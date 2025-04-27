@@ -1,1 +1,1 @@
-# mean-webapp-template
+# toy-exchange
