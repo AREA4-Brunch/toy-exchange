@@ -6,6 +6,16 @@ export abstract class UserRole<TValue extends UserRole.Type>
     extends ValueObject<TValue>
     implements IComparable<TValue>
 {
+    /**
+     * Invokes findByValue on given roleType class and returns the result cast.
+     */
+    protected static getRole<TValue extends UserRole.Type>(
+        value: string,
+        roleType: any = UserRole.Type,
+    ): TValue | undefined {
+        return roleType.findByValue(value, roleType) as TValue | undefined;
+    }
+
     protected constructor(value: TValue) {
         super(value);
         this.registerInstance(value, this);

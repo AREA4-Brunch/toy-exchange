@@ -15,15 +15,14 @@ export class RegularUserRole extends UserRole<RegularUserRole.Type> {
     }
 
     public static fromString(value: string): RegularUserRole {
-        const role = RegularUserRole.getRole(value);
+        const role = RegularUserRole.getRole<RegularUserRole.Type>(
+            value,
+            RegularUserRole.Type,
+        );
         if (role === undefined) {
             throw new Error(`Invalid role: ${value}`);
         }
         return RegularUserRole.create(role);
-    }
-
-    private static getRole(value: string): RegularUserRole.Type | undefined {
-        return RegularUserRole.Type.findByValue(value, RegularUserRole.Type);
     }
 
     protected override registerInstance(

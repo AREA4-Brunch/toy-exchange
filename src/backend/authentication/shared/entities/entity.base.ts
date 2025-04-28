@@ -48,14 +48,14 @@ export abstract class Entity<
     protected updateMultipleStates(
         updates: Partial<TProps>,
         validate: boolean = true,
-        excludeModifiedAt: boolean = false,
-        excludeVersion: boolean = false,
+        allowSetModifiedAt: boolean = false,
+        allowSetVersion: boolean = false,
     ): void {
         const updatedProps = {
             ...this.props,
             ...updates,
-            ...(excludeModifiedAt ? {} : { modifiedAt: new Date() }),
-            ...(excludeVersion ? {} : { version: this.props.version + 1 }),
+            ...(allowSetModifiedAt ? {} : { modifiedAt: new Date() }),
+            ...(allowSetVersion ? {} : { version: this.props.version + 1 }),
         } as TProps;
 
         if (validate) {
