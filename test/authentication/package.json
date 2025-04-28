@@ -1,0 +1,14 @@
+{
+  "name": "test-authentication",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "description": "",
+  "dependencies": {
+    "vitest": "^3.1.2"
+  }
+}

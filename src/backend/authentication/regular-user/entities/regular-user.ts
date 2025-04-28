@@ -1,32 +1,16 @@
-import { Entity, TimestampedProps } from '../../shared/entities/entity.base.ts';
 import { UserId } from '../../shared/value-objects/user-id.ts';
-import { Email } from '../../shared/value-objects/email.ts';
 import { RegularUserRole } from '../value-objects/regular-user-role.ts';
+import { IUserProps, User } from '../../shared/entities/user.base.ts';
 
 export class RegularUserId extends UserId {}
 
-export interface RegularUserProps extends TimestampedProps {
-    email: Email;
-    password: string;
-    username: string;
+export interface IRegularUserProps extends IUserProps {
     roles: RegularUserRole[];
 }
 
-export class RegularUser extends Entity<RegularUserId, RegularUserProps> {
-    constructor(id: RegularUserId, props: RegularUserProps) {
+export class RegularUser extends User<IRegularUserProps> {
+    constructor(id: RegularUserId, props: IRegularUserProps) {
         super(id, props);
-    }
-
-    public get email(): Email {
-        return this.props.email;
-    }
-
-    public get password(): string {
-        return this.props.password;
-    }
-
-    public get username(): string {
-        return this.props.username;
     }
 
     public get roles(): RegularUserRole[] {
@@ -34,8 +18,14 @@ export class RegularUser extends Entity<RegularUserId, RegularUserProps> {
     }
 
     public isNotBanned(): boolean {
-        return !this.roles.some((role) =>
-            role.equals(RegularUserRole.Type.BLOCKED),
+        return !this.roles.includes(
+            RegularUserRole.create(RegularUserRole.Type.BLOCKED),
+        );
+    }
+
+    public isVerified(): boolean {
+        return !this.roles.includes(
+            RegularUserRole.create(RegularUserRole.Type.UNVERIFIED),
         );
     }
 }

@@ -1,7 +1,7 @@
 import { Identifier } from '../value-objects/identifier.ts';
 import { TrackableEntity } from './trackable-entity.ts';
 
-export interface TimestampedProps {
+export interface ITimestampedProps {
     createdAt: Date;
     modifiedAt: Date;
     version: number;
@@ -9,7 +9,7 @@ export interface TimestampedProps {
 
 export abstract class Entity<
     TId extends Identifier<unknown>,
-    TProps extends TimestampedProps,
+    TProps extends ITimestampedProps,
 > extends TrackableEntity<TId, TProps> {
     constructor(id: TId, props: TProps) {
         super(id, props);
