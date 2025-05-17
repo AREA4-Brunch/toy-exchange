@@ -1,6 +1,6 @@
-import { IDomainEvent } from '../events/domain-event.interface.ts';
-import { Identifier } from '../value-objects/identifier.ts';
-import { BasicEntity } from './basic-entity.base.ts';
+import { IDomainEvent } from '../events/domain-event.interface';
+import { Identifier } from '../value-objects/identifier';
+import { BasicEntity } from './basic-entity.base';
 
 export abstract class TrackableEntity<
     TId extends Identifier<unknown>,

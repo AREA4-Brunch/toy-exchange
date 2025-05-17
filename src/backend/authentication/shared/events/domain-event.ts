@@ -1,5 +1,5 @@
-import { Identifier } from '../value-objects/identifier.ts';
-import { IDomainEvent } from './domain-event.interface.ts';
+import { Identifier } from '../value-objects/identifier';
+import { IDomainEvent } from './domain-event.interface';
 
 export abstract class DomainEvent implements IDomainEvent {
     constructor(

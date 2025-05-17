@@ -17,17 +17,17 @@ export const findStaticStringProperty = (
 ): string | undefined => {
     const found: string | undefined = Object.getOwnPropertyNames(cls).find(
         (prop) =>
-            typeof cls[prop] === 'string' &&
-            prop !== 'prototype' &&
-            cls[prop] === target,
+            typeof cls[prop] === 'string'
+            && prop !== 'prototype'
+            && cls[prop] === target,
     );
     if (found) {
         return cls[found];
     }
     const parent = Object.getPrototypeOf(cls);
-    return parent &&
-        parent !== Object.prototype &&
-        parent !== Function.prototype
+    return parent
+        && parent !== Object.prototype
+        && parent !== Function.prototype
         ? findStaticStringProperty(parent, target)
         : undefined;
 };

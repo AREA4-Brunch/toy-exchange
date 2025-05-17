@@ -1,6 +1,6 @@
-import { findStaticStringProperty } from '../common/class-utils.ts';
-import { IComparable } from '../common/comparable.interface.ts';
-import { ValueObject } from './value-object.base.ts';
+import { findStaticStringProperty } from '../common/class-utils';
+import { IComparable } from '../common/comparable.interface';
+import { ValueObject } from './value-object.base';
 
 export abstract class UserRole<TValue extends UserRole.Type>
     extends ValueObject<TValue>

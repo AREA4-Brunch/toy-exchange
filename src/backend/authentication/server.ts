@@ -3,39 +3,35 @@
  * node server.js --config=path/to/config/app-config/default.config.js
  */
 
-import { Application } from './shared/main/app/app.ts';
-import { IAppConfig } from './shared/main/app/app-config.interface.ts';
-import { config as defaultConfig } from './config/app-config/default.config.ts';
-import { Container } from 'inversify';
-import { binder as regularUserIoCBinder } from './regular-user/main/ioc/ioc-binder.ts';
-import { initializer as regularUserIoCInitializer } from './regular-user/main/ioc/ioc-initializer.ts';
+import 'reflect-metadata'; // tsyringe requires this to be first line imported
 import express from 'express';
 import * as path from 'path';
 import * as fs from 'fs';
+import { Application } from './shared/main/app/app';
+import { IAppConfig } from './shared/main/app/app-config.interface';
+import { config as defaultConfig } from './regular-user/config/app-config/default.config';
+import { binder as regularUserIoCBinder } from './regular-user/main/ioc/binders/ioc-binder';
+import { initializer as regularUserIoCInitializer } from './regular-user/main/ioc/initializers/ioc-initializer';
 
-const authContainer: Container = new Container();
-const authApp: express.Express = express();
-const authAppBindKey = '_Auth_App_';
-const config: IAppConfig = await loadConfig(defaultConfig);
+const main = async () => {
+    const authApp: express.Express = express();
+    const config: IAppConfig = await loadConfig(defaultConfig);
+    config.main.di.app = authApp;
 
-// RegularUser Module
-Application.createUnsafe(
-    config,
-    regularUserIoCBinder,
-    regularUserIoCInitializer,
-    authContainer,
-    authApp,
-    authAppBindKey,
-)
-    .then((app) => app.listenHttp())
-    .catch((error) => {
-        console.error('Failed to start application:\n', error);
-        process.exit(error.code || 1);
-    });
+    console.log('Loaded configuration:', config);
+
+    // RegularUser Module
+    Application.create(config, regularUserIoCBinder, regularUserIoCInitializer)
+        .then((app) => app.listenHttp())
+        .catch((error) => {
+            console.error('Failed to start application:\n', error);
+            process.exit(error.code || 1);
+        });
+};
 
 async function loadConfig(defaultConfig: IAppConfig): Promise<IAppConfig> {
-    // e.g. --config=path/to/config.ts
-    const configArg = process.argv.find((arg) => arg.startsWith('--config='));
+    // e.g. --config=./regular-user/config/app-config/test.config.ts
+    const configArg = process.env.CONFIG;
     if (!configArg) {
         console.log('No config file arg provided, using default configuration');
         return defaultConfig;
@@ -53,10 +49,13 @@ async function loadConfig(defaultConfig: IAppConfig): Promise<IAppConfig> {
             return defaultConfig;
         }
         const customConfig = await import(confPath);
-        return customConfig.default || customConfig.config || customConfig;
+        // !important try config first as it is in the default config
+        return customConfig.config || customConfig.default || customConfig;
     } catch (error) {
         console.error(`Error loading config file: ${(error as Error).message}`);
         console.log('Falling back to default configuration');
         return defaultConfig;
     }
 }
+
+main();

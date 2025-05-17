@@ -1,4 +1,4 @@
-import { IValueObject } from './value-object.interface.ts';
+import { IValueObject } from './value-object.interface';
 
 export abstract class ValueObject<T> implements IValueObject<T> {
     protected constructor(public readonly value: T) {}

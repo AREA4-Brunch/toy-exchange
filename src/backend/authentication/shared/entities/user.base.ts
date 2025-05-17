@@ -1,9 +1,6 @@
-import {
-    Entity,
-    ITimestampedProps,
-} from '../../shared/entities/entity.base.ts';
-import { Email } from '../../shared/value-objects/email.ts';
-import { UserId } from '../value-objects/user-id.ts';
+import { Entity, ITimestampedProps } from '../../shared/entities/entity.base';
+import { Email } from '../../shared/value-objects/email';
+import { UserId } from '../value-objects/user-id';
 
 export interface IUserProps extends ITimestampedProps {
     email: Email;

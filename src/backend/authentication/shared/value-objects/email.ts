@@ -1,4 +1,4 @@
-import { ValueObject } from './value-object.base.ts';
+import { ValueObject } from './value-object.base';
 
 export class Email extends ValueObject<string> {
     protected constructor(email: string) {

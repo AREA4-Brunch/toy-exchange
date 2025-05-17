@@ -2,14 +2,18 @@
     "name": "authentication",
     "version": "1.0.0",
     "description": "Authentication module for toy-exchange web app.",
-    "type": "module",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "main": "dist/server.js",
+    "types": "dist/server.d.ts",
     "scripts": {
-        "build": "tsc --outDir dist --noEmit false",
-        "start": "node dist/server.js",
-        "dev": "tsc -w",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "start": "npm run serve",
+        "start:dev": "npm run build && npm run serve",
+        "start:test": "npm run build && npm run serve",
+        "serve": "node dist/server.js",
+        "build": "npx tsc",
+        "install:docker:prod": "npm install --omit=dev",
+        "install:docker:build": "npm install typescript",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
     },
     "author": "Aleksandar Radenkovic (Sale)",
     "license": "UNLICENSED",
@@ -17,17 +21,24 @@
         "type": "git",
         "url": "git+https://github.com/AREA4-Brunch/toy-exchange.git"
     },
+    "bugs": {
+        "url": "https://github.com/AREA4-Brunch/toy-exchange/issues"
+    },
+    "homepage": "https://github.com/AREA4-Brunch/toy-exchange#readme",
     "devDependencies": {
+        "@types/cors": "^2.8.18",
         "@types/express": "^5.0.1",
-        "@types/node": "^22.15.2",
+        "@types/node": "^22.15.17",
         "@types/uuid": "^10.0.0",
+        "prettier": "^3.5.3",
         "typescript": "^5.8.3"
     },
     "dependencies": {
+        "cors": "^2.8.5",
         "express": "^5.1.0",
-        "inversify": "^7.5.1",
-        "mongodb": "^6.16.0",
-        "mongoose": "^8.14.0",
-        "uuid": "^11.1.0"
+        "reflect-metadata": "^0.2.2",
+        "tsyringe": "^4.10.0",
+        "uuid": "^11.1.0",
+        "xss": "^1.0.15"
     }
 }

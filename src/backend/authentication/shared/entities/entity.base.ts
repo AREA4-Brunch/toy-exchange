@@ -1,5 +1,5 @@
-import { Identifier } from '../value-objects/identifier.ts';
-import { TrackableEntity } from './trackable-entity.ts';
+import { Identifier } from '../value-objects/identifier';
+import { TrackableEntity } from './trackable-entity';
 
 export interface ITimestampedProps {
     createdAt: Date;

@@ -1,6 +1,6 @@
-import { UserId } from '../../../shared/value-objects/user-id.ts';
-import { RegularUserRole } from '../value-objects/regular-user-role.ts';
-import { IUserProps, User } from '../../../shared/entities/user.base.ts';
+import { UserId } from '../../../shared/value-objects/user-id';
+import { RegularUserRole } from '../value-objects/regular-user-role';
+import { IUserProps, User } from '../../../shared/entities/user.base';
 
 export class RegularUserId extends UserId {}
 

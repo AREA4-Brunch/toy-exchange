@@ -1,4 +1,4 @@
-import { Identifier } from '../value-objects/identifier.ts';
+import { Identifier } from '../value-objects/identifier';
 
 export interface IDomainEvent {
     readonly id: Identifier<string>;

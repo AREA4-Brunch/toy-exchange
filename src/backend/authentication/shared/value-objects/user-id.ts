@@ -1,4 +1,4 @@
-import { Identifier } from './identifier.ts';
+import { Identifier } from './identifier';
 import * as uuid from 'uuid';
 
 export class UserId extends Identifier<string> {

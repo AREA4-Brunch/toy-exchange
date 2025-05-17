@@ -1,6 +1,6 @@
-import { IValidateable } from '../common/validateable.interface.ts';
-import { Identifier } from '../value-objects/identifier.ts';
-import { IEntity } from './entity.interface.ts';
+import { IValidateable } from '../common/validateable.interface';
+import { Identifier } from '../value-objects/identifier';
+import { IEntity } from './entity.interface';
 
 export abstract class BasicEntity<TId extends Identifier<unknown>, TProps>
     implements IEntity<TId>, IValidateable<TProps>
