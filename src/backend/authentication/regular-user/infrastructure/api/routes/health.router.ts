@@ -1,6 +1,5 @@
 import express from 'express';
 import { injectable, singleton } from 'tsyringe';
-import { RouterRegistry } from './router-registry';
 import { HealthController } from '../controllers/health.controller';
 
 @singleton()
@@ -8,8 +7,8 @@ import { HealthController } from '../controllers/health.controller';
 export class HealthRouter {
     constructor(private readonly healthController: HealthController) {}
 
-    public registerRoutes(routerRegistry: RouterRegistry): void {
-        routerRegistry.registerRouter(`/health`, this.createHealthRouter());
+    public getRouters(): { path: string; router: express.Router }[] {
+        return [{ path: `/health`, router: this.createHealthRouter() }];
     }
 
     private createHealthRouter() {

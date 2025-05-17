@@ -1,7 +1,7 @@
 import express from 'express';
-import { IAppConfig } from './app-config.interface';
 import { IocBinder } from '../ioc/binders/ioc-binder.base';
 import { IocInitializer } from '../ioc/initializers/ioc-initializer.base';
+import { IAppConfig } from './app-config.interface';
 
 export class Application {
     protected constructor(
@@ -37,8 +37,8 @@ export class Application {
     }
 
     protected async init(): Promise<Application> {
-        this.binder.bind(this.config.main.di.container, this.config);
-        this.initializer.initialize(this.config);
+        await this.binder.bind(this.config.main.di.container, this.config);
+        await this.initializer.initialize(this.config);
         return this;
     }
 }

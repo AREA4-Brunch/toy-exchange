@@ -1,7 +1,7 @@
-import { Router } from 'express';
+import express, { Router } from 'express';
 import { injectable, singleton } from 'tsyringe';
-import { LoginRouter } from './login.router';
 import { HealthRouter } from './health.router';
+import { LoginRouter } from './login.router';
 
 @singleton()
 @injectable()
@@ -9,11 +9,19 @@ export class RouterRegistry {
     public readonly mainRouter = Router();
 
     constructor(healthRouter: HealthRouter, loginRouter: LoginRouter) {
-        healthRouter.registerRoutes(this);
-        loginRouter.registerRoutes(this);
+        this.registerRouters(healthRouter.getRouters());
+        this.registerRouters(loginRouter.getRouters());
     }
 
-    public registerRouter(path: string, router: Router): void {
+    private registerRouters(
+        routers: { path: string; router: express.Router }[],
+    ) {
+        routers.forEach(({ path, router }) =>
+            this.registerRouter(path, router),
+        );
+    }
+
+    private registerRouter(path: string, router: Router): void {
         this.mainRouter.use(path, router);
     }
 }
