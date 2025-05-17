@@ -1,4 +1,4 @@
-import { IValidateable } from '../common/validateable.interface';
+import { IValidateable } from '../../common/validateable.interface';
 import { Identifier } from '../value-objects/identifier';
 import { IEntity } from './entity.interface';
 

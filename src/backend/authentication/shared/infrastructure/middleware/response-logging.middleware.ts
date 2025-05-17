@@ -31,7 +31,9 @@ export class ResponseLoggingMiddleware {
                     `${res.statusCode} - [${method}] [${url}] [${duration}ms]`,
                 );
             } else {
-                this.logger.info(`${res.statusCode} - [${id}] [${duration}ms]`);
+                this.logger.info(
+                    `${res.statusCode} - [REQ.ID: ${id}] [${duration}ms]`,
+                );
             }
         });
 

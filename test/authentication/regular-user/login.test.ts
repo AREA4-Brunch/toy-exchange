@@ -1,8 +1,7 @@
+import axios, { AxiosInstance } from 'axios';
 import 'reflect-metadata';
-import axios from 'axios';
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
-import { AxiosInstance } from 'axios';
-import { getApiBasePath, generateTestCredentials, startTestServer } from './utils/test-utils';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { generateTestCredentials, getApiBasePath, startTestServer } from './utils/test-utils';
 
 describe('Login API', () => {
     let api: AxiosInstance;
@@ -23,15 +22,12 @@ describe('Login API', () => {
 
     describe('Login endpoint', async () => {
         const apiBasePath = await getApiBasePath();
-        const loginEndpoint = `${apiBasePath}/login`;
+        const loginEndpoint = `http://${apiBasePath}/login`;
 
         it(`${ID++}. should process login request`, async () => {
             const loginPayload = generateTestCredentials();
-            console.log(`login: ${loginEndpoint}`);
             const response = await api.post(loginEndpoint, loginPayload);
-            // In real implementation, you'd check for a token or user data
-            // For now, just check that the endpoint responds
-            expect(response.status).toBeLessThan(500); // Not a server error
+            expect(response.status).toBe(200);
         });
 
         // it(`${ID++}. should reject login with missing email`, async () => {

@@ -1,6 +1,6 @@
-import { UserId } from '../../../shared/value-objects/user-id';
+import { UserId } from '../../../shared/core/value-objects/user-id';
 import { RegularUserRole } from '../value-objects/regular-user-role';
-import { IUserProps, User } from '../../../shared/entities/user.base';
+import { IUserProps, User } from '../../../shared/core/entities/user.base';
 
 export class RegularUserId extends UserId {}
 

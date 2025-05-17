@@ -5,8 +5,8 @@ import {
     IRegularUserProps,
 } from '../../../src/backend/authentication/regular-user/core/entities/regular-user';
 import { RegularUserRole } from '../../../src/backend/authentication/regular-user/core/value-objects/regular-user-role';
-import { UserRole } from '../../../src/backend/authentication/shared/value-objects/user-role';
-import { Email } from '../../../src/backend/authentication/shared/value-objects/email';
+import { Email } from '../../../src/backend/authentication/shared/core/value-objects/email';
+import { UserRole } from '../../../src/backend/authentication/shared/core/value-objects/user-role';
 
 describe('RegularUser', () => {
     let userId: RegularUserId;

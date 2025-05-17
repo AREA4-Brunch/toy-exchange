@@ -1,5 +1,5 @@
-import { findStaticStringProperty } from '../common/class-utils';
-import { IComparable } from '../common/comparable.interface';
+import { findStaticStringProperty } from '../../common/class-utils';
+import { IComparable } from '../../common/comparable.interface';
 import { ValueObject } from './value-object.base';
 
 export abstract class UserRole<TValue extends UserRole.Type>

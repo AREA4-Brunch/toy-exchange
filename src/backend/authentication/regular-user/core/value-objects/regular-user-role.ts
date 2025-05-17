@@ -1,4 +1,4 @@
-import { UserRole } from '../../../shared/value-objects/user-role';
+import { UserRole } from '../../../shared/core/value-objects/user-role';
 
 export class RegularUserRole extends UserRole<RegularUserRole.Type> {
     private static readonly registry = new Map<
