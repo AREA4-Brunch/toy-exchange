@@ -1,14 +1,30 @@
 {
-  "name": "test-authentication",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "vitest"
-  },
-  "author": "",
-  "license": "UNLICENSED",
-  "description": "",
-  "dependencies": {
-    "vitest": "^3.1.2"
-  }
+    "name": "test-authentication",
+    "version": "1.0.0",
+    "scripts": {
+        "test": "node ./scripts/test-runner.js",
+        "test:watch": "node ./scripts/test-runner.js --watch",
+        "test:coverage": "node ./scripts/test-runner.js --coverage",
+        "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
+    },
+    "author": "",
+    "license": "UNLICENSED",
+    "description": "",
+    "dependencies": {
+        "child_process": "^1.0.2",
+        "concurrently": "^9.1.2",
+        "cross-env": "^7.0.3",
+        "reflect-metadata": "^0.2.2",
+        "tsyringe": "^4.10.0",
+        "vitest": "^3.1.2",
+        "wait-on": "^8.0.3"
+    },
+    "devDependencies": {
+        "@types/node": "^22.15.18",
+        "@types/wait-on": "^5.3.4",
+        "axios": "^1.9.0",
+        "prettier": "^3.5.3",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.8.3"
+    }
 }

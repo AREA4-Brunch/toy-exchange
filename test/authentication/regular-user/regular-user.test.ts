@@ -3,10 +3,10 @@ import {
     RegularUser,
     RegularUserId,
     IRegularUserProps,
-} from '../../src/backend/authentication/regular-user/core/entities/regular-user';
-import { RegularUserRole } from '../../src/backend/authentication/regular-user/core/value-objects/regular-user-role';
-import { UserRole } from '../../src/backend/authentication/shared/value-objects/user-role';
-import { Email } from '../../src/backend/authentication/shared/value-objects/email';
+} from '../../../src/backend/authentication/regular-user/core/entities/regular-user';
+import { RegularUserRole } from '../../../src/backend/authentication/regular-user/core/value-objects/regular-user-role';
+import { UserRole } from '../../../src/backend/authentication/shared/value-objects/user-role';
+import { Email } from '../../../src/backend/authentication/shared/value-objects/email';
 
 describe('RegularUser', () => {
     let userId: RegularUserId;
