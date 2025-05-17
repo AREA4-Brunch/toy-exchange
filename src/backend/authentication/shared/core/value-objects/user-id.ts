@@ -1,8 +1,8 @@
-import { Identifier } from './identifier';
 import * as uuid from 'uuid';
+import { Identifier } from './identifier';
 
 export class UserId extends Identifier<string> {
-    public constructor(value: string) {
+    protected constructor(value: string) {
         super(value);
     }
 

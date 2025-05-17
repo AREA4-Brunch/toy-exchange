@@ -18,7 +18,6 @@ export abstract class UserRole<TValue extends UserRole.Type>
 
     protected constructor(value: TValue) {
         super(value);
-        this.registerInstance(value, this);
     }
 
     public override equals(other?: ValueObject<TValue> | TValue): boolean {
@@ -36,11 +35,6 @@ export abstract class UserRole<TValue extends UserRole.Type>
     public toString(): string {
         return String(this.value);
     }
-
-    protected abstract registerInstance(
-        value: TValue,
-        instance: UserRole<TValue>,
-    ): void;
 }
 
 export namespace UserRole {

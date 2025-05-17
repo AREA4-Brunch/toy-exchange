@@ -8,6 +8,7 @@ export class RegularUserRole extends UserRole<RegularUserRole.Type> {
 
     protected constructor(value: RegularUserRole.Type) {
         super(value);
+        this.registerInstance(value, this);
     }
 
     public static create(role: RegularUserRole.Type): RegularUserRole {
@@ -25,7 +26,7 @@ export class RegularUserRole extends UserRole<RegularUserRole.Type> {
         return RegularUserRole.create(role);
     }
 
-    protected override registerInstance(
+    protected registerInstance(
         role: RegularUserRole.Type,
         instance: RegularUserRole,
     ): void {
