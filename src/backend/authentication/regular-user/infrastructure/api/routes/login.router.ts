@@ -3,9 +3,11 @@ import { injectable, singleton } from 'tsyringe';
 import { ErrorHandlerMiddleware } from '../../../../shared/infrastructure/middleware/error-handler.middleware';
 import { RequestLoggingMiddleware } from '../../../../shared/infrastructure/middleware/request-logging.middleware';
 import { RequestMetadataMiddleware } from '../../../../shared/infrastructure/middleware/request-metadata.middleware';
+import { RequestValidationMiddleware } from '../../../../shared/infrastructure/middleware/request-validation.middleware';
 import { ResponseLoggingMiddleware } from '../../../../shared/infrastructure/middleware/response-logging.middleware';
 import { SanitizationMiddleware } from '../../../../shared/infrastructure/middleware/sanitization.middleware';
 import { LoginController } from '../controllers/login.controller';
+import { loginRequestSchema } from '../request-schemas/login-request.schema';
 
 @singleton()
 @injectable()
@@ -16,6 +18,7 @@ export class LoginRouter {
         private readonly requestLoggingMiddleware: RequestLoggingMiddleware,
         private readonly responseLoggingMiddleware: ResponseLoggingMiddleware,
         private readonly errorHandlerMiddleware: ErrorHandlerMiddleware,
+        private readonly requestValidationMiddleware: RequestValidationMiddleware,
         private readonly loginController: LoginController,
     ) {}
 
@@ -30,6 +33,11 @@ export class LoginRouter {
         login.use(this.requestMetadataMiddleware.createRequestMetadata());
         login.use(this.requestLoggingMiddleware.createLogRequest());
         login.use(this.responseLoggingMiddleware.createLogResponse());
+        login.use(
+            this.requestValidationMiddleware.createValidateRequest(
+                loginRequestSchema,
+            ),
+        );
 
         login
             .route(``)

@@ -4,22 +4,23 @@
 
 import express from 'express';
 import { DependencyContainer } from 'tsyringe';
-import { IocBinder } from '../../../../shared/main/ioc/binders/ioc-binder.base';
-import { SanitizationMiddleware } from '../../../../shared/infrastructure/middleware/sanitization.middleware';
-import { RequestLoggingMiddleware } from '../../../../shared/infrastructure/middleware/request-logging.middleware';
-import { ResponseLoggingMiddleware } from '../../../../shared/infrastructure/middleware/response-logging.middleware';
 import { ErrorHandlerMiddleware } from '../../../../shared/infrastructure/middleware/error-handler.middleware';
 import { MiddlewareModule } from '../../../../shared/infrastructure/middleware/module';
-import { IMiddlewareConfig } from '../../../infrastructure/api/middleware/middleware-config.interface';
-import { LoginUseCase } from '../../../application/use-cases/login.use-case';
-import { INFRASTRUCTURE_TYPES } from '../../../infrastructure/di/types';
-import { IConfigCore } from '../../../core/config/core-config.interface';
-import { IConfigApplication } from '../../../application/config/application-config.interface';
-import { IConfigInfrastructure } from '../../../infrastructure/config/infrastructure-config.interface';
-import { IAppConfig } from '../../config/app-config.interface';
+import { RequestLoggingMiddleware } from '../../../../shared/infrastructure/middleware/request-logging.middleware';
 import { RequestMetadataMiddleware } from '../../../../shared/infrastructure/middleware/request-metadata.middleware';
+import { RequestValidationMiddleware } from '../../../../shared/infrastructure/middleware/request-validation.middleware';
+import { ResponseLoggingMiddleware } from '../../../../shared/infrastructure/middleware/response-logging.middleware';
+import { SanitizationMiddleware } from '../../../../shared/infrastructure/middleware/sanitization.middleware';
+import { IocBinder } from '../../../../shared/main/ioc/binders/ioc-binder.base';
+import { IConfigApplication } from '../../../application/config/application-config.interface';
 import { APPLICATION_TYPES } from '../../../application/di/types';
 import { ILoginUseCase } from '../../../application/use-cases/login.interfaces';
+import { LoginUseCase } from '../../../application/use-cases/login.use-case';
+import { IConfigCore } from '../../../core/config/core-config.interface';
+import { IMiddlewareConfig } from '../../../infrastructure/api/middleware/middleware-config.interface';
+import { IConfigInfrastructure } from '../../../infrastructure/config/infrastructure-config.interface';
+import { INFRASTRUCTURE_TYPES } from '../../../infrastructure/di/types';
+import { IAppConfig } from '../../config/app-config.interface';
 
 const core = (container: DependencyContainer, conf: IConfigCore): void => {};
 
@@ -103,5 +104,10 @@ const bindMiddleware = (
     container.registerInstance(
         ErrorHandlerMiddleware,
         middleware.errorHandlerMiddleware,
+    );
+
+    container.registerInstance(
+        RequestValidationMiddleware,
+        middleware.requestValidationMiddleware,
     );
 };

@@ -27,39 +27,34 @@ describe('Login API', () => {
         it(`${ID++}. should process login request`, async () => {
             const loginPayload = generateTestCredentials();
             const response = await api.post(loginEndpoint, loginPayload);
+            console.log(`Login response ${response.status}: ${response.data}`);
             expect(response.status).toBe(200);
         });
 
-        // it(`${ID++}. should reject login with missing email`, async () => {
-        //     const invalidPayload = {
-        //         password: 'password123',
-        //     };
+        it(`${ID++}. should reject login with missing email`, async () => {
+            const invalidPayload = {
+                password: 'password123',
+            };
+            const response = await api.post(loginEndpoint, invalidPayload);
+            expect(response.status).toBe(400);
+        });
 
-        //     const response = await api.post(loginEndpoint, invalidPayload);
+        it(`${ID++}. should reject login with missing password`, async () => {
+            const invalidPayload = {
+                email: 'test@example.com',
+            };
+            const response = await api.post(loginEndpoint, invalidPayload);
+            expect(response.status).toBe(400);
+        });
 
-        //     expect(response.status).toBe(400);
-        // });
-
-        // it(`${ID++}. should reject login with missing password`, async () => {
-        //     const invalidPayload = {
-        //         email: 'test@example.com',
-        //     };
-
-        //     const response = await api.post(loginEndpoint, invalidPayload);
-
-        //     expect(response.status).toBe(400);
-        // });
-
-        // it(`${ID++}. should reject login with invalid email format`, async () => {
-        //     const invalidPayload = {
-        //         email: 'not-an-email',
-        //         password: 'password123',
-        //     };
-
-        //     const response = await api.post(loginEndpoint, invalidPayload);
-
-        //     expect(response.status).toBe(400);
-        // });
+        it(`${ID++}. should reject login with invalid email format`, async () => {
+            const invalidPayload = {
+                email: 'not-an-email',
+                password: 'password123',
+            };
+            const response = await api.post(loginEndpoint, invalidPayload);
+            expect(response.status).toBe(400);
+        });
     });
 
     // describe('Login flow', () => {

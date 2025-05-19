@@ -66,24 +66,41 @@ function startServer(config) {
         process.exit(1);
     }
 
-    const serverFile = path.join(config.serverDir, 'dist', 'server.js');
-    console.log(`Starting server directly: ${serverFile}`);
+    console.log(`Starting server using npm run start:test in: ${config.serverDir}`);
 
-    const server = spawn(process.execPath, [serverFile], {
-        cwd: config.serverDir,
-        env: process.env,
-        stdio: 'inherit',
-    });
+    // use 'npm.cmd' on Windows, 'npm' otherwise
+    const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 
-    server.on('exit', (code) => {
-        if (code !== null && code !== 0) {
-            console.error(`Server process exited with code ${code}`);
-        }
-    });
+    try {
+        // normalize the path to avoid any Windows-specific issues
+        const normalizedPath = path.normalize(config.serverDir);
+        console.log(`Using normalized path: ${normalizedPath}`);
 
-    setupCleanupHandlers(server);
+        const server = spawn(npmCmd, ['run', 'start:test'], {
+            cwd: normalizedPath,
+            env: process.env,
+            stdio: 'inherit',
+            shell: true, // use shell to handle any path issues
+        });
 
-    return server;
+        server.on('error', (err) => {
+            console.error('Failed to start server:', err);
+            process.exit(1);
+        });
+
+        server.on('exit', (code) => {
+            if (code !== null && code !== 0) {
+                console.error(`Server process exited with code ${code}`);
+            }
+        });
+
+        setupCleanupHandlers(server);
+
+        return server;
+    } catch (error) {
+        console.error('Error starting server:', error);
+        process.exit(1);
+    }
 }
 
 /**

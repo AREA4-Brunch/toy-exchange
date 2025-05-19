@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
+    IRegularUserProps,
     RegularUser,
     RegularUserId,
-    IRegularUserProps,
 } from '../../../src/backend/authentication/regular-user/core/entities/regular-user';
 import { RegularUserRole } from '../../../src/backend/authentication/regular-user/core/value-objects/regular-user-role';
 import { Email } from '../../../src/backend/authentication/shared/core/value-objects/email';
@@ -14,7 +14,7 @@ describe('RegularUser', () => {
     let ID = 1;
 
     beforeEach(() => {
-        userId = new RegularUserId('user-123');
+        userId = RegularUserId.create();
         userProps = {
             email: Email.create('test@example.com'),
             password: 'hashedPassword123',

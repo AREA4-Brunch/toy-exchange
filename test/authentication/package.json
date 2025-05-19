@@ -2,6 +2,7 @@
     "name": "test-authentication",
     "version": "1.0.0",
     "scripts": {
+        "build": "npx tsc --outDir ./dist",
         "test": "node ./scripts/test-runner.js",
         "test:watch": "node ./scripts/test-runner.js --watch",
         "test:coverage": "node ./scripts/test-runner.js --coverage",

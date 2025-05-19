@@ -1,6 +1,6 @@
 import { container } from 'tsyringe';
-import { IAppConfig } from '../../main/config/app-config.interface.js';
 import { MAIN_TYPES } from '../../../shared/main/di/types.js';
+import { IAppConfig } from '../../main/config/app-config.interface.js';
 
 export const config: IAppConfig = {
     core: {},
@@ -16,6 +16,7 @@ export const config: IAppConfig = {
                 sanitization: {
                     logger: console,
                 },
+                requestMetadata: {},
                 requestLogging: {
                     logger: console,
                     logLevel: 'detailed',
@@ -27,6 +28,7 @@ export const config: IAppConfig = {
                 errorHandler: {
                     logger: console,
                 },
+                requestValidation: {},
             },
         },
     },
