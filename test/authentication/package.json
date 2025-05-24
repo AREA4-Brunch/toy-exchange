@@ -2,8 +2,9 @@
     "name": "test-authentication",
     "version": "1.0.0",
     "scripts": {
-        "build": "npx tsc --outDir ./dist",
-        "test": "node ./scripts/test-runner.js",
+        "clean": "rimraf ./dist",
+        "build": "npm run clean && npx tsc --outDir ./dist",
+        "test": "npm run build && cross-env PROJECT_ROOT=../../ node ./dist/test/authentication/scripts/test-runner.js",
         "test:watch": "node ./scripts/test-runner.js --watch",
         "test:coverage": "node ./scripts/test-runner.js --coverage",
         "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
@@ -15,7 +16,7 @@
         "child_process": "^1.0.2",
         "concurrently": "^9.1.2",
         "cross-env": "^7.0.3",
-        "reflect-metadata": "^0.2.2",
+        "rimraf": "^6.0.1",
         "tsyringe": "^4.10.0",
         "vitest": "^3.1.2",
         "wait-on": "^8.0.3"

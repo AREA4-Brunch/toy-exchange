@@ -3,8 +3,8 @@ import {
     IRegularUserProps,
     RegularUser,
     RegularUserId,
-} from '../../../src/backend/authentication/regular-user/core/entities/regular-user';
-import { RegularUserRole } from '../../../src/backend/authentication/regular-user/core/value-objects/regular-user-role';
+} from '../../../src/backend/authentication/regular-user/login/core/entities/regular-user';
+import { RegularUserRole } from '../../../src/backend/authentication/regular-user/login/core/value-objects/regular-user-role';
 import { Email } from '../../../src/backend/authentication/shared/core/value-objects/email';
 import { UserRole } from '../../../src/backend/authentication/shared/core/value-objects/user-role';
 

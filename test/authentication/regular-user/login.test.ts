@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
-import 'reflect-metadata';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { generateTestCredentials, getApiBasePath, startTestServer } from './utils/test-utils';
+import { getLoginUrl, IUrl } from '../shared/config';
+import { generateTestCredentials } from './common';
 
 describe('Login API', () => {
     let api: AxiosInstance;
@@ -9,10 +9,10 @@ describe('Login API', () => {
     let server: any;
 
     beforeAll(async () => {
-        server = await startTestServer();
+        // server = await startTestServer();
         api = axios.create({
-            baseURL: `http://localhost:${server.port}/api`,
-            validateStatus: (status) => status < 500,
+            baseURL: ``,
+            validateStatus: (status) => true,
         });
     });
 
@@ -21,13 +21,11 @@ describe('Login API', () => {
     });
 
     describe('Login endpoint', async () => {
-        const apiBasePath = await getApiBasePath();
-        const loginEndpoint = `http://${apiBasePath}/login`;
+        const url: IUrl = await getLoginUrl();
 
         it(`${ID++}. should process login request`, async () => {
             const loginPayload = generateTestCredentials();
-            const response = await api.post(loginEndpoint, loginPayload);
-            console.log(`Login response ${response.status}: ${response.data}`);
+            const response = await api.request({ ...url, data: loginPayload });
             expect(response.status).toBe(200);
         });
 
@@ -35,7 +33,7 @@ describe('Login API', () => {
             const invalidPayload = {
                 password: 'password123',
             };
-            const response = await api.post(loginEndpoint, invalidPayload);
+            const response = await api.request({ ...url, data: invalidPayload });
             expect(response.status).toBe(400);
         });
 
@@ -43,7 +41,7 @@ describe('Login API', () => {
             const invalidPayload = {
                 email: 'test@example.com',
             };
-            const response = await api.post(loginEndpoint, invalidPayload);
+            const response = await api.request({ ...url, data: invalidPayload });
             expect(response.status).toBe(400);
         });
 
@@ -52,14 +50,14 @@ describe('Login API', () => {
                 email: 'not-an-email',
                 password: 'password123',
             };
-            const response = await api.post(loginEndpoint, invalidPayload);
+            const response = await api.request({ ...url, data: invalidPayload });
             expect(response.status).toBe(400);
         });
     });
 
     // describe('Login flow', () => {
     //     const apiBasePath = getApiBasePath();
-    //     const loginEndpoint = `${apiBasePath}/login`;
+    //     const url = `${apiBasePath}/login`;
 
     //     let authToken: string;
 
@@ -68,7 +66,7 @@ describe('Login API', () => {
     //     });
 
     //     it(`${ID++}. should be able to access protected endpoints after login`, async () => {
-    //         const loginResponse = await api.post(loginEndpoint, generateTestCredentials());
+    //         const loginResponse = await api.request({ ...url, generateTestCredentials() });
 
     //         // authToken = loginResponse.data.token;
     //         // expect(loginResponse.status).toBeLessThan(500);

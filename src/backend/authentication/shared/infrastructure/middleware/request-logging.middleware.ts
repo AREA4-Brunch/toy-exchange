@@ -38,7 +38,7 @@ export class RequestLoggingMiddleware {
         res: express.Response,
         next: express.NextFunction,
     ) {
-        const { method, url, ip } = req;
+        const { method, originalUrl: url, ip } = req;
         const id = req.id || 'no-id';
 
         const headers: string = this.shouldLogHeaders(req)
