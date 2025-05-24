@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { getLoginUrl, IUrl } from '../shared/config';
+import { getLoginUrl, IUrl } from '../shared/config-management';
 import { generateTestCredentials } from './common';
 
 describe('Login API', () => {

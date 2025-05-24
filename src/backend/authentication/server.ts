@@ -17,7 +17,8 @@ import { AuthenticationInitializer } from './main/ioc/initializers/auth.initiali
 const main = async (): Promise<void> => {
     const authContainer = container;
     const authApp: express.Express = express();
-    const config: IAuthenticationConfig = await loadConfig(defaultConfig);
+    const config: IAuthenticationConfig =
+        await loadConfigFromFile(defaultConfig);
     console.log(`Loaded configuration:\n${JSON.stringify(config, null, 2)}`);
 
     initApp(authContainer, authApp, config);
@@ -28,12 +29,12 @@ const main = async (): Promise<void> => {
     );
 };
 
-const loadConfig = async (
-    defaultConfig: IAuthenticationConfig,
+const loadConfigFromFile = async (
+    fallbackConfig: IAuthenticationConfig,
 ): Promise<IAuthenticationConfig> => {
     const confPathRaw = process.env.APP_CONFIG;
     if (!confPathRaw) {
-        return defaultConfig;
+        return fallbackConfig;
     }
 
     try {
@@ -44,7 +45,7 @@ const loadConfig = async (
         console.log(`Loading configuration from: ${confPath}`);
         if (!fs.existsSync(confPath)) {
             console.warn(`Config file not found, using default config`);
-            return defaultConfig;
+            return fallbackConfig;
         }
         const customConfig = await import(confPath);
         // !important try config first as it is in the default config
@@ -52,13 +53,13 @@ const loadConfig = async (
     } catch (error) {
         console.error(`Error loading config file: ${(error as Error).message}`);
         console.log('Falling back to default configuration');
-        return defaultConfig;
+        return fallbackConfig;
     }
 };
 
 const initApp = (
     rootContainer: DependencyContainer,
-    app: express.Express,
+    app: express.Router,
     config: IAuthenticationConfig,
 ) => {
     rootContainer.resolve(AuthenticationBinder).bind(rootContainer, config);

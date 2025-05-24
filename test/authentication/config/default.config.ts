@@ -1,4 +1,4 @@
-import { IApiConfig, ITestConfig } from '../shared/config';
+import { IApiConfig, ITestConfig } from '../shared/config.interface';
 
 const api: IApiConfig = {
     endpoint: `http://${process.env.HOSTNAME}:${process.env.PORT}`,
