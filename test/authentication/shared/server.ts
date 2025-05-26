@@ -1,29 +1,31 @@
-import { ChildProcess, spawn } from 'child_process';
+import { ChildProcess, exec, spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import waitOn from 'wait-on';
+import defaultConfig from '../config/default.config';
+import { IServerRunnerConfig } from './config.interface';
 
 /**
- * Configuration for the test runner
+ * Initialize configuration and environment variables
+ * @returns Configuration object
  */
-export interface ITestRunnerConfig {
-    port: string;
-    hostname: string;
-    configPath: string;
-    pingTimeout: number;
-    serverPingEndpoint: string;
-    rootDir: string;
-    serverDir: string;
-    testDir: string;
-    testConfigPath: string;
-}
+export const initializeServerConfig = (): IServerRunnerConfig => {
+    const config: IServerRunnerConfig = defaultConfig.runnerScript.server;
+    console.info(`Server config path: ${config.configPath}`);
+    // Set environment variables for child processes
+    process.env.NODE_ENV = 'test';
+    process.env.PORT = config.port;
+    process.env.HOSTNAME = config.hostname;
+    process.env.APP_CONFIG = config.configPath;
+    return config;
+};
 
 /**
  * Start the test server
  * @param config Configuration object
  * @returns Server process object
  */
-export const startServer = (config: ITestRunnerConfig): ChildProcess => {
+export const startServer = (config: IServerRunnerConfig): ChildProcess => {
     console.log('Starting test server...');
 
     if (!fs.existsSync(config.serverDir)) {
@@ -74,16 +76,16 @@ export const startServer = (config: ITestRunnerConfig): ChildProcess => {
  */
 export const setupCleanupHandlers = (server: ChildProcess): void => {
     // Ensure server is killed on script exit
-    process.on('exit', () => {
+    process.on('exit', async () => {
         console.log('Shutting down server...');
-        killServer(server);
+        await killServer(server);
     });
 
     // Handle Ctrl+C and other termination signals
     ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal) => {
-        process.on(signal as NodeJS.Signals, () => {
+        process.on(signal as NodeJS.Signals, async () => {
             console.log(`\nReceived ${signal}, shutting down...`);
-            killServer(server);
+            await killServer(server);
             process.exit(0);
         });
     });
@@ -93,10 +95,44 @@ export const setupCleanupHandlers = (server: ChildProcess): void => {
  * Kill server process if it exists and is running
  * @param server Server process
  */
-export const killServer = (server: ChildProcess): void => {
-    if (server && !server.killed) {
-        server.kill();
+export const killServer = async (server: ChildProcess, port: number): Promise<void> => {
+    if (!server) return;
+
+    console.log('Terminating server process...');
+
+    // On Windows, we need to use SIGTERM first then force kill if needed
+    if (process.platform === 'win32') {
+        try {
+            // First try graceful termination
+            server.kill('SIGTERM');
+
+            // Force kill after a short delay if still running
+            if (!server.killed) {
+                await new Promise(() =>
+                    setTimeout(() => {
+                        if (!server.killed) {
+                            server.kill('SIGKILL');
+                        }
+                    }, 1200),
+                );
+            }
+        } catch (error) {
+            console.error('Error killing server process:', error);
+        }
+    } else {
+        // On Unix systems
+        try {
+            server.kill('SIGTERM');
+        } catch (error) {
+            console.error('Error killing server process:', error);
+        }
     }
+
+    // does not work:
+    // if (await checkPortAvailability(port)) {
+    //     cleanup(port);
+    //     console.log(`✅ Server on port ${port} has been successfully killed.`);
+    // }
 };
 
 /**
@@ -104,7 +140,7 @@ export const killServer = (server: ChildProcess): void => {
  * @param config Configuration object
  * @returns Promise that resolves when the server is ready
  */
-export const waitForServer = async (config: ITestRunnerConfig): Promise<void> => {
+export const waitForServer = async (config: IServerRunnerConfig): Promise<void> => {
     const healthCheckUrl = `http://${config.hostname}:${config.port}${config.serverPingEndpoint}`;
     console.log(`Waiting for server to be available at: ${healthCheckUrl}`);
 
@@ -112,5 +148,31 @@ export const waitForServer = async (config: ITestRunnerConfig): Promise<void> =>
         resources: [healthCheckUrl],
         timeout: config.pingTimeout,
         log: true,
+    });
+};
+
+export const cleanup = (port: number) => {
+    exec(`npx cross-env kill-port ${port}`, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error killing port ${port}:`, error);
+            process.exit(1);
+        }
+        console.log(`✅ Port ${port} killed successfully.`);
+        if (stdout) console.log(stdout);
+        if (stderr) console.error(stderr);
+    });
+};
+
+export const checkPortAvailability = async (port: number): Promise<boolean> => {
+    // there are no type definitions for detect-port-alt
+    const detectPort = require('detect-port-alt') as (port: number) => Promise<number>;
+
+    return detectPort(port).then((availablePort: number) => {
+        if (availablePort === port) {
+            console.log(`✅ Port ${port} is available`);
+        } else {
+            console.log(`❌ Port ${port} is in use`);
+        }
+        return availablePort === port;
     });
 };

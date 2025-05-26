@@ -3,11 +3,15 @@
     "version": "1.0.0",
     "scripts": {
         "clean": "rimraf ./dist",
-        "build": "npm run clean && npx tsc --outDir ./dist",
-        "test": "npm run build && cross-env PROJECT_ROOT=../../ node ./dist/test/authentication/scripts/test-runner.js",
-        "test:watch": "node ./scripts/test-runner.js --watch",
-        "test:coverage": "node ./scripts/test-runner.js --coverage",
-        "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
+        "build": "npx tsc --outDir ./dist",
+        "test": "npm run clean && npm run build && npm run _start",
+        "test:watch": "node ./dist/test/authentication/scripts/test-runner.js --watch",
+        "test:coverage": "node ./dist/test/authentication/scripts/test-runner.js --coverage",
+        "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+        "killer-start": "(npm run check-need-cleanup || npm run cleanup) && npm run _start",
+        "check-need-cleanup": "cross-env TEST_CONFIG=./dist/test/authentication/config/default.config.js node ./dist/test/authentication/scripts/check-port.js",
+        "cleanup": "cross-env TEST_CONFIG=./dist/test/authentication/config/default.config.js node ./dist/test/authentication/scripts/cleanup.js",
+        "_start": "cross-env TEST_CONFIG=./dist/test/authentication/config/default.config.js node ./dist/test/authentication/scripts/test-runner.js"
     },
     "author": "",
     "license": "UNLICENSED",
@@ -15,7 +19,6 @@
     "dependencies": {
         "child_process": "^1.0.2",
         "concurrently": "^9.1.2",
-        "cross-env": "^7.0.3",
         "rimraf": "^6.0.1",
         "tsyringe": "^4.10.0",
         "vitest": "^3.1.2",
@@ -25,6 +28,9 @@
         "@types/node": "^22.15.18",
         "@types/wait-on": "^5.3.4",
         "axios": "^1.9.0",
+        "cross-env": "^7.0.3",
+        "detect-port-alt": "^1.1.6",
+        "kill-port": "^2.0.1",
         "prettier": "^3.5.3",
         "ts-node": "^10.9.2",
         "typescript": "^5.8.3"

@@ -20,6 +20,26 @@ export interface IApiConfig {
     authentication: IAuthenticationApiConfig;
 }
 
+export interface IRunnerScriptConfig {
+    server: IServerRunnerConfig;
+    tests: ITestsRunnerConfig;
+}
+
+export interface IServerRunnerConfig {
+    port: string;
+    hostname: string;
+    pingTimeout: number;
+    serverPingEndpoint: string;
+    serverDir: string;
+    configPath: string;
+}
+
+export interface ITestsRunnerConfig {
+    testDir: string;
+    testConfigPath: string;
+}
+
 export interface ITestConfig {
     api: IApiConfig;
+    runnerScript: IRunnerScriptConfig;
 }

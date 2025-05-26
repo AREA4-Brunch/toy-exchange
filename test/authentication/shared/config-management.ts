@@ -1,10 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { IApiConfig, IEndpointConfig, ITestConfig } from './config.interface';
+import { IApiConfig, IEndpointConfig, IRunnerScriptConfig, ITestConfig } from './config.interface';
 
 export class ConfigManager {
     private static instance: ConfigManager;
-    private _config: IApiConfig | undefined;
+    private _config: ITestConfig | undefined;
 
     private constructor() {}
 
@@ -15,9 +15,17 @@ export class ConfigManager {
         return ConfigManager.instance;
     }
 
-    public async config(): Promise<IApiConfig> {
+    public async apiConfig(): Promise<IApiConfig> {
+        return (await this.config()).api;
+    }
+
+    public async runnerScript(): Promise<IRunnerScriptConfig> {
+        return (await this.config()).runnerScript;
+    }
+
+    private async config(): Promise<ITestConfig> {
         if (!this._config) {
-            this._config = (await loadConfigFromFile()).api;
+            this._config = await loadConfigFromFile();
             if (!this._config) {
                 throw new Error('Config failed to load.');
             }
@@ -40,7 +48,7 @@ export const getLoginUrl = async (config?: IApiConfig): Promise<IUrl> => {
 };
 
 const buildUrl = async (propertyPath: string, obj: any): Promise<IUrl> => {
-    obj = obj || (await ConfigManager.getInstance().config());
+    obj = obj || (await ConfigManager.getInstance().apiConfig());
     if (!obj) throw new Error('Cannot build url of undefined/null obj.');
 
     const keys = propertyPath.split('.');
