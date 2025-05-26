@@ -11,8 +11,7 @@ import 'reflect-metadata'; // tsyringe requires this to be first line imported
 import { container, DependencyContainer } from 'tsyringe';
 import { config as defaultConfig } from './config/app-config/dev.config';
 import { IAuthenticationConfig } from './main/config/auth-config.interface';
-import { AuthenticationBinder } from './main/ioc/binders/auth.binder';
-import { AuthenticationInitializer } from './main/ioc/initializers/auth.initializer';
+import { AuthenticationIoC } from './main/ioc/ioc/auth.ioc';
 
 const main = async (): Promise<void> => {
     const authContainer = container;
@@ -24,9 +23,14 @@ const main = async (): Promise<void> => {
     initApp(authContainer, authApp, config);
 
     const serverConfig = config.server;
-    authApp.listen(serverConfig.http.port, serverConfig.http.hostname, () =>
-        console.log(`App is listening on port ${serverConfig.http.port}`),
-    );
+    authApp
+        .listen(serverConfig.http.port, serverConfig.http.hostname, () =>
+            console.log(`App is listening on port ${serverConfig.http.port}`),
+        )
+        .on('error', (error: Error) => {
+            console.error(`Error starting server: ${error.message}`);
+            process.exit(1);
+        });
 };
 
 const loadConfigFromFile = async (
@@ -62,10 +66,9 @@ const initApp = (
     app: express.Router,
     config: IAuthenticationConfig,
 ) => {
-    rootContainer.resolve(AuthenticationBinder).bind(rootContainer, config);
     rootContainer
-        .resolve(AuthenticationInitializer)
-        .initialize(rootContainer, app, config);
+        .resolve(AuthenticationIoC)
+        .initialize({ container: rootContainer, router: app, config });
 };
 
 main();

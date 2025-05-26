@@ -15,10 +15,7 @@ import { ILoginConfig } from '../../config/login-config.interface';
 @singleton()
 @injectable()
 export class LoginBinder implements IIoCBinder<ILoginConfig> {
-    public async bind(
-        container: DependencyContainer,
-        config: ILoginConfig,
-    ): Promise<void> {
+    public bind(container: DependencyContainer, config: ILoginConfig): void {
         core(container, config.core);
         application(container, config.application);
         infrastructure(container, config.infrastructure);

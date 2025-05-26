@@ -1,17 +1,17 @@
 import { Router } from 'express';
 import { injectable, singleton } from 'tsyringe';
-import { RoutesInitializer } from '../../../../../shared/main/ioc/initializers/routes-initializer.base';
+import { RoutesLoader } from '../../../../../shared/main/ioc/routes-loaders/routes-loader.base';
 import { LoginRouter } from '../../../infrastructure/api/routes/login.router';
 import { ILoginConfig } from '../../config/login-config.interface';
 
 @singleton()
 @injectable()
-export class LoginInitializer extends RoutesInitializer<ILoginConfig> {
+export class LoginRoutesLoader extends RoutesLoader<ILoginConfig> {
     constructor(private readonly loginRouter: LoginRouter) {
         super();
     }
 
-    protected override async loadRoutes(
+    public async loadRoutes(
         router: Router,
         config: ILoginConfig,
     ): Promise<Router> {

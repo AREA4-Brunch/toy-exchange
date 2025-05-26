@@ -1,19 +1,16 @@
 import { DependencyContainer, injectable, singleton } from 'tsyringe';
-import { IIoCBinder } from '../../../../shared/main/ioc/binders/ioc-binder.interface';
+import { IIoCBinder } from '../../../../../shared/main/ioc/binders/ioc-binder.interface';
 import {
     IHealthInfrastructureConfig,
     IHealthRoutesConfig,
-} from '../../infrastructure/config/health-config';
-import { HEALTH_INFRASTRUCTURE_TYPES } from '../../infrastructure/di/health-types';
-import { IHealthConfig } from '../config/health-config.interface';
+} from '../../../infrastructure/config/health-config';
+import { HEALTH_INFRASTRUCTURE_TYPES } from '../../../infrastructure/di/health-types';
+import { IHealthConfig } from '../../config/health-config.interface';
 
 @singleton()
 @injectable()
 export class HealthBinder implements IIoCBinder<IHealthConfig> {
-    public async bind(
-        container: DependencyContainer,
-        config: IHealthConfig,
-    ): Promise<void> {
+    public bind(container: DependencyContainer, config: IHealthConfig): void {
         infrastructure(container, config.infrastructure);
     }
 }

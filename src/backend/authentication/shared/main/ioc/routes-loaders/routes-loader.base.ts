@@ -1,14 +1,23 @@
 import express, { Router } from 'express';
 import { IRoutesConfig } from '../../../infrastructure/config/infrastructure-config.interface';
-import { IoC } from './ioc-initializer.base';
 
-export class RoutesInitializer<TConfig> extends IoC<TConfig> {
+export interface IRoutesLoader<TConfig> {
+    loadRoutes(router: Router, config: TConfig): Promise<Router>;
+}
+
+export abstract class RoutesLoader<TConfig> implements IRoutesLoader<TConfig> {
+    public abstract loadRoutes(
+        router: Router,
+        config: TConfig,
+    ): Promise<Router>;
+
     protected registerRouters(
         root: Router,
         routers: { path: string; router: Router }[],
     ) {
         routers.forEach(({ path, router }) => {
             root.use(path, router);
+            console.debug(`Loaded router: ${path}`);
         });
     }
 

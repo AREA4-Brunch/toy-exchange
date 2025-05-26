@@ -1,17 +1,17 @@
 import { Router } from 'express';
 import { injectable, singleton } from 'tsyringe';
-import { RoutesInitializer } from '../../../../shared/main/ioc/initializers/routes-initializer.base';
-import { HealthRouter } from '../../infrastructure/api/health.router';
-import { IHealthConfig } from '../config/health-config.interface';
+import { RoutesLoader } from '../../../../../shared/main/ioc/routes-loaders/routes-loader.base';
+import { HealthRouter } from '../../../infrastructure/api/health.router';
+import { IHealthConfig } from '../../config/health-config.interface';
 
 @singleton()
 @injectable()
-export class HealthInitializer extends RoutesInitializer<IHealthConfig> {
+export class HealthRoutesLoader extends RoutesLoader<IHealthConfig> {
     constructor(private readonly healthRouter: HealthRouter) {
         super();
     }
 
-    protected override async loadRoutes(
+    public override async loadRoutes(
         router: Router,
         config: IHealthConfig,
     ): Promise<Router> {

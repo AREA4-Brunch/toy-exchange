@@ -6,7 +6,7 @@
     "types": "dist/server.d.ts",
     "scripts": {
         "start": "npm run serve",
-        "start:dev": "npm run build && npm run serve",
+        "start:dev": "npm run clean && npm run build && npm run serve",
         "start:test": "npm run clean && npm run build && npm run serve",
         "serve": "node dist/server.js",
         "build": "npx tsc",
