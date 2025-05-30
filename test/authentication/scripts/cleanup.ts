@@ -3,7 +3,7 @@ import { cleanup } from '../shared/server';
 
 const main = async (): Promise<void> => {
     const port: number = Number((await ConfigManager.getInstance().runnerScript()).server.port);
-    cleanup(port);
+    await cleanup(port);
 };
 
 main();

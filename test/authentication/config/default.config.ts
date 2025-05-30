@@ -37,7 +37,7 @@ const config: ITestConfig = {
     api: api,
     runnerScript: {
         server: {
-            port: process.env.PORT || '3001',
+            port: Number(process.env.PORT || '3001'),
             hostname: process.env.HOSTNAME || 'localhost',
             pingTimeout: Number(process.env.PING_TIMEOUT) || 30000,
             serverPingEndpoint: process.env.HEALTH_ENDPOINT || '/api/v1/auth/regular-user/health',

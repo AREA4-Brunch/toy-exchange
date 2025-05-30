@@ -26,7 +26,7 @@ export interface IRunnerScriptConfig {
 }
 
 export interface IServerRunnerConfig {
-    port: string;
+    port: number;
     hostname: string;
     pingTimeout: number;
     serverPingEndpoint: string;

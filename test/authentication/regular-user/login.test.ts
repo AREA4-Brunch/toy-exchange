@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { getLoginUrl, IUrl } from '../shared/config-management';
 import { generateTestCredentials } from './common';
 
@@ -55,27 +55,26 @@ describe('Login API', () => {
         });
     });
 
-    // describe('Login flow', () => {
-    //     const apiBasePath = getApiBasePath();
-    //     const url = `${apiBasePath}/login`;
+    describe('Login flow', async () => {
+        const url: IUrl = await getLoginUrl();
+        let authToken: string;
 
-    //     let authToken: string;
+        beforeEach(() => {
+            authToken = '';
+        });
 
-    //     beforeEach(() => {
-    //         authToken = '';
-    //     });
+        it(`${ID++}. should be able to access protected endpoints after login`, async () => {
+            const loginResponse = await api.request({ ...url, data: generateTestCredentials() });
+            console.log('Login response:', loginResponse.data);
 
-    //     it(`${ID++}. should be able to access protected endpoints after login`, async () => {
-    //         const loginResponse = await api.request({ ...url, generateTestCredentials() });
-
-    //         // authToken = loginResponse.data.token;
-    //         // expect(loginResponse.status).toBeLessThan(500);
-    //         // const protectedResponse = await api.get(`${apiBasePath}/protected-resource`, {
-    //         //     headers: {
-    //         //         Authorization: `Bearer ${authToken}`
-    //         //     }
-    //         // });
-    //         // expect(protectedResponse.status).toBe(200);
-    //     });
-    // });
+            // authToken = loginResponse.data.token;
+            // expect(loginResponse.status).toBeLessThan(500);
+            // const protectedResponse = await api.get(`${apiBasePath}/protected-resource`, {
+            //     headers: {
+            //         Authorization: `Bearer ${authToken}`
+            //     }
+            // });
+            // expect(protectedResponse.status).toBe(200);
+        });
+    });
 });

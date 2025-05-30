@@ -61,6 +61,7 @@ const tryRunningWithVitestBinary = async (
     testArgs: string[],
     options: CommandLineOptions,
     server: ChildProcess,
+    port: number,
 ): Promise<boolean> => {
     // Find vitest executable
     const vitestBin = path.join(
@@ -89,7 +90,7 @@ const tryRunningWithVitestBinary = async (
 
         tests.on('error', async (err) => {
             console.error('Failed to start tests:', err);
-            await killServer(server);
+            await killServer(server, port);
             process.exit(1);
         });
 
@@ -97,7 +98,7 @@ const tryRunningWithVitestBinary = async (
             console.info(`Tests completed with exit code: ${code}`);
 
             if (!options.watchMode) {
-                await killServer(server);
+                await killServer(server, port);
                 process.exit(code || 0);
             }
 
@@ -119,6 +120,7 @@ const tryRunningWithVitestModule = async (
     testArgs: string[],
     options: CommandLineOptions,
     server: ChildProcess,
+    port: number,
 ): Promise<boolean> => {
     console.info('Vitest binary not found, using fallback approach');
     const vitestPath = path.resolve(config.testDir, 'node_modules', 'vitest', 'dist', 'cli.mjs');
@@ -136,7 +138,7 @@ const tryRunningWithVitestModule = async (
 
         tests.on('error', async (err) => {
             console.error('Failed to start tests with fallback:', err);
-            await killServer(server);
+            await killServer(server, port);
             process.exit(1);
         });
 
@@ -144,7 +146,7 @@ const tryRunningWithVitestModule = async (
             console.info(`Tests completed with exit code: ${code}`);
 
             if (!options.watchMode) {
-                await killServer(server);
+                await killServer(server, port);
                 process.exit(code || 0);
             }
 
@@ -163,6 +165,7 @@ const runTests = async (
     config: ITestsRunnerConfig,
     options: CommandLineOptions,
     server: ChildProcess,
+    port: number,
 ): Promise<void> => {
     console.info('Server is ready! Running tests...');
 
@@ -178,12 +181,12 @@ const runTests = async (
 
     // Try to run tests using the vitest binary
     const success =
-        (await tryRunningWithVitestBinary(config, testArgs, options, server))
-        || (await tryRunningWithVitestModule(config, testArgs, options, server));
+        (await tryRunningWithVitestBinary(config, testArgs, options, server, port))
+        || (await tryRunningWithVitestModule(config, testArgs, options, server, port));
 
     if (!success) {
         console.error('Could not find vitest. Make sure it is installed.');
-        await killServer(server);
+        await killServer(server, port);
         process.exit(1);
     }
 };
@@ -210,7 +213,7 @@ const main = async (): Promise<void> => {
 
         const runnerConfig = initializeTestConfig();
         console.info(`Test directory: ${runnerConfig.testDir}`);
-        await runTests(runnerConfig, options, server);
+        await runTests(runnerConfig, options, server, serverConfig.port);
     } catch (error) {
         console.error('Error in test runner:', error);
         process.exit(1);

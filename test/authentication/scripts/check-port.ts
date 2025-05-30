@@ -5,11 +5,11 @@
  */
 
 import { ConfigManager } from '../shared/config-management';
-import { checkPortAvailability } from '../shared/server';
+import { isPortAvailable } from '../shared/server';
 
 const main = async (): Promise<void> => {
     const port: number = Number((await ConfigManager.getInstance().runnerScript()).server.port);
-    checkPortAvailability(port)
+    isPortAvailable(port)
         .then((wasAvailable: boolean) => {
             if (wasAvailable) process.exit(0);
             else process.exit(1);

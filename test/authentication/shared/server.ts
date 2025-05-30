@@ -14,7 +14,7 @@ export const initializeServerConfig = (): IServerRunnerConfig => {
     console.info(`Server config path: ${config.configPath}`);
     // Set environment variables for child processes
     process.env.NODE_ENV = 'test';
-    process.env.PORT = config.port;
+    process.env.PORT = `${config.port}`;
     process.env.HOSTNAME = config.hostname;
     process.env.APP_CONFIG = config.configPath;
     return config;
@@ -61,7 +61,7 @@ export const startServer = (config: IServerRunnerConfig): ChildProcess => {
             }
         });
 
-        setupCleanupHandlers(server);
+        setupCleanupHandlers(server, config.port);
 
         return server;
     } catch (error) {
@@ -74,18 +74,18 @@ export const startServer = (config: IServerRunnerConfig): ChildProcess => {
  * Setup handlers for cleaning up server on exit
  * @param server Server process
  */
-export const setupCleanupHandlers = (server: ChildProcess): void => {
+export const setupCleanupHandlers = (server: ChildProcess, port: number): void => {
     // Ensure server is killed on script exit
     process.on('exit', async () => {
         console.log('Shutting down server...');
-        await killServer(server);
+        await killServer(server, port);
     });
 
     // Handle Ctrl+C and other termination signals
     ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal) => {
         process.on(signal as NodeJS.Signals, async () => {
             console.log(`\nReceived ${signal}, shutting down...`);
-            await killServer(server);
+            await killServer(server, port);
             process.exit(0);
         });
     });
@@ -128,11 +128,10 @@ export const killServer = async (server: ChildProcess, port: number): Promise<vo
         }
     }
 
-    // does not work:
-    // if (await checkPortAvailability(port)) {
-    //     cleanup(port);
-    //     console.log(`✅ Server on port ${port} has been successfully killed.`);
-    // }
+    if (!(await isPortAvailable(port))) {
+        await cleanup(port);
+        console.log(`✅ Server on port ${port} has been successfully killed.`);
+    }
 };
 
 /**
@@ -151,19 +150,23 @@ export const waitForServer = async (config: IServerRunnerConfig): Promise<void> 
     });
 };
 
-export const cleanup = (port: number) => {
-    exec(`npx cross-env kill-port ${port}`, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error killing port ${port}:`, error);
-            process.exit(1);
-        }
-        console.log(`✅ Port ${port} killed successfully.`);
-        if (stdout) console.log(stdout);
-        if (stderr) console.error(stderr);
+export const cleanup = (port: number): Promise<void> => {
+    return new Promise((resolve, reject) => {
+        exec(`npx cross-env kill-port ${port}`, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`Error killing port ${port}:`, error);
+                reject(error);
+                return;
+            }
+            console.log(`✅ Port ${port} killed successfully.`);
+            if (stdout) console.log(stdout);
+            if (stderr) console.error(stderr);
+            resolve();
+        });
     });
 };
 
-export const checkPortAvailability = async (port: number): Promise<boolean> => {
+export const isPortAvailable = async (port: number): Promise<boolean> => {
     // there are no type definitions for detect-port-alt
     const detectPort = require('detect-port-alt') as (port: number) => Promise<number>;
 
