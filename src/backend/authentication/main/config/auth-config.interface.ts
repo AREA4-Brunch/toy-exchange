@@ -12,4 +12,7 @@ export interface IAuthenticationConfig extends IAppConfig {
 
 export interface ISharedConfig {
     readonly middleware: IMiddlewareModuleConfig;
+    readonly authorization: {
+        readonly jwtSecretKey: string;
+    };
 }

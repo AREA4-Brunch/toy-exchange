@@ -23,14 +23,14 @@ import {
     SanitizationMiddleware,
 } from './sanitization.middleware';
 
-export type IMiddlewareModuleConfig = {
+export interface IMiddlewareModuleConfig {
     sanitization: ISanitizationMiddlewareConfig;
     requestMetadata: IRequestMetadataMiddlewareConfig;
     requestLogging: IRequestLoggingMiddlewareConfig;
     responseLogging: IResponseLoggingMiddlewareConfig;
     errorHandler: IErrorHandlerMiddlewareConfig;
     requestValidation: IRequestValidationMiddlewareConfig;
-};
+}
 
 export class MiddlewareModule {
     public readonly sanitizationMiddleware: SanitizationMiddleware;

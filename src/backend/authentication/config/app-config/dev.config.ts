@@ -6,13 +6,13 @@ import { IHealthConfig } from '../../regular-user/health/main/config/health-conf
 import { ILoginConfig } from '../../regular-user/login/main/config/login-config.interface';
 import { IRegularUserConfig } from '../../regular-user/main/config/app-config.interface';
 
+const defaultJwtSecretKey = `07885db471baa1ce5672c7843e309818cfe43cbaadc76133c21213d98fc8c3d3`;
+
 const loginConfig: ILoginConfig = {
   core: {},
   application: {
     tokenService: {
-      jwtSecretKey:
-        process.env.JWT_SECRET_KEY
-        || `07885db471baa1ce5672c7843e309818cfe43cbaadc76133c21213d98fc8c3d3`,
+      jwtSecretKey: process.env.JWT_SECRET_KEY || defaultJwtSecretKey,
       jwtTokenDurationSecs: Number(process.env.JWT_TOKEN_DURATION_SECS || 3600),
     },
   },
@@ -68,6 +68,9 @@ const sharedConfig: ISharedConfig = {
       logger: console,
     },
     requestValidation: {},
+  },
+  authorization: {
+    jwtSecretKey: process.env.JWT_SECRET_KEY || defaultJwtSecretKey,
   },
 };
 

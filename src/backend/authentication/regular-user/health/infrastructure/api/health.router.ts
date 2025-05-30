@@ -1,3 +1,4 @@
+import { AuthorizationMiddleware } from 'authorization/dist/authorization/middleware';
 import express from 'express';
 import { inject, injectable, singleton } from 'tsyringe';
 import { RequestLoggingMiddleware } from '../../../../shared/infrastructure/middleware/request-logging.middleware';
@@ -13,6 +14,7 @@ export class HealthRouter {
         private readonly routesConfig: IHealthRoutesConfig,
         private readonly healthController: HealthController,
         private readonly requestLogging: RequestLoggingMiddleware,
+        private readonly authorization: AuthorizationMiddleware,
     ) {}
 
     public getRouters(): { path: string; router: express.Router }[] {
@@ -20,6 +22,10 @@ export class HealthRouter {
             {
                 path: this.routesConfig.apiBasePath,
                 router: this.createHealthRouter(),
+            },
+            {
+                path: `${this.routesConfig.apiBasePath}/test`,
+                router: this.createTestRouter(),
             },
         ];
     }
@@ -32,6 +38,24 @@ export class HealthRouter {
         health
             .route(``)
             .get((req, res) => this.healthController.ping(req, res));
+
+        return health;
+    }
+
+    private createTestRouter() {
+        const health = express.Router();
+
+        health.use(this.requestLogging.createLogRequest());
+
+        // prettier-ignore
+        health
+            .route(``)
+            .get(
+                this.authorization.createRequireLogin(),
+                (req, res) => this.healthController.ping(req, res),
+            );
+
+        health.use(this.authorization.createUnauthorizedErrHandler());
 
         return health;
     }

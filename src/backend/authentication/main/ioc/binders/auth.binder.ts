@@ -1,3 +1,5 @@
+import { AuthorizationModule } from 'authorization';
+import { AuthorizationMiddleware } from 'authorization/dist/authorization/middleware';
 import { DependencyContainer, injectable, singleton } from 'tsyringe';
 import { ErrorHandlerMiddleware } from '../../../shared/infrastructure/middleware/error-handler.middleware';
 import { MiddlewareModule } from '../../../shared/infrastructure/middleware/module';
@@ -54,5 +56,12 @@ const shared = (container: DependencyContainer, conf: ISharedConfig) => {
     container.registerInstance(
         RequestValidationMiddleware,
         middleware.requestValidationMiddleware,
+    );
+
+    const authorization = new AuthorizationModule(conf.authorization);
+
+    container.registerInstance(
+        AuthorizationMiddleware,
+        authorization.authorizationMiddleware,
     );
 };
