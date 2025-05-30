@@ -3,7 +3,9 @@ export interface ILoginInput {
     password: string;
 }
 
-export interface ILoginOutput {}
+export interface ILoginOutput {
+    token: string;
+}
 
 export interface ILoginUseCase {
     execute(input: ILoginInput): ILoginOutput;

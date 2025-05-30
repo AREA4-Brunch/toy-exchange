@@ -65,10 +65,10 @@ describe('Login API', () => {
 
         it(`${ID++}. should be able to access protected endpoints after login`, async () => {
             const loginResponse = await api.request({ ...url, data: generateTestCredentials() });
-            console.log('Login response:', loginResponse.data);
-
-            // authToken = loginResponse.data.token;
-            // expect(loginResponse.status).toBeLessThan(500);
+            expect(loginResponse.status).toBeLessThan(300);
+            expect(loginResponse.status).toBeGreaterThanOrEqual(200);
+            authToken = loginResponse.data.token;
+            expect(authToken).toBeDefined();
             // const protectedResponse = await api.get(`${apiBasePath}/protected-resource`, {
             //     headers: {
             //         Authorization: `Bearer ${authToken}`

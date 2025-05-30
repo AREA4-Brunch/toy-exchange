@@ -1,4 +1,3 @@
-import * as uuid from 'uuid';
 import { Identifier } from './identifier';
 
 export class UserId extends Identifier<string> {
@@ -7,6 +6,6 @@ export class UserId extends Identifier<string> {
     }
 
     public static create(): UserId {
-        return new UserId(uuid.v4());
+        return new UserId(crypto.randomUUID());
     }
 }

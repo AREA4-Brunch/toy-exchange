@@ -2,6 +2,7 @@ import { DependencyContainer, injectable, singleton } from 'tsyringe';
 import { IIoCBinder } from '../../../../../shared/main/ioc/binders/ioc-binder.interface';
 import { IConfigLoginApplication } from '../../../application/config/login-config.interface';
 import { LOGIN_APPLICATION_TYPES } from '../../../application/di/login-application.types';
+import { ITokenServiceConfig } from '../../../application/services/token.service';
 import { ILoginUseCase } from '../../../application/use-cases/login.interfaces';
 import { LoginUseCase } from '../../../application/use-cases/login.use-case';
 import { IConfigLoginCore } from '../../../core/config/login-config.interface';
@@ -35,6 +36,10 @@ const application = (
     container.register<ILoginUseCase>(LOGIN_APPLICATION_TYPES.LoginUseCase, {
         useClass: LoginUseCase,
     });
+    container.registerInstance<ITokenServiceConfig>(
+        LOGIN_APPLICATION_TYPES.TokenServiceConfig,
+        conf.tokenService,
+    );
 };
 
 const infrastructure = (
