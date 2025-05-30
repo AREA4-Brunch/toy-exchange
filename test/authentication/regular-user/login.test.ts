@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { getLoginUrl, IUrl } from '../shared/config-management';
+import { getLoginUrl, getPingSecuredUrl, IUrl } from '../shared/config-management';
 import { generateTestCredentials } from './common';
 
 describe('Login API', () => {
@@ -56,25 +56,92 @@ describe('Login API', () => {
     });
 
     describe('Login flow', async () => {
-        const url: IUrl = await getLoginUrl();
         let authToken: string;
 
         beforeEach(() => {
             authToken = '';
         });
 
-        it(`${ID++}. should be able to access protected endpoints after login`, async () => {
-            const loginResponse = await api.request({ ...url, data: generateTestCredentials() });
-            expect(loginResponse.status).toBeLessThan(300);
-            expect(loginResponse.status).toBeGreaterThanOrEqual(200);
+        it(`${ID++}. should fail due to missing auth header`, async () => {
+            const url: IUrl = await getPingSecuredUrl();
+            const protectedResponse = await api.request({
+                ...url,
+                headers: {},
+            });
+            expect(protectedResponse.status).toBe(401);
+            expect(protectedResponse.data).toStrictEqual({
+                errMsg: `Authorization header is missing.`,
+            });
+        });
+
+        it(`${ID++}. should fail due to invalid auth header`, async () => {
+            const url: IUrl = await getPingSecuredUrl();
+            const protectedResponse = await api.request({
+                ...url,
+                headers: {
+                    Authorization: `Beare`,
+                },
+            });
+            expect(protectedResponse.status).toBe(401);
+            expect(protectedResponse.data).toStrictEqual({
+                errMsg: `Authorization header is invalid.`,
+            });
+        });
+
+        it(`${ID++}. should fail due to invalid auth token`, async () => {
+            const url: IUrl = await getPingSecuredUrl();
+            const protectedResponse = await api.request({
+                ...url,
+                headers: {
+                    Authorization: `Bearer InvalidToken`,
+                },
+            });
+            expect(protectedResponse.status).toBe(401);
+            expect(protectedResponse.data).toStrictEqual({
+                errMsg: `Invalid token.`,
+            });
+        });
+
+        it(`${ID++}. should fail due to expired token`, async () => {
+            const loginResponse = await api.request({
+                ...(await getLoginUrl()),
+                data: generateTestCredentials(),
+            });
+            expect(loginResponse.status).toBe(200);
             authToken = loginResponse.data.token;
             expect(authToken).toBeDefined();
-            // const protectedResponse = await api.get(`${apiBasePath}/protected-resource`, {
-            //     headers: {
-            //         Authorization: `Bearer ${authToken}`
-            //     }
-            // });
-            // expect(protectedResponse.status).toBe(200);
+            // simulate token expiration
+            await new Promise((resolve) => setTimeout(resolve, 5001));
+            const protectedResponse = await api.request({
+                ...(await getPingSecuredUrl()),
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            });
+            expect(protectedResponse.status).toBe(401);
+            expect(protectedResponse.data).toStrictEqual({
+                errMsg: `Token expired.`,
+            });
+        }, 10000);
+
+        it(`${ID++}. should be able to access protected endpoints after login`, async () => {
+            const loginResponse = await api.request({
+                ...(await getLoginUrl()),
+                data: generateTestCredentials(),
+            });
+            expect(loginResponse.status).toBe(200);
+            authToken = loginResponse.data.token;
+            expect(authToken).toBeDefined();
+            const protectedResponse = await api.request({
+                ...(await getPingSecuredUrl()),
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            });
+            expect(protectedResponse.status).toBe(200);
+            expect(protectedResponse.data).toStrictEqual({
+                msg: 'Pong!',
+            });
         });
     });
 });

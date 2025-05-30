@@ -11,6 +11,10 @@ const api: IApiConfig = {
                 endpoint: '/health',
                 method: 'GET',
             },
+            healthTest: {
+                endpoint: '/health/test',
+                method: 'GET',
+            },
             login: {
                 endpoint: '/login',
                 method: 'POST',

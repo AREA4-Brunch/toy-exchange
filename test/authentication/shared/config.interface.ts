@@ -12,6 +12,7 @@ export interface IAuthenticationApiConfig {
 export interface IRegularUserApiConfig {
     endpoint: string;
     health: IEndpointConfig;
+    healthTest: IEndpointConfig;
     login: IEndpointConfig;
 }
 

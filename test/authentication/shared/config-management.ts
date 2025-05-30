@@ -92,3 +92,7 @@ const loadConfigFromFile = async (): Promise<ITestConfig> => {
         throw new Error(`TEST_CONFIG environment variable is not set.`);
     }
 };
+
+export const getPingSecuredUrl = async (config?: IApiConfig): Promise<IUrl> => {
+    return buildUrl('authentication.regularUser.healthTest', config);
+};

@@ -5,13 +5,13 @@
         "clean": "rimraf ./dist",
         "build": "npx tsc --outDir ./dist",
         "test": "npm run clean && npm run build && npm run _start",
-        "test:watch": "node ./dist/test/authentication/scripts/test-runner.js --watch",
-        "test:coverage": "node ./dist/test/authentication/scripts/test-runner.js --coverage",
+        "test:watch": "node ./dist/test/authentication/commands/test-runner.js --watch",
+        "test:coverage": "node ./dist/test/authentication/commands/test-runner.js --coverage",
         "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
         "killer-start": "(npm run check-need-cleanup || npm run cleanup) && npm run _start",
-        "check-need-cleanup": "cross-env TEST_CONFIG=./dist/test/authentication/config/default.config.js node ./dist/test/authentication/scripts/check-port.js",
-        "cleanup": "cross-env TEST_CONFIG=./dist/test/authentication/config/default.config.js node ./dist/test/authentication/scripts/cleanup.js",
-        "_start": "cross-env TEST_CONFIG=./dist/test/authentication/config/default.config.js node ./dist/test/authentication/scripts/test-runner.js"
+        "check-need-cleanup": "cross-env TEST_CONFIG=./dist/test/authentication/config/default.config.js node ./dist/test/authentication/commands/check-port.js",
+        "cleanup": "cross-env TEST_CONFIG=./dist/test/authentication/config/default.config.js node ./dist/test/authentication/commands/cleanup.js",
+        "_start": "cross-env TEST_CONFIG=./dist/test/authentication/config/default.config.js node ./dist/test/authentication/commands/test-runner.js"
     },
     "author": "",
     "license": "UNLICENSED",

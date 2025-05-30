@@ -6,4 +6,6 @@ const main = async (): Promise<void> => {
     await cleanup(port);
 };
 
-main();
+if (require.main === module) {
+    main();
+}
