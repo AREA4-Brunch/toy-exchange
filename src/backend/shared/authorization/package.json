@@ -1,0 +1,40 @@
+{
+    "name": "authorization",
+    "version": "1.1.0",
+    "description": "Authorization token management utils shared among microservices.",
+    "homepage": "https://github.com/AREA4-Brunch/toy-exchange#readme",
+    "bugs": {
+        "url": "https://github.com/AREA4-Brunch/toy-exchange/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/AREA4-Brunch/toy-exchange.git"
+    },
+    "license": "UNLICENSED",
+    "author": "Aleksandar Radenkovic (Sale)",
+    "type": "commonjs",
+    "main": "dist/authorization/module.js",
+    "scripts": {
+        "publish": "npm run build && node dist/commands/publish-clients-update.js",
+        "publish:no-npm-update": "npm run build && node dist/commands/publish.js",
+        "build": "npx tsc",
+        "build:auth": "npx tsc -p tsconfig.auth.json",
+        "clean": "rimraf dist",
+        "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
+    },
+    "dependencies": {
+        "express": "^5.1.0",
+        "jsonwebtoken": "^9.0.2",
+        "zod": "^3.25.42"
+    },
+    "devDependencies": {
+        "@types/express": "^5.0.2",
+        "@types/jsonwebtoken": "^9.0.9",
+        "@types/node": "^22.15.28",
+        "prettier": "^3.5.3",
+        "typescript": "^5.8.3"
+    },
+    "files": [
+        "dist/"
+    ]
+}
