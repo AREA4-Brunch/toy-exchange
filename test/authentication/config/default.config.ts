@@ -9,16 +9,33 @@ const api: IApiConfig = {
             endpoint: '/regular-user',
             health: {
                 endpoint: '/health',
-                method: 'GET',
-            },
-            healthTest: {
-                endpoint: '/health/test',
-                method: 'GET',
+                health: {
+                    endpoint: '',
+                    method: 'GET',
+                },
+                test: {
+                    endpoint: '/test',
+                    health: {
+                        endpoint: '/health/test',
+                        method: 'GET',
+                    },
+                    healthSomeRole: {
+                        endpoint: '/health/test/some-role',
+                        method: 'GET',
+                    },
+                    healthMultipleRoles: {
+                        endpoint: '/health/test/multiple-roles',
+                        method: 'GET',
+                    },
+                },
             },
             login: {
                 endpoint: '/login',
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                login: {
+                    endpoint: '',
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                },
             },
         },
     },

@@ -9,11 +9,26 @@ export interface IAuthenticationApiConfig {
     regularUser: IRegularUserApiConfig;
 }
 
-export interface IRegularUserApiConfig {
+export interface ILoginRoutesConfig {
+    endpoint: string;
+    login: IEndpointConfig;
+}
+
+export interface IHealthRoutesConfig {
     endpoint: string;
     health: IEndpointConfig;
-    healthTest: IEndpointConfig;
-    login: IEndpointConfig;
+    test: {
+        endpoint: string;
+        health: IEndpointConfig;
+        healthSomeRole: IEndpointConfig;
+        healthMultipleRoles: IEndpointConfig;
+    };
+}
+
+export interface IRegularUserApiConfig {
+    endpoint: string;
+    login: ILoginRoutesConfig;
+    health: IHealthRoutesConfig;
 }
 
 export interface IApiConfig {
