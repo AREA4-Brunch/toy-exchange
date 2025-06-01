@@ -1,6 +1,6 @@
 {
     "name": "authorization",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "description": "Authorization token management utils shared among microservices.",
     "homepage": "https://github.com/AREA4-Brunch/toy-exchange#readme",
     "bugs": {

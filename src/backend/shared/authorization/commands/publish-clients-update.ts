@@ -11,7 +11,6 @@ const main = async () => {
     try {
         const optionalVersion: string | undefined = process.argv[2];
         const version: string = await publish(optionalVersion);
-        // const version: string = '1.1.0';
         console.log(
             `\n📦 Authorization package published as version ${version}`,
         );
@@ -100,7 +99,7 @@ const npmUpdateClients = async (version: string): Promise<number> => {
             console.log(`   ✅ Successfully updated authorization package`);
             updatedClients.push(client.name);
 
-            // Clean up older versions after successful update
+            // clean up older versions after successful update
             if (isFileDependency) {
                 const oldVersionFilesToRemove: string[] = [];
                 try {
