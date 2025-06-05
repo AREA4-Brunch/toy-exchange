@@ -6,4 +6,6 @@ export interface IHealthInfrastructureConfig {
   };
 }
 
-export interface IHealthRoutesConfig extends IRoutesConfig {}
+export interface IHealthRoutesConfig extends IRoutesConfig {
+  readonly testEnabled: boolean;
+}

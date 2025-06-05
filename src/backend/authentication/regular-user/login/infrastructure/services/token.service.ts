@@ -1,7 +1,8 @@
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { inject, injectable, singleton } from 'tsyringe';
-import { LOGIN_APPLICATION_TYPES } from '../di/login-application.types';
+import { ITokenService } from '../../application/services/token.service.interface';
+import { LOGIN_INFRASTRUCTURE_TYPES } from '../di/login-types';
 
 export interface ITokenServiceConfig {
     jwtSecretKey: string;
@@ -10,9 +11,9 @@ export interface ITokenServiceConfig {
 
 @singleton()
 @injectable()
-export class TokenService {
+export class TokenService implements ITokenService {
     constructor(
-        @inject(LOGIN_APPLICATION_TYPES.TokenServiceConfig)
+        @inject(LOGIN_INFRASTRUCTURE_TYPES.TokenServiceConfig)
         private readonly config: ITokenServiceConfig,
     ) {}
 

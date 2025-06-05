@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { TokenService } from '../login/application/services/token.service';
+import { TokenService } from '../login/infrastructure/services/token.service';
 
 if (require.main === module) {
     const jwtSecretKey = TokenService.generateJwtSecretKey();

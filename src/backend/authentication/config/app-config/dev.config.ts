@@ -10,12 +10,7 @@ const defaultJwtSecretKey = `07885db471baa1ce5672c7843e309818cfe43cbaadc76133c21
 
 const loginConfig: ILoginConfig = {
   core: {},
-  application: {
-    tokenService: {
-      jwtSecretKey: process.env.JWT_SECRET_KEY || defaultJwtSecretKey,
-      jwtTokenDurationSecs: Number(process.env.JWT_TOKEN_DURATION_SECS || 3600),
-    },
-  },
+  application: {},
   infrastructure: {
     api: {
       routes: {
@@ -24,6 +19,10 @@ const loginConfig: ILoginConfig = {
         staticContents: [],
       },
       middleware: {},
+    },
+    tokenService: {
+      jwtSecretKey: process.env.JWT_SECRET_KEY || defaultJwtSecretKey,
+      jwtTokenDurationSecs: Number(process.env.JWT_TOKEN_DURATION_SECS || 3600),
     },
   },
 };
@@ -35,6 +34,7 @@ const healthConfig: IHealthConfig = {
         apiBasePath: '/health',
         staticBasePath: '/static',
         staticContents: [],
+        testEnabled: false,
       },
     },
   },

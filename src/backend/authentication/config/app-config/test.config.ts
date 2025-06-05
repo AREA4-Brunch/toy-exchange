@@ -11,14 +11,28 @@ export const config: IAuthenticationConfig = {
       ...devConfig.regularUser.features,
       login: {
         ...devConfig.regularUser.features.login,
-        application: {
-          ...devConfig.regularUser.features.login.application,
+        infrastructure: {
+          ...devConfig.regularUser.features.login.infrastructure,
           tokenService: {
-            ...devConfig.regularUser.features.login.application.tokenService,
+            ...devConfig.regularUser.features.login.infrastructure.tokenService,
             jwtSecretKey: process.env.JWT_SECRET_KEY || defaultJwtSecretKey,
             jwtTokenDurationSecs: Number(
               process.env.JWT_TOKEN_DURATION_SECS || 5,
             ),
+          },
+        },
+      },
+      health: {
+        ...devConfig.regularUser.features.health,
+        infrastructure: {
+          ...devConfig.regularUser.features.health.infrastructure,
+          api: {
+            ...devConfig.regularUser.features.health.infrastructure.api,
+            routes: {
+              ...devConfig.regularUser.features.health.infrastructure.api
+                .routes,
+              testEnabled: true,
+            },
           },
         },
       },
