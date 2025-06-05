@@ -1,6 +1,6 @@
 import { injectable, singleton } from 'tsyringe';
 import { FeatureIoC } from '../../../../../shared/main/ioc/ioc/ioc-initializer.base';
-import { IHealthConfig } from '../../config/health-config.interface';
+import { IHealthConfig } from '../../config/health.config.interface';
 import { HealthBinder } from '../binders/health.binder';
 import { HealthRoutesLoader } from '../routes-loaders/health.routes-loader';
 

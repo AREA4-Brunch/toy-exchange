@@ -2,7 +2,7 @@ import { AuthorizationMiddleware } from 'authorization/dist/authorization/middle
 import express from 'express';
 import { inject, injectable, singleton } from 'tsyringe';
 import { RequestLoggingMiddleware } from '../../../../shared/infrastructure/middleware/request-logging.middleware';
-import { IHealthRoutesConfig } from '../config/health-config';
+import { IHealthRoutesConfig } from '../config/health.config.interface';
 import { HEALTH_INFRASTRUCTURE_TYPES } from '../di/health-types';
 import { HealthController } from './health.controller';
 

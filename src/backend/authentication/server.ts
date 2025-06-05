@@ -10,7 +10,7 @@ import * as path from 'path';
 import 'reflect-metadata'; // tsyringe requires this to be first line imported
 import { container, DependencyContainer } from 'tsyringe';
 import { config as defaultConfig } from './config/app-config/dev.config';
-import { IAuthenticationConfig } from './main/config/auth-config.interface';
+import { IAuthenticationConfig } from './main/config/auth.config.interface';
 import { AuthenticationIoC } from './main/ioc/ioc/auth.ioc';
 
 const main = async (): Promise<void> => {

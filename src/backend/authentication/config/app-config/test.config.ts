@@ -1,4 +1,4 @@
-import { IAuthenticationConfig } from '../../main/config/auth-config.interface';
+import { IAuthenticationConfig } from '../../main/config/auth.config.interface';
 import { config as devConfig } from './dev.config';
 
 const defaultJwtSecretKey = `4ed22494e028f42c8ce966c396aedb4478d516a23e6321c96663aa35a10a317c`;

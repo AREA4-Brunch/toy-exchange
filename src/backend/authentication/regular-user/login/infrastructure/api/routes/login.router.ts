@@ -6,7 +6,7 @@ import { RequestMetadataMiddleware } from '../../../../../shared/infrastructure/
 import { RequestValidationMiddleware } from '../../../../../shared/infrastructure/middleware/request-validation.middleware';
 import { ResponseLoggingMiddleware } from '../../../../../shared/infrastructure/middleware/response-logging.middleware';
 import { SanitizationMiddleware } from '../../../../../shared/infrastructure/middleware/sanitization.middleware';
-import { ILoginRoutesConfig } from '../../config/login-config.interface';
+import { ILoginRoutesConfig } from '../../config/login.config.interface';
 import { LOGIN_INFRASTRUCTURE_TYPES } from '../../di/login-types';
 import { LoginController } from '../controllers/login.controller';
 import { loginRequestSchema } from '../request-schemas/login.schema';

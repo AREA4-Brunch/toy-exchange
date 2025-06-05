@@ -1,5 +1,5 @@
-import { IHealthConfig } from '../../health/main/config/health-config.interface';
-import { ILoginConfig } from '../../login/main/config/login-config.interface';
+import { IHealthConfig } from '../../health/main/config/health.config.interface';
+import { ILoginConfig } from '../../login/main/config/login.config.interface';
 
 export interface IRegularUserConfig {
     readonly api: {

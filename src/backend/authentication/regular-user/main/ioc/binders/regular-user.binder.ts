@@ -1,6 +1,6 @@
 import { DependencyContainer, injectable, singleton } from 'tsyringe';
 import { IIoCBinder } from '../../../../shared/main/ioc/binders/ioc-binder.interface';
-import { IRegularUserConfig } from '../../config/app-config.interface';
+import { IRegularUserConfig } from '../../config/app.config.interface';
 
 @singleton()
 @injectable()

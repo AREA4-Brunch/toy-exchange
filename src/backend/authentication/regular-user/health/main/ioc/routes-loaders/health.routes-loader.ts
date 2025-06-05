@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { injectable, singleton } from 'tsyringe';
 import { RoutesLoader } from '../../../../../shared/main/ioc/routes-loaders/routes-loader.base';
 import { HealthRouter } from '../../../infrastructure/api/health.router';
-import { IHealthConfig } from '../../config/health-config.interface';
+import { IHealthConfig } from '../../config/health.config.interface';
 
 @singleton()
 @injectable()

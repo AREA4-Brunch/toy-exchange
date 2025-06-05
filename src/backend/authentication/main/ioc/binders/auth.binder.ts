@@ -12,7 +12,7 @@ import { IIoCBinder } from '../../../shared/main/ioc/binders/ioc-binder.interfac
 import {
     IAuthenticationConfig,
     ISharedConfig,
-} from '../../config/auth-config.interface';
+} from '../../config/auth.config.interface';
 
 @singleton()
 @injectable()

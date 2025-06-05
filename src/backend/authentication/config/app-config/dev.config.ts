@@ -1,10 +1,10 @@
 import {
   IAuthenticationConfig,
   ISharedConfig,
-} from '../../main/config/auth-config.interface';
-import { IHealthConfig } from '../../regular-user/health/main/config/health-config.interface';
-import { ILoginConfig } from '../../regular-user/login/main/config/login-config.interface';
-import { IRegularUserConfig } from '../../regular-user/main/config/app-config.interface';
+} from '../../main/config/auth.config.interface';
+import { IHealthConfig } from '../../regular-user/health/main/config/health.config.interface';
+import { ILoginConfig } from '../../regular-user/login/main/config/login.config.interface';
+import { IRegularUserConfig } from '../../regular-user/main/config/app.config.interface';
 
 const defaultJwtSecretKey = `07885db471baa1ce5672c7843e309818cfe43cbaadc76133c21213d98fc8c3d3`;
 

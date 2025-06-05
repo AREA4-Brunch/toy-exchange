@@ -1,23 +1,23 @@
 import { DependencyContainer, injectable, singleton } from 'tsyringe';
 import { IIoCBinder } from '../../../../../shared/main/ioc/binders/ioc-binder.interface';
-import { IConfigLoginApplication } from '../../../application/config/login-config.interface';
+import { IConfigLoginApplication } from '../../../application/config/login.config.interface';
 import { LOGIN_APPLICATION_TYPES } from '../../../application/di/login-application.types';
 import { IPasswordService } from '../../../application/services/password.service.interface';
 import { ITokenService } from '../../../application/services/token.service.interface';
 import { ILoginUseCase } from '../../../application/use-cases/login.interfaces';
 import { LoginUseCase } from '../../../application/use-cases/login.use-case';
-import { IConfigLoginCore } from '../../../core/config/login-config.interface';
+import { IConfigLoginCore } from '../../../core/config/login.config.interface';
 import {
     ILoginInfrastructureConfig,
     ILoginRoutesConfig,
-} from '../../../infrastructure/config/login-config.interface';
+} from '../../../infrastructure/config/login.config.interface';
 import { LOGIN_INFRASTRUCTURE_TYPES } from '../../../infrastructure/di/login-types';
 import { PasswordService } from '../../../infrastructure/services/password.service';
 import {
     ITokenServiceConfig,
     TokenService,
 } from '../../../infrastructure/services/token.service';
-import { ILoginConfig } from '../../config/login-config.interface';
+import { ILoginConfig } from '../../config/login.config.interface';
 
 @singleton()
 @injectable()
@@ -53,7 +53,7 @@ const infrastructure = (
         conf.api.routes,
     );
     container.registerInstance<ITokenServiceConfig>(
-        LOGIN_APPLICATION_TYPES.TokenServiceConfig,
+        LOGIN_INFRASTRUCTURE_TYPES.TokenServiceConfig,
         conf.tokenService,
     );
     container.register<ITokenService>(LOGIN_APPLICATION_TYPES.TokenService, {

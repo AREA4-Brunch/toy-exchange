@@ -1,5 +1,5 @@
 import express, { Router } from 'express';
-import { IRoutesConfig } from '../../../infrastructure/config/infrastructure-config.interface';
+import { IRoutesConfig } from '../../../infrastructure/config/infrastructure.config.interface';
 
 export interface IRoutesLoader<TConfig> {
     loadRoutes(router: Router, config: TConfig): Promise<Router>;
