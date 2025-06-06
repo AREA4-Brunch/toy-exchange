@@ -1,6 +1,6 @@
 {
     "name": "authorization",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "description": "Authorization token management utils shared among microservices.",
     "homepage": "https://github.com/AREA4-Brunch/toy-exchange#readme",
     "bugs": {
@@ -15,16 +15,17 @@
     "type": "commonjs",
     "main": "dist/authorization/module.js",
     "scripts": {
-        "publish": "npm run build && node dist/commands/publish-clients-update.js",
+        "publish": "npm run clean & npm run build && node dist/commands/publish-clients-update.js",
         "publish:no-npm-update": "npm run build && node dist/commands/publish.js",
         "build": "npx tsc",
-        "build:auth": "npx tsc -p tsconfig.auth.json",
         "clean": "rimraf dist",
         "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
     },
     "dependencies": {
+        "common": "file:libs/common-1.0.0.tgz",
         "express": "^5.1.0",
         "jsonwebtoken": "^9.0.2",
+        "rimraf": "^6.0.1",
         "zod": "^3.25.42"
     },
     "devDependencies": {

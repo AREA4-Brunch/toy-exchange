@@ -1,0 +1,8 @@
+node_modules/
+
+/dist/*
+!/dist/versions/
+
+package-lock.json
+
+TODO.md
