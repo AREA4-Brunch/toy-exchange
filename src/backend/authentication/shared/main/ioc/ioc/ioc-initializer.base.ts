@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { DependencyContainer, InjectionToken } from 'tsyringe';
 import { fetchObjectProperty } from '../../../common/class-utils';
+import { IRoutesConfig } from '../../../infrastructure/config/infrastructure.config.interface';
+import { IRoutesLoader } from '../../../infrastructure/routes/routes-loader.base';
 import { IIoCBinder } from '../binders/ioc-binder.interface';
 
 export interface IIoCInitializeArgs<TConfig> {
@@ -89,13 +91,15 @@ export abstract class IoCContainerizedModule<TConfig> extends IoC<TConfig> {
         init: InjectionToken,
     ): IIoCInitializeArgs<unknown> {
         return {
-            container: this.rootContainer.createChildContainer(),
+            container: this.getChildInitContainer(init),
             router: this.getChildInitRouter(init),
             config: this.getChildInitConfig(init),
         };
     }
 
-    protected abstract getBasePath(config: TConfig): string;
+    protected getChildInitContainer(init: InjectionToken): DependencyContainer {
+        return this.rootContainer.createChildContainer();
+    }
 
     protected abstract getChildInitRouter(init: InjectionToken): Router;
 
@@ -132,16 +136,13 @@ export class ModuleIoC<TConfig> extends IoCContainerizedModule<TConfig> {
         return this.commonChildRouter;
     }
 
-    protected override async getChildConfig(config: TConfig): Promise<unknown> {
+    protected override async onInitStart({
+        container,
+        router,
+        config,
+    }: IIoCInitializeArgs<TConfig>): Promise<void> {
+        await super.onInitStart({ container, router, config });
         this.config = config;
-        return config;
-    }
-
-    protected getBasePath(config: TConfig): string {
-        return fetchObjectProperty<string>(
-            config,
-            this.apiBasePathConfigProperty,
-        );
     }
 
     protected getChildInitRouter(init: InjectionToken): Router {
@@ -153,55 +154,103 @@ export class ModuleIoC<TConfig> extends IoCContainerizedModule<TConfig> {
 
     protected getChildInitConfig(init: InjectionToken): unknown {
         const property: string = this.initsConfigProps.get(init)!;
-        const childConfig = fetchObjectProperty<unknown>(this.config, property);
-        if (!childConfig) {
-            console.warn(
-                `Child sub-config ${property} = ${childConfig}\nfor init: ${String(init)}.`,
-            );
-        }
-        return childConfig;
+        return this.extractSubConfig<unknown>(init, property);
     }
 
     protected createCommonChildRouter(): Router {
         return Router();
     }
-}
 
-export class FeatureIoC<TConfig, TChildConfig = unknown> extends IoC<
-    TConfig,
-    TChildConfig
-> {
-    private container!: DependencyContainer;
-
-    constructor(
-        private readonly binderToken: InjectionToken,
-        private readonly routesLoadersTokens: InjectionToken[],
-    ) {
-        super();
+    protected getBasePath(config: TConfig): string {
+        return fetchObjectProperty<string>(
+            config,
+            this.apiBasePathConfigProperty,
+        );
     }
 
-    protected override async onInitStart(
-        arg: IIoCInitializeArgs<TConfig>,
-    ): Promise<void> {
-        this.container = arg.container;
+    private extractSubConfig<T>(init: InjectionToken, property: string): T {
+        const childConfig = fetchObjectProperty<T>(this.config, property);
+        if (!childConfig) {
+            console.warn(
+                `Sub-config ${property} = ${childConfig}\nfor init: ${String(init)}.`,
+            );
+        }
+        return childConfig;
+    }
+}
+
+export class FeatureIoC<TConfig> extends IoCContainerizedModule<TConfig> {
+    protected rootRouter: Router | undefined;
+    protected config: TConfig | undefined;
+
+    constructor(
+        protected readonly binder: IIoCBinder<TConfig>,
+        private readonly routesConfs: Map<InjectionToken, string> = new Map(),
+        private readonly initsConfs: Map<InjectionToken, string> = new Map(),
+    ) {
+        super(Array.from(initsConfs.keys()));
+    }
+
+    protected override async onInitStart({
+        container,
+        router,
+        config,
+    }: IIoCInitializeArgs<TConfig>): Promise<void> {
+        await super.onInitStart({ container, router, config });
+        this.rootRouter = router;
+        this.config = config;
     }
 
     protected override async bind(
         container: DependencyContainer,
         config: TConfig,
     ): Promise<DependencyContainer> {
-        await container.resolve(this.binderToken).bind(container, config);
+        this.binder.bind(container, config);
         return container;
     }
 
-    protected async loadRoutes(
+    protected override async loadRoutes(
         router: Router,
         config: TConfig,
     ): Promise<Router> {
         // now can resolve after its dependencies were registered via bind()
-        this.routesLoadersTokens.forEach(async (loader) => {
-            await this.container.resolve(loader).loadRoutes(router, config);
+        this.routesConfs.forEach(async (property, token, _) => {
+            await this.rootContainer
+                .resolve<IRoutesLoader<IRoutesConfig>>(token)
+                .loadRoutes(
+                    router,
+                    this.extractSubConfig<IRoutesConfig>(token, property),
+                    this.rootContainer,
+                );
         });
         return router;
+    }
+
+    protected override getChildInitContainer(
+        init: InjectionToken,
+    ): DependencyContainer {
+        return this.rootContainer;
+    }
+
+    protected getChildInitRouter(init: InjectionToken): Router {
+        if (!this.rootRouter) {
+            throw new Error(`Root router for child IoC is not initialized.`);
+        }
+        return this.rootRouter;
+    }
+
+    protected getChildInitConfig(init: InjectionToken): unknown {
+        const property: string = this.initsConfs.get(init)!;
+        return this.extractSubConfig<unknown>(init, property);
+    }
+
+    private extractSubConfig<T>(init: InjectionToken, property: string): T {
+        const childConfig = fetchObjectProperty<T>(this.config, property);
+        if (!childConfig) {
+            console.warn(
+                `Sub-config ${property} = ${childConfig}\nfor init: ${String(init)}.`,
+            );
+        }
+        return childConfig;
     }
 }

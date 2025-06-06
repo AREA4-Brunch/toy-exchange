@@ -1,13 +1,18 @@
-import { injectable, singleton } from 'tsyringe';
+import { injectable, InjectionToken, singleton } from 'tsyringe';
 import { FeatureIoC } from '../../../../../shared/main/ioc/ioc/ioc-initializer.base';
+import { HealthRouter } from '../../../infrastructure/api/health.router';
 import { IHealthConfig } from '../../config/health.config.interface';
 import { HealthBinder } from '../binders/health.binder';
-import { HealthRoutesLoader } from '../routes-loaders/health.routes-loader';
 
 @singleton()
 @injectable()
-export class HealthIoC extends FeatureIoC<IHealthConfig, void> {
-    constructor() {
-        super(HealthBinder, [HealthRoutesLoader]);
+export class HealthIoC extends FeatureIoC<IHealthConfig> {
+    constructor(binder: HealthBinder) {
+        super(
+            binder,
+            new Map<InjectionToken, string>([
+                [HealthRouter, 'infrastructure.api.routes'],
+            ]),
+        );
     }
 }
