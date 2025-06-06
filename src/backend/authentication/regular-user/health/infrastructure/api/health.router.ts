@@ -1,4 +1,4 @@
-import { AuthorizationMiddleware } from 'authorization/dist/authorization/middleware';
+import { AuthorizationMiddleware } from 'authorization/dist/infrastructure/middleware';
 import express from 'express';
 import { inject, injectable, singleton } from 'tsyringe';
 import { RequestLoggingMiddleware } from '../../../../shared/infrastructure/middleware/request-logging.middleware';
