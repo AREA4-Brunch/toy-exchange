@@ -55,7 +55,6 @@ const npmUpdateClients = async (
                 'utf8',
             );
             const packageJson = JSON.parse(packageJsonContent);
-
             // Store the original indentation by checking the first property indentation
             const indentMatch = packageJsonContent.match(/\n(\s+)"/);
             const indent = indentMatch ? indentMatch[1] : '  '; // Default to 2 spaces if not found

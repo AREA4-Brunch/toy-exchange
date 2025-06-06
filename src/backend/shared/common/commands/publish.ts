@@ -52,6 +52,7 @@ export const publish = async ({
         // read the client's package.json with original formatting
         const packageJsonContent = fs.readFileSync(packageJsonPath, 'utf8');
         const packageJson = JSON.parse(packageJsonContent) as PackageJson;
+        packageJson.name = publishedLibName; // set the package name
         // Store the original indentation by checking the first property indentation
         const indentMatch = packageJsonContent.match(/\n(\s+)"/);
         const indent = indentMatch ? indentMatch[1] : '  '; // Default to 2 spaces if not found
