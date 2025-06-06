@@ -1,5 +1,5 @@
 export interface IClientProject {
-  name: string;
-  packageJsonPath: string;
-  targetLibsDir: string;
+    name: string;
+    packageJsonPath: string;
+    targetLibsDir: string;
 }
