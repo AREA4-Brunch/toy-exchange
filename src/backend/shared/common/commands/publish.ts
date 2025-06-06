@@ -17,6 +17,7 @@ export interface IPublishOptions {
     clientProjects: IClientProject[];
     pkgJsonFiles: string[];
     tsConfigContent: any;
+    publishedLibName: string; // no version number
     newVersion?: string;
 }
 
@@ -25,6 +26,7 @@ export const publish = async ({
     clientProjects,
     pkgJsonFiles,
     tsConfigContent,
+    publishedLibName,
     newVersion,
 }: IPublishOptions): Promise<string> => {
     try {
@@ -91,8 +93,8 @@ export const publish = async ({
             JSON.stringify(tsConfigContent, null, indent),
         );
 
-        // build only the authorization code
-        console.log('Building authorization code...');
+        // build only the project code
+        console.log(`Building ${publishedLibName} code...`);
         await execAsync('npx tsc -p temp-tsconfig.json', { cwd: projectRoot });
 
         // clean up temporary tsconfig file

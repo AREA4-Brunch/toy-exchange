@@ -15,6 +15,11 @@ const clientProjects: IClientProject[] = [
     packageJsonPath: path.join(baseDir, 'password-utils/package.json'),
     targetLibsDir: path.join(baseDir, 'password-utils/libs'),
   },
+  {
+    name: 'Authentication Service',
+    packageJsonPath: path.join(baseDir, '../authentication/package.json'),
+    targetLibsDir: path.join(baseDir, '../authentication/shared/libs'),
+  },
 ];
 
 const projectRoot = path.resolve(__dirname, '../../');
@@ -33,5 +38,6 @@ export const publishOptions: IPublishOptions = {
   clientProjects,
   pkgJsonFiles,
   tsConfigContent,
+  publishedLibName: 'common',
   newVersion: undefined,
 };

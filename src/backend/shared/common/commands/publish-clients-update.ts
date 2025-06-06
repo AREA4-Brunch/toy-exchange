@@ -9,9 +9,15 @@ const execAsync = util.promisify(exec);
 
 export const publishClientsUpdate = async (options: IPublishOptions) => {
     const version: string = await publish(options);
-    console.log(`\n📦 Authorization package published as version ${version}`);
+    console.log(
+        `\n📦 ${options.publishedLibName} package published as version ${version}`,
+    );
     console.log(`🔄 Updating client projects...\n`);
-    const numFailed = await npmUpdateClients(version, options.clientProjects);
+    const numFailed = await npmUpdateClients(
+        version,
+        options.clientProjects,
+        options.publishedLibName,
+    );
     if (numFailed === 0) {
         console.log(`\n✅ Client update process completed successfully!`);
     } else {
@@ -24,6 +30,7 @@ export const publishClientsUpdate = async (options: IPublishOptions) => {
 const npmUpdateClients = async (
     version: string,
     clientProjects: IClientProject[],
+    publishedLibName: string,
 ): Promise<number> => {
     const updatedClients: string[] = [];
     const skippedClients: string[] = [];
@@ -53,28 +60,30 @@ const npmUpdateClients = async (
             const indentMatch = packageJsonContent.match(/\n(\s+)"/);
             const indent = indentMatch ? indentMatch[1] : '  '; // Default to 2 spaces if not found
 
-            // check if the client uses our authorization package
+            // check if the client uses our package
             const dependencies = {
                 ...packageJson.dependencies,
                 ...packageJson.devDependencies,
             };
 
-            if (!dependencies.authorization) {
-                console.log(`   ⚠️ Project does not use authorization package`);
+            if (!dependencies[publishedLibName]) {
+                console.log(
+                    `   ⚠️ Project does not use ${publishedLibName} package`,
+                );
                 skippedClients.push(client.name);
                 continue;
             }
             // Check if version needs updating
             const isFileDependency =
-                dependencies.authorization.startsWith('file:');
+                dependencies[publishedLibName].startsWith('file:');
 
             // Update version in package.json (dependencies or devDependencies)
-            const depKey = packageJson.dependencies?.authorization
+            const depKey = packageJson.dependencies?.[publishedLibName]
                 ? 'dependencies'
                 : 'devDependencies';
-            packageJson[depKey].authorization = isFileDependency
-                ? packageJson[depKey].authorization.replace(
-                      /(authorization-)([0-9.]+)(\.tgz)/,
+            packageJson[depKey][publishedLibName] = isFileDependency
+                ? packageJson[depKey][publishedLibName].replace(
+                      new RegExp(`(${publishedLibName}-)([0-9.]+)(\.tgz)`),
                       `$1${version}$3`,
                   )
                 : version;
@@ -87,11 +96,13 @@ const npmUpdateClients = async (
 
             console.log(`   ✏️ Updated package.json version reference`);
             console.log(`   🔄 Running npm update...`);
-            await execAsync('npm update authorization', {
+            await execAsync(`npm update ${publishedLibName}`, {
                 cwd: path.dirname(client.packageJsonPath),
             });
 
-            console.log(`   ✅ Successfully updated authorization package`);
+            console.log(
+                `   ✅ Successfully updated ${publishedLibName} package`,
+            );
             updatedClients.push(client.name);
 
             // clean up older versions after successful update
@@ -104,7 +115,7 @@ const npmUpdateClients = async (
                         const files = fs.readdirSync(libsDir);
                         const oldVersionFiles = files.filter(
                             (file) =>
-                                file.startsWith('authorization-')
+                                file.startsWith(`${publishedLibName}-`)
                                 && file.endsWith('.tgz')
                                 && !file.includes(`-${version}.tgz`),
                         );

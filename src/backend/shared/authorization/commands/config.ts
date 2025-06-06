@@ -2,6 +2,7 @@ import { IClientProject } from 'common/dist/commands/config.interface';
 import { IPublishOptions } from 'common/dist/commands/publish';
 import * as path from 'path';
 
+const projectRoot = path.resolve(__dirname, '../../');
 const baseDir = path.resolve(__dirname, '../../../../');
 
 const clientProjects: IClientProject[] = [
@@ -11,8 +12,6 @@ const clientProjects: IClientProject[] = [
         targetLibsDir: path.join(baseDir, 'authentication/shared/libs'),
     },
 ];
-
-const projectRoot = path.resolve(__dirname, '../../');
 
 const pkgJsonFiles = ['dist/infrastructure/**/*', 'README.md'];
 
