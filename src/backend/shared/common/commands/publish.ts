@@ -491,7 +491,8 @@ const analyzeDependencies = (options: {
 
     // Create dependency objects
     const dependencies: Record<string, string> = {};
-    const peerDependencies: Record<string, string> = {};
+    const peerDependencies: Record<string, string> =
+        packageJson.peerDependencies || {};
 
     // Categorize dependencies (framework deps as peer deps)
     const frameworkDeps = ['typescript', 'react', 'vue', 'angular'];
@@ -502,6 +503,22 @@ const analyzeDependencies = (options: {
                 peerDependencies[pkg] = allDependencies[pkg];
             } else {
                 dependencies[pkg] = allDependencies[pkg];
+            }
+        }
+    });
+
+    // remove fpath from 'file:' dependencies
+    Object.keys(dependencies).forEach((key) => {
+        if (dependencies[key].startsWith('file:')) {
+            const tgzFilename = dependencies[key].substring(5); // Remove 'file:' prefix
+            const versionMatch = tgzFilename.match(
+                /-(\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?)\.tgz$/,
+            );
+            if (versionMatch && versionMatch[1]) {
+                dependencies[key] = versionMatch[1];
+            } else {
+                // Fallback if version can't be extracted from filename
+                dependencies[key] = dependencies[key].substring(5);
             }
         }
     });
