@@ -40,4 +40,7 @@ export const publishOptions: IPublishOptions = {
   tsConfigContent,
   publishedLibName: 'common',
   newVersion: undefined,
+  selectiveCompilation: false,
+  cleanupTempDist: true,
+  outputDest: './_versions',
 };

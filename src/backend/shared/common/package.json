@@ -1,6 +1,6 @@
 {
     "name": "common",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Common code used in shared/",
     "homepage": "https://github.com/AREA4-Brunch/toy-exchange#readme",
     "bugs": {
@@ -21,12 +21,10 @@
         "clean": "rimraf dist",
         "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
     },
-    "dependencies": {
-        "rimraf": "^6.0.1"
-    },
     "devDependencies": {
         "@types/node": "^22.15.30",
         "prettier": "^3.5.3",
+        "rimraf": "^6.0.1",
         "typescript": "^5.8.3"
     },
     "files": [

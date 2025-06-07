@@ -108,8 +108,7 @@ const npmUpdateClients = async (
             if (isFileDependency) {
                 const oldVersionFilesToRemove: string[] = [];
                 try {
-                    const libsDir =
-                        path.dirname(client.packageJsonPath) + '/shared/libs';
+                    const libsDir = client.targetLibsDir;
                     if (fs.existsSync(libsDir)) {
                         const files = fs.readdirSync(libsDir);
                         const oldVersionFiles = files.filter(
