@@ -4,7 +4,7 @@ import { LOGIN_APPLICATION_TYPES } from '../../../application/di/login-applicati
 import {
     ILoginInput,
     ILoginUseCase,
-} from '../../../application/use-cases/login.interfaces';
+} from '../../../application/use-cases/login.use-case.interface';
 
 @singleton()
 @injectable()

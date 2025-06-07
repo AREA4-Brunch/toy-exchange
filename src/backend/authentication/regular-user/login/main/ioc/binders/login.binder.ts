@@ -6,7 +6,7 @@ import { IRegularUserRepository } from '../../../application/repositories/regula
 import { IPasswordService } from '../../../application/services/password.service.interface';
 import { ITokenService } from '../../../application/services/token.service.interface';
 import { LoginUseCase } from '../../../application/use-cases/login.use-case';
-import { ILoginUseCase } from '../../../application/use-cases/login.use-case.interfaces';
+import { ILoginUseCase } from '../../../application/use-cases/login.use-case.interface';
 import { IConfigLoginCore } from '../../../core/config/login.config.interface';
 import {
     ILoginInfrastructureConfig,

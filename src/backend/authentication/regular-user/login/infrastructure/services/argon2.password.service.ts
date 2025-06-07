@@ -3,4 +3,8 @@ import { IPasswordService } from '../../application/services/password.service.in
 
 @singleton()
 @injectable()
-export class PasswordService implements IPasswordService {}
+export class Argon2PasswordService implements IPasswordService {
+    verifyPassword(password: string, hashedPassword: string): boolean {
+        return true;
+    }
+}

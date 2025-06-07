@@ -1,5 +1,5 @@
 import { IRoutesConfig } from '../../../../shared/infrastructure/config/infrastructure.config.interface';
-import { ITokenServiceConfig } from '../services/token.service';
+import { ITokenServiceConfig } from '../services/jwt.token.service';
 
 export interface ILoginInfrastructureConfig {
     readonly api: {
