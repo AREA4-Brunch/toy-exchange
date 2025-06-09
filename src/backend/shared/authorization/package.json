@@ -15,14 +15,14 @@
     "type": "commonjs",
     "main": "dist/authorization/module.js",
     "scripts": {
-        "publish": "npm run clean & npm run build && node dist/commands/publish-clients-update.js",
-        "publish:no-npm-update": "npm run build && node dist/commands/publish.js",
+        "publish": "npm run clean && npm run build && node dist/commands/publish.js",
+        "publish:self": "npm run build && node dist/commands/publish-self.js",
         "build": "npx tsc",
         "clean": "rimraf dist",
         "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
     },
     "dependencies": {
-        "common": "file:libs/common-1.1.0.tgz",
+        "common": "file:libs/common-2.0.1.tgz",
         "express": "^5.1.0",
         "jsonwebtoken": "^9.0.2",
         "rimraf": "^6.0.1",

@@ -8,6 +8,7 @@ const baseDir = path.resolve(__dirname, '../../../../');
 const clientProjects: IClientProject[] = [
   {
     name: 'Authentication Service',
+    projectPath: path.join(baseDir, 'authentication'),
     packageJsonPath: path.join(baseDir, 'authentication/package.json'),
     targetLibsDir: path.join(baseDir, 'authentication/shared/libs'),
   },

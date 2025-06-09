@@ -199,11 +199,7 @@ export const publish = async (options: IPublishOptions): Promise<string> => {
         }
 
         // Update original package.json version if needed
-        if (
-            newVersion
-            && originalPackageJson.version !== newVersion
-            && !selectiveCompilation
-        ) {
+        if (newVersion && originalPackageJson.version !== newVersion) {
             const updatedOriginal = {
                 ...originalPackageJson,
                 version: newVersion,
