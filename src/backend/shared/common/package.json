@@ -1,6 +1,6 @@
 {
     "name": "common",
-    "version": "1.2.0",
+    "version": "2.0.0",
     "description": "Common code used in shared/",
     "homepage": "https://github.com/AREA4-Brunch/toy-exchange#readme",
     "bugs": {
@@ -15,7 +15,8 @@
     "type": "commonjs",
     "main": "index.js",
     "scripts": {
-        "publish": "npm run clean & npm run build && node dist/_commands/publish-clients-update.js",
+        "publish": "npm run clean & npm run build && node dist/_commands/publish.js",
+        "publish-OLD": "npm run clean & npm run build && node dist/_commands/publish-clients-update.js",
         "publish:no-npm-update": "npm run build && node dist/_commands/publish.js",
         "build": "npx tsc",
         "clean": "rimraf dist",

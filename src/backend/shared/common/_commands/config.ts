@@ -7,16 +7,19 @@ const baseDir = path.resolve(__dirname, '../../../');
 const clientProjects: IClientProject[] = [
   {
     name: 'Authorization Lib',
+    projectPath: path.join(baseDir, 'authorization'),
     packageJsonPath: path.join(baseDir, 'authorization/package.json'),
     targetLibsDir: path.join(baseDir, 'authorization/libs'),
   },
   {
     name: 'Password Utils Lib',
+    projectPath: path.join(baseDir, 'password-utils'),
     packageJsonPath: path.join(baseDir, 'password-utils/package.json'),
     targetLibsDir: path.join(baseDir, 'password-utils/libs'),
   },
   {
     name: 'Authentication Service',
+    projectPath: path.join(baseDir, '../authentication'),
     packageJsonPath: path.join(baseDir, '../authentication/package.json'),
     targetLibsDir: path.join(baseDir, '../authentication/shared/libs'),
   },
