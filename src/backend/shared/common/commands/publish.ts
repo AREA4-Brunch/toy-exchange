@@ -53,28 +53,58 @@ export interface IPublishOptions {
     libPaths?: string[]; // New: configurable paths to dependency libs
 }
 
-export const publish = async (options: IPublishOptions): Promise<string> => {
+export interface ICreatePackageOptions {
+    projectRoot: string;
+    pkgJsonFiles: string[];
+    tsConfigContent: any;
+    publishedLibName: string;
+    newVersion?: string;
+    outputDest?: string;
+    selectiveCompilation?: boolean;
+    selectiveFiles?: string[];
+    selectiveIgnorePatterns?: string[];
+    cleanupTempDist?: boolean;
+    dependencyFormat?: DependencyFormat;
+    bundleDependencies?: boolean;
+    buildBeforePublish?: boolean;
+    libPaths?: string[];
+}
+
+export interface IDistributePackageOptions {
+    packageInfo: VersionInfo;
+    clientProjects: IClientProject[];
+    publishedLibName: string;
+    updateClients?: boolean;
+}
+
+export interface ICopyPackageOptions {
+    packageInfo: VersionInfo;
+    destinationDir: string;
+    overwrite?: boolean;
+}
+
+export const createPackageTgz = async (
+    options: ICreatePackageOptions,
+): Promise<VersionInfo> => {
     const {
         projectRoot,
-        clientProjects,
         pkgJsonFiles,
         tsConfigContent,
         publishedLibName,
         newVersion,
         outputDest = './_versions',
         selectiveCompilation = false,
-        selectiveFiles = [], // Default to empty array
+        selectiveFiles = [],
         cleanupTempDist = true,
         dependencyFormat = 'bundled',
         bundleDependencies = true,
-        updateClients = true,
         buildBeforePublish = true,
-        libPaths = [], // Default to empty array
+        libPaths = [],
         selectiveIgnorePatterns = [],
     } = options;
 
     try {
-        console.log(`🚀 Publishing ${publishedLibName}...`);
+        console.log(`📦 Creating package for ${publishedLibName}...`);
         console.log(`📁 Project root: ${projectRoot}`);
         console.log(
             `📦 Compilation mode: ${selectiveCompilation ? 'Selective' : 'Full'}`,
@@ -90,11 +120,6 @@ export const publish = async (options: IPublishOptions): Promise<string> => {
 
         createDirIfNotExists(distDir);
         createDirIfNotExists(outputDir);
-
-        // Initialize client libs directories
-        for (const client of clientProjects) {
-            createDirIfNotExists(client.targetLibsDir);
-        }
 
         // Load and prepare package.json
         const packageJsonPath = path.join(projectRoot, 'package.json');
@@ -148,7 +173,7 @@ export const publish = async (options: IPublishOptions): Promise<string> => {
         const dependencyInfo = await analyzeDependencies({
             sourceFiles,
             projectRoot: compilationRoot,
-            clientProjects,
+            clientProjects: [], // Empty for package creation step
             dependencyFormat,
             bundleDependencies,
         });
@@ -168,13 +193,15 @@ export const publish = async (options: IPublishOptions): Promise<string> => {
                 tsConfigContent,
                 selectiveCompilation,
             );
-        } // Handle dependency bundling
+        }
+
+        // Handle dependency bundling
         if (bundleDependencies && dependencyFormat === 'bundled') {
             console.log(`📦 Bundling dependencies...`);
             await bundleLocalDependencies(
                 compilationRoot,
                 dependencyInfo.localDependencies,
-                clientProjects,
+                [], // Empty for package creation step
                 libPaths,
             );
         }
@@ -187,16 +214,6 @@ export const publish = async (options: IPublishOptions): Promise<string> => {
             outputDir,
             selectiveCompilation ? undefined : packageJsonPath,
         );
-
-        // Distribute to client projects
-        if (updateClients) {
-            console.log(`🔄 Updating client projects...`);
-            await distributeToClients(
-                packageInfo,
-                clientProjects,
-                publishedLibName,
-            );
-        }
 
         // Update original package.json version if needed
         if (newVersion && originalPackageJson.version !== newVersion) {
@@ -218,17 +235,134 @@ export const publish = async (options: IPublishOptions): Promise<string> => {
         }
 
         console.log(
-            `✅ Successfully published ${publishedLibName} v${packageInfo.version}`,
+            `✅ Successfully created package ${publishedLibName} v${packageInfo.version}`,
         );
         console.log(`📦 Package: ${packageInfo.filename}`);
         console.log(`📍 Location: ${packageInfo.path}`);
 
-        return packageInfo.version;
+        return packageInfo;
     } catch (error) {
-        console.error(`❌ Failed to publish ${publishedLibName}:`, error);
+        console.error(
+            `❌ Failed to create package ${publishedLibName}:`,
+            error,
+        );
         if (error instanceof Error && error.stack) {
             console.error('Stack trace:', error.stack);
         }
+        throw error;
+    }
+};
+
+export const distributePackage = async (
+    options: IDistributePackageOptions,
+): Promise<void> => {
+    const {
+        packageInfo,
+        clientProjects,
+        publishedLibName,
+        updateClients = true,
+    } = options;
+
+    try {
+        if (!updateClients) {
+            console.log(`⏭️ Skipping client updates as requested`);
+            return;
+        }
+
+        console.log(
+            `🔄 Distributing ${publishedLibName} to client projects...`,
+        );
+
+        // Initialize client libs directories
+        for (const client of clientProjects) {
+            createDirIfNotExists(client.targetLibsDir);
+        }
+
+        // Distribute to client projects
+        await distributeToClients(
+            packageInfo,
+            clientProjects,
+            publishedLibName,
+        );
+
+        console.log(
+            `✅ Successfully distributed ${publishedLibName} v${packageInfo.version}`,
+        );
+    } catch (error) {
+        console.error(`❌ Failed to distribute ${publishedLibName}:`, error);
+        if (error instanceof Error && error.stack) {
+            console.error('Stack trace:', error.stack);
+        }
+        throw error;
+    }
+};
+
+export const publish = async (options: IPublishOptions): Promise<string> => {
+    const { clientProjects, updateClients = true, ...createOptions } = options;
+
+    try {
+        console.log(`🚀 Publishing ${options.publishedLibName}...`);
+
+        // Step 1: Create the package
+        const packageInfo = await createPackageTgz(createOptions);
+
+        // Step 2: Distribute the package
+        await distributePackage({
+            packageInfo,
+            clientProjects,
+            publishedLibName: options.publishedLibName,
+            updateClients,
+        });
+
+        console.log(
+            `✅ Successfully published ${options.publishedLibName} v${packageInfo.version}`,
+        );
+
+        return packageInfo.version;
+    } catch (error) {
+        console.error(
+            `❌ Failed to publish ${options.publishedLibName}:`,
+            error,
+        );
+        if (error instanceof Error && error.stack) {
+            console.error('Stack trace:', error.stack);
+        }
+        throw error;
+    }
+};
+
+export const copyPackageToDirectory = async (
+    options: ICopyPackageOptions,
+): Promise<VersionInfo> => {
+    const { packageInfo, destinationDir, overwrite = true } = options;
+
+    try {
+        console.log(`📁 Copying package to ${destinationDir}...`);
+
+        createDirIfNotExists(destinationDir);
+
+        const destinationPath = path.join(destinationDir, packageInfo.filename);
+
+        // Check if file exists and handle overwrite
+        if (fs.existsSync(destinationPath) && !overwrite) {
+            console.log(
+                `⚠️ Package already exists at ${destinationPath}, skipping copy`,
+            );
+            return {
+                ...packageInfo,
+                path: destinationPath,
+            };
+        }
+
+        fs.copyFileSync(packageInfo.path, destinationPath);
+        console.log(`✅ Successfully copied package to ${destinationPath}`);
+
+        return {
+            ...packageInfo,
+            path: destinationPath,
+        };
+    } catch (error) {
+        console.error(`❌ Failed to copy package to ${destinationDir}:`, error);
         throw error;
     }
 };
