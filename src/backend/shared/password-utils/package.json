@@ -19,7 +19,10 @@
         "publish:self": "npm run clean && npm run build && node dist/commands/publish-self.js",
         "build": "npx tsc",
         "clean": "node -e \"require('fs').rmSync('./dist', {recursive: true, force: true})\"",
-        "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
+        "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+        "pwd:hash": "node dist/commands/gen-hash.js",
+        "pwd:verifier:tune": "npm run _tune:argon2 500 verify power-of-2",
+        "_tune:argon2": "node dist/commands/tune-argon2.js"
     },
     "dependencies": {
         "argon2": "^0.43.0",

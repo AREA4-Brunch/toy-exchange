@@ -9,7 +9,7 @@ export const findFilesByPattern = (
         const results = fg.sync(pattern, {
             cwd: rootDir,
             ignore: ignorePatterns,
-            onlyFiles: true, // Only return files, not directories
+            onlyFiles: true,
         });
 
         console.log(`🔍 Pattern: ${pattern} found ${results.length} files`);
