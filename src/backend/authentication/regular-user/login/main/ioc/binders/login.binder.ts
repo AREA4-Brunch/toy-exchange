@@ -75,6 +75,7 @@ const infrastructure = (
     );
 };
 
-const main = (container: DependencyContainer, conf: IConfigLoginCore): void => {
-    // Main configuration setup
-};
+const main = (
+    container: DependencyContainer,
+    conf: IConfigLoginCore,
+): void => {};
