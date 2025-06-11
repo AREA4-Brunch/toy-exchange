@@ -1,8 +1,8 @@
 import { exec } from 'child_process';
 import * as fs from 'fs';
-import { glob } from 'glob';
 import * as path from 'path';
 import * as util from 'util';
+import { findFilesByPattern } from './common';
 
 const execAsync = util.promisify(exec);
 
@@ -190,26 +190,6 @@ const resolveImportPath = (
         }
     }
     return null;
-};
-
-const findFilesByPattern = (
-    pattern: string,
-    rootDir: string,
-    ignorePatterns: string[] = [],
-): string[] => {
-    try {
-        const results = glob.sync(pattern, {
-            cwd: rootDir,
-            ignore: ignorePatterns,
-            nodir: true,
-        });
-
-        console.log(`🔍 Pattern: ${pattern} found ${results.length} files`);
-        return results;
-    } catch (error) {
-        console.error(`❌ Error finding files with pattern ${pattern}:`, error);
-        return [];
-    }
 };
 
 const setupStagingEnvironment = async (

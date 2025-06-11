@@ -11,7 +11,7 @@
         "serve": "node dist/server.js",
         "build": "npm run build:interfaces && npx tsc",
         "build:interfaces": "npm run regular-user:publish-interfaces:self -- ",
-        "clean": "rimraf ./dist",
+        "clean": "node -e \"require('fs').rmSync('./dist', {recursive: true, force: true})\"",
         "install:docker:prod": "npm install --omit=dev",
         "install:docker:build": "npm install typescript",
         "test": "echo \"Error: no test specified\" && exit 1",
@@ -43,13 +43,11 @@
     "dependencies": {
         "authentication-interfaces": "file:shared/libs/authentication-interfaces-1.0.0.tgz",
         "authorization": "file:shared/libs/authorization-1.3.0.tgz",
-        "common": "file:shared/libs/common-2.1.0.tgz",
+        "common": "file:shared/libs/common-2.1.1.tgz",
         "cors": "^2.8.5",
         "express": "^5.1.0",
         "jsonwebtoken": "^9.0.2",
-        "password-utils": "file:shared/libs/password-utils-1.0.0.tgz",
         "reflect-metadata": "^0.2.2",
-        "rimraf": "^6.0.1",
         "tsyringe": "^4.10.0",
         "xss": "^1.0.15",
         "zod": "^3.24.4"
