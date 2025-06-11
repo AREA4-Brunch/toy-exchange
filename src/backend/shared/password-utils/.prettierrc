@@ -1,0 +1,17 @@
+{
+    "tabWidth": 4,
+    "useTabs": false,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "printWidth": 80,
+    "semi": true,
+    "experimentalOperatorPosition": "start",
+    "overrides": [
+        {
+            "files": ["**/*config.ts"],
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ]
+}

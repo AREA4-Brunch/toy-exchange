@@ -1,3 +1,4 @@
+import { Argon2PasswordVerifier } from 'password-utils/dist/infrastructure/argon2.password-verifier';
 import { DependencyContainer, injectable, singleton } from 'tsyringe';
 import { IIoCBinder } from '../../../../../shared/main/ioc/binders/ioc-binder.interface';
 import { IConfigLoginApplication } from '../../../application/config/login.config.interface';
@@ -14,7 +15,6 @@ import {
 } from '../../../infrastructure/config/login.config.interface';
 import { LOGIN_INFRASTRUCTURE_TYPES } from '../../../infrastructure/di/login.types';
 import { TestRegularUserRepository } from '../../../infrastructure/repositories/test-regular-user.repository';
-import { Argon2PasswordService } from '../../../infrastructure/services/argon2.password.service';
 import {
     ITokenServiceConfig,
     JwtTokenService,
@@ -64,7 +64,7 @@ const infrastructure = (
     container.register<IPasswordService>(
         LOGIN_APPLICATION_TYPES.PasswordService,
         {
-            useClass: Argon2PasswordService,
+            useClass: Argon2PasswordVerifier,
         },
     );
     container.register<IRegularUserRepository>(
