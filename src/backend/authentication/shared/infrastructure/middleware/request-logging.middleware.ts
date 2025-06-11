@@ -42,11 +42,11 @@ export class RequestLoggingMiddleware {
         const id = req.id || 'no-id';
 
         const headers: string = this.shouldLogHeaders(req)
-            ? ` [Headers: ${this.safelyLogHeaders(req.headers)}]`
+            ? ` [Headers: ${JSON.stringify(this.safelyLogHeaders(req.headers), null, 2)}]`
             : ``;
 
         const body: string = this.shouldLogBody(req)
-            ? ` [Body: ${this.sanitizeBody(req.body)}]`
+            ? ` [Body: ${JSON.stringify(this.sanitizeBody(req.body), null, 2)}]`
             : ``;
 
         this.logger.info(
@@ -94,7 +94,6 @@ export class RequestLoggingMiddleware {
                 sanitized[header] = '[REDACTED]';
             }
         });
-
         return sanitized;
     }
 }

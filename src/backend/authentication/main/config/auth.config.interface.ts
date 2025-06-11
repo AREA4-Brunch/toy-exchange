@@ -1,6 +1,6 @@
 import { IRegularUserConfig } from '../../regular-user/main/config/app.config.interface';
 import { IMiddlewareModuleConfig } from '../../shared/infrastructure/middleware/module';
-import { IAppConfig } from '../../shared/main/app/app.config.interface';
+import { IAppConfig } from '../../shared/main/config/app.config.interface';
 
 export interface IAuthenticationConfig extends IAppConfig {
     readonly api: {

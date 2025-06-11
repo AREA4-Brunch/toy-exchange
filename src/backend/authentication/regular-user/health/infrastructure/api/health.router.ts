@@ -4,7 +4,7 @@ import { inject, injectable, singleton } from 'tsyringe';
 import { RequestLoggingMiddleware } from '../../../../shared/infrastructure/middleware/request-logging.middleware';
 import { RoutesLoader } from '../../../../shared/infrastructure/routes/routes-loader.base';
 import { IHealthRoutesConfig } from '../config/health.config.interface';
-import { HEALTH_INFRASTRUCTURE_TYPES } from '../di/health-types';
+import { HEALTH_INFRASTRUCTURE_TYPES } from '../di/health.types';
 import { HealthController } from './health.controller';
 
 @singleton()

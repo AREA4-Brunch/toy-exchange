@@ -6,7 +6,7 @@ import {
     ITokenService,
 } from '../../application/services/token.service.interface';
 import { RegularUserRole } from '../../core/value-objects/regular-user-role';
-import { LOGIN_INFRASTRUCTURE_TYPES } from '../di/login-types';
+import { LOGIN_INFRASTRUCTURE_TYPES } from '../di/login.types';
 
 export interface ITokenServiceConfig {
     jwtSecretKey: string;

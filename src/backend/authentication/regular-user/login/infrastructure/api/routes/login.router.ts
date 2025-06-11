@@ -8,7 +8,7 @@ import { ResponseLoggingMiddleware } from '../../../../../shared/infrastructure/
 import { SanitizationMiddleware } from '../../../../../shared/infrastructure/middleware/sanitization.middleware';
 import { RoutesLoader } from '../../../../../shared/infrastructure/routes/routes-loader.base';
 import { ILoginRoutesConfig } from '../../config/login.config.interface';
-import { LOGIN_INFRASTRUCTURE_TYPES } from '../../di/login-types';
+import { LOGIN_INFRASTRUCTURE_TYPES } from '../../di/login.types';
 import { LoginController } from '../controllers/login.controller';
 import { loginRequestSchema } from '../request-schemas/login.schema';
 

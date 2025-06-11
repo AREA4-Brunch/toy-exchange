@@ -12,7 +12,7 @@ import {
     ILoginInfrastructureConfig,
     ILoginRoutesConfig,
 } from '../../../infrastructure/config/login.config.interface';
-import { LOGIN_INFRASTRUCTURE_TYPES } from '../../../infrastructure/di/login-types';
+import { LOGIN_INFRASTRUCTURE_TYPES } from '../../../infrastructure/di/login.types';
 import { TestRegularUserRepository } from '../../../infrastructure/repositories/test-regular-user.repository';
 import { Argon2PasswordService } from '../../../infrastructure/services/argon2.password.service';
 import {

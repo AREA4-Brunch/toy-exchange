@@ -4,7 +4,7 @@ import {
     IHealthInfrastructureConfig,
     IHealthRoutesConfig,
 } from '../../../infrastructure/config/health.config.interface';
-import { HEALTH_INFRASTRUCTURE_TYPES } from '../../../infrastructure/di/health-types';
+import { HEALTH_INFRASTRUCTURE_TYPES } from '../../../infrastructure/di/health.types';
 import { IHealthConfig } from '../../config/health.config.interface';
 
 @singleton()
