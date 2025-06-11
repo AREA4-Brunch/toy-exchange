@@ -23,7 +23,7 @@ interface PackageJson {
 interface DependencyInfo {
     dependencies: Record<string, string>;
     peerDependencies: Record<string, string>;
-    localDependencies: Record<string, string>;
+    localDependencies: Record<string, [string, string]>;
 }
 
 interface VersionInfo {
@@ -32,7 +32,12 @@ interface VersionInfo {
     path: string;
 }
 
-export type DependencyFormat = 'version' | 'filename' | 'relative' | 'bundled';
+export type DependencyFormat =
+    | 'version'
+    | 'filename'
+    | 'relative'
+    | 'bundled'
+    | 'bundled-relative';
 
 export interface IPublishOptions {
     projectRoot: string;
@@ -43,14 +48,17 @@ export interface IPublishOptions {
     newVersion?: string;
     outputDest?: string;
     selectiveCompilation?: boolean;
-    selectiveFiles?: string[]; // New: file patterns for selective compilation
+    selectiveFiles?: string[];
     selectiveIgnorePatterns?: string[];
     cleanupTempDist?: boolean;
-    dependencyFormat?: DependencyFormat;
-    bundleDependencies?: boolean;
+    bundleDeps?: {
+        dependencyFormat?: DependencyFormat;
+        enabled?: boolean;
+        libPaths?: string[];
+        outputDir?: string;
+    };
     updateClients?: boolean;
     buildBeforePublish?: boolean;
-    libPaths?: string[]; // New: configurable paths to dependency libs
 }
 
 export interface ICreatePackageOptions {
@@ -64,10 +72,12 @@ export interface ICreatePackageOptions {
     selectiveFiles?: string[];
     selectiveIgnorePatterns?: string[];
     cleanupTempDist?: boolean;
-    dependencyFormat?: DependencyFormat;
-    bundleDependencies?: boolean;
-    buildBeforePublish?: boolean;
-    libPaths?: string[];
+    bundleDeps?: {
+        dependencyFormat?: DependencyFormat;
+        enabled?: boolean;
+        libPaths?: string[];
+        outputDir?: string;
+    };
 }
 
 export interface IDistributePackageOptions {
@@ -96,12 +106,15 @@ export const createPackageTgz = async (
         selectiveCompilation = false,
         selectiveFiles = [],
         cleanupTempDist = true,
-        dependencyFormat = 'bundled',
-        bundleDependencies = true,
-        buildBeforePublish = true,
-        libPaths = [],
         selectiveIgnorePatterns = [],
+        bundleDeps = { enabled: false, dependencyFormat: 'bundled' },
     } = options;
+
+    const bundleDependencies = bundleDeps.enabled ?? false;
+    const buildBeforePublish = true; // Always build
+    const libPaths = bundleDeps.libPaths ?? [];
+    const bundleOutputDir = bundleDeps.outputDir ?? './';
+    const dependencyFormat = bundleDeps.dependencyFormat ?? 'bundled';
 
     try {
         console.log(`📦 Creating package for ${publishedLibName}...`);
@@ -114,9 +127,6 @@ export const createPackageTgz = async (
         // Initialize directories
         const distDir = path.join(projectRoot, 'dist');
         const outputDir = path.resolve(projectRoot, outputDest);
-        const stagingDir = selectiveCompilation
-            ? path.join(projectRoot, `staging.${publishedLibName}`)
-            : projectRoot;
 
         createDirIfNotExists(distDir);
         createDirIfNotExists(outputDir);
@@ -139,9 +149,15 @@ export const createPackageTgz = async (
             workingPackageJson.version = newVersion;
         }
 
+        // Always use staging for clean packaging
+        const stagingDir = path.join(
+            projectRoot,
+            `staging.${publishedLibName}`,
+        );
+        console.log(`🎯 Using staging directory: ${stagingDir}`);
+
         // Determine files to compile
         let sourceFiles: string[] = [];
-        let compilationRoot: string;
         if (selectiveCompilation) {
             console.log(`🎯 Performing selective compilation...`);
             sourceFiles = discoverDependentFiles(
@@ -151,13 +167,6 @@ export const createPackageTgz = async (
                 projectRoot,
                 selectiveIgnorePatterns,
             );
-            compilationRoot = await setupStagingEnvironment(
-                stagingDir,
-                sourceFiles,
-                projectRoot,
-                tsConfigContent,
-                workingPackageJson,
-            );
         } else {
             console.log(`🌐 Performing full compilation...`);
             sourceFiles = findFilesByPattern(
@@ -165,24 +174,37 @@ export const createPackageTgz = async (
                 projectRoot,
                 ['node_modules/**', 'dist/**'],
             );
-            compilationRoot = projectRoot;
         }
+
+        // Always setup staging environment
+        const compilationRoot = await setupStagingEnvironment(
+            stagingDir,
+            sourceFiles,
+            projectRoot,
+            tsConfigContent,
+            workingPackageJson,
+        );
 
         // Analyze dependencies
         console.log(`🔍 Analyzing dependencies...`);
-        const dependencyInfo = await analyzeDependencies({
-            sourceFiles,
-            projectRoot: compilationRoot,
-            clientProjects: [], // Empty for package creation step
-            dependencyFormat,
-            bundleDependencies,
-        });
+        const dependencyInfo = await analyzeDependencies(
+            {
+                sourceFiles,
+                projectRoot: compilationRoot,
+                clientProjects: [], // Empty for package creation step
+                dependencyFormat,
+                bundleDependencies,
+            },
+            projectRoot,
+            workingPackageJson,
+        );
 
         // Prepare final package.json for publishing
         const publishPackageJson = preparePublishPackageJson(
             workingPackageJson,
             dependencyInfo,
             pkgJsonFiles,
+            dependencyInfo.localDependencies,
         );
 
         // Build the project
@@ -191,18 +213,23 @@ export const createPackageTgz = async (
             await buildProject(
                 compilationRoot,
                 tsConfigContent,
-                selectiveCompilation,
+                true, // Always use staging approach
             );
         }
 
         // Handle dependency bundling
-        if (bundleDependencies && dependencyFormat === 'bundled') {
+        let bundledFiles: string[] = [];
+        if (
+            bundleDependencies
+            && (dependencyFormat === 'bundled'
+                || dependencyFormat === 'bundled-relative')
+        ) {
             console.log(`📦 Bundling dependencies...`);
-            await bundleLocalDependencies(
+            bundledFiles = await bundleLocalDependencies(
                 compilationRoot,
                 dependencyInfo.localDependencies,
-                [], // Empty for package creation step
                 libPaths,
+                bundleOutputDir,
             );
         }
 
@@ -212,8 +239,9 @@ export const createPackageTgz = async (
             compilationRoot,
             publishPackageJson,
             outputDir,
-            selectiveCompilation ? undefined : packageJsonPath,
         );
+
+        // No need to clean up bundled files since we're using staging - they'll be cleaned with staging dir
 
         // Update original package.json version if needed
         if (newVersion && originalPackageJson.version !== newVersion) {
@@ -224,12 +252,8 @@ export const createPackageTgz = async (
             savePackageJson(packageJsonPath, updatedOriginal);
         }
 
-        // Cleanup
-        if (
-            selectiveCompilation
-            && cleanupTempDist
-            && fs.existsSync(stagingDir)
-        ) {
+        // Cleanup staging directory
+        if (cleanupTempDist && fs.existsSync(stagingDir)) {
             console.log(`🧹 Cleaning up staging directory...`);
             fs.rmSync(stagingDir, { recursive: true, force: true });
         }
@@ -438,7 +462,7 @@ const discoverDependentFiles = (
 
     // Recursively find dependencies
     while (toProcess.size > 0) {
-        const currentFile = toProcess.values().next().value;
+        const currentFile = Array.from(toProcess.values())[0];
         if (!currentFile) {
             break;
         }
@@ -537,6 +561,9 @@ const setupStagingEnvironment = async (
             ...tsConfigContent.compilerOptions,
             outDir: './dist',
             rootDir: './',
+            declaration: true, // Generate .d.ts files
+            declarationMap: true, // Generate .d.ts.map files for better debugging
+            emitDeclarationOnly: false, // Emit both JS and .d.ts files
         },
         include: sourceFiles.map((file) => `./${file}`), // Use copied source files as include
         exclude: ['./dist/**/*', './node_modules/**/*'],
@@ -569,57 +596,68 @@ const setupStagingEnvironment = async (
     return stagingDir;
 };
 
-const analyzeDependencies = async (options: {
-    sourceFiles: string[];
-    projectRoot: string;
-    clientProjects: IClientProject[];
-    dependencyFormat: DependencyFormat;
-    bundleDependencies: boolean;
-}): Promise<DependencyInfo> => {
-    const { sourceFiles, projectRoot, clientProjects, dependencyFormat } =
-        options;
+const analyzeDependencies = async (
+    options: {
+        sourceFiles: string[];
+        projectRoot: string;
+        clientProjects: IClientProject[];
+        dependencyFormat: DependencyFormat;
+        bundleDependencies: boolean;
+    },
+    originalProjectRoot: string,
+    originalPkgJson: any,
+): Promise<DependencyInfo> => {
+    const { sourceFiles, projectRoot, dependencyFormat } = options;
 
     const externalImports = new Set<string>();
-    const localDependencies: Record<string, string> = {};
+    const localDependencies: Record<string, [string, string]> = {};
 
     // Analyze imports in source files
     for (const file of sourceFiles) {
         const fullPath = path.join(projectRoot, file);
         const content = fs.readFileSync(fullPath, 'utf8');
 
-        const importRegex = /import\s+(?:[^'"]*from\s+)?['"]([^'"]+)['"]/g;
-        let match;
+        // Match various import patterns including namespace imports
+        const importPatterns = [
+            /import\s+(?:[^'"]*from\s+)?['"]([^'"]+)['"]/g, // Standard imports
+            /require\s*\(\s*['"]([^'"]+)['"]\s*\)/g, // require() calls
+            /import\s*\*\s+as\s+\w+\s+from\s+['"]([^'"]+)['"]/g, // namespace imports
+        ];
 
-        while ((match = importRegex.exec(content)) !== null) {
-            const importPath = match[1];
+        for (const importRegex of importPatterns) {
+            let match;
+            while ((match = importRegex.exec(content)) !== null) {
+                const importPath = match[1];
 
-            if (!importPath.startsWith('.') && !importPath.startsWith('/')) {
-                const packageName = importPath.startsWith('@')
-                    ? importPath.split('/').slice(0, 2).join('/')
-                    : importPath.split('/')[0];
+                if (
+                    !importPath.startsWith('.')
+                    && !importPath.startsWith('/')
+                ) {
+                    const packageName = importPath.startsWith('@')
+                        ? importPath.split('/').slice(0, 2).join('/')
+                        : importPath.split('/')[0];
 
-                externalImports.add(packageName);
+                    externalImports.add(packageName);
+                }
             }
         }
     }
 
     // Load existing dependencies from package.json
-    const packageJsonPath = path.join(projectRoot, 'package.json');
-    const packageJson = loadPackageJson(packageJsonPath);
-
     const allDependencies = {
-        ...(packageJson.dependencies || {}),
-        ...(packageJson.devDependencies || {}),
+        ...(originalPkgJson.dependencies || {}),
+        // ...(packageJson.devDependencies || {}),
     };
 
     // Categorize dependencies
     const dependencies: Record<string, string> = {};
     const peerDependencies: Record<string, string> =
-        packageJson.peerDependencies || {};
+        originalPkgJson.peerDependencies || {};
 
     const frameworkDeps = ['typescript', 'react', 'vue', 'angular', '@types'];
 
-    for (const pkg of externalImports) {
+    // Include ALL dependencies that are actually imported in the code
+    for (const pkg of Array.from(externalImports)) {
         if (allDependencies[pkg]) {
             const isFramework = frameworkDeps.some((fw) => pkg.includes(fw));
 
@@ -631,57 +669,66 @@ const analyzeDependencies = async (options: {
                 if (depValue.startsWith('file:')) {
                     // Handle local dependencies based on format
                     localDependencies[pkg] = formatLocalDependency(
-                        pkg,
+                        originalProjectRoot,
                         depValue,
                         dependencyFormat,
-                        clientProjects,
                     );
                 } else {
                     dependencies[pkg] = depValue;
                 }
             }
+        } else {
+            console.warn(
+                `⚠️ Imported package '${pkg}' not found in package.json dependencies`,
+            );
         }
     }
 
     return {
-        dependencies: { ...dependencies, ...localDependencies },
+        dependencies,
         peerDependencies,
         localDependencies,
     };
 };
 
 const formatLocalDependency = (
-    packageName: string,
+    originalProjectRoot: string,
     originalValue: string,
     format: DependencyFormat,
-    clientProjects: IClientProject[],
-): string => {
+): [string, string] => {
     const filePath = originalValue.substring(5); // Remove 'file:' prefix
 
-    switch (format) {
-        case 'version':
-            // Extract version from filename
-            const versionMatch = filePath.match(
-                /-(\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?)\.tgz$/,
-            );
-            return versionMatch ? versionMatch[1] : '1.0.0';
+    const fmt = (): string => {
+        switch (format) {
+            case 'version':
+                // Extract version from filename
+                const versionMatch = filePath.match(
+                    /-(\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?)\.tgz$/,
+                );
+                return versionMatch ? versionMatch[1] : '1.0.0';
 
-        case 'filename':
-            // Just the filename
-            return path.basename(filePath);
+            case 'filename':
+                // Just the filename
+                return path.basename(filePath);
 
-        case 'relative':
-            // Keep original relative path
-            return originalValue;
+            case 'relative':
+                // Keep original relative path
+                return originalValue;
 
-        case 'bundled':
-            // Reference to bundled location
-            const filename = path.basename(filePath);
-            return `file:./${filename}`;
+            case 'bundled':
+                // Reference to bundled location
+                const filename = path.basename(filePath);
+                return `file:./${filename}`;
 
-        default:
-            return originalValue;
-    }
+            case 'bundled-relative':
+                return `file:./${filePath}`;
+
+            default:
+                return originalValue;
+        }
+    };
+
+    return [path.resolve(originalProjectRoot, filePath), fmt()];
 };
 
 const buildProject = async (
@@ -714,19 +761,30 @@ const buildProject = async (
 
 const bundleLocalDependencies = async (
     projectRoot: string,
-    localDependencies: Record<string, string>,
-    clientProjects: IClientProject[],
+    localDependencies: Record<string, [string, string]>,
     libPaths: string[] = [],
-): Promise<void> => {
-    const libsDir = path.join(projectRoot, 'libs');
-    createDirIfNotExists(libsDir);
+    outputDir: string = './libs',
+): Promise<string[]> => {
+    const targetDir = path.isAbsolute(outputDir)
+        ? outputDir
+        : path.join(projectRoot, outputDir);
 
-    for (const [packageName, depPath] of Object.entries(localDependencies)) {
-        if (depPath.startsWith('file:./')) {
-            const filename = depPath.substring(7); // Remove 'file:./'
+    // Only create directory if it's not the project root
+    if (outputDir !== './') {
+        createDirIfNotExists(targetDir);
+    }
 
-            if (filename.endsWith('.tgz')) {
-                // Find source file using configurable lib paths or fallback to client libs directories
+    const bundledFiles: string[] = [];
+
+    for (const [packageName, [originalPath, dstRelPath]] of Object.entries(
+        localDependencies,
+    )) {
+        if (dstRelPath.startsWith('file:./')) {
+            const filename = dstRelPath.substring('file:./'.length);
+
+            if (dstRelPath.endsWith('.tgz')) {
+                // Find source file using configurable lib paths or fallback to
+                // client libs directories
                 let sourceFound = false;
 
                 // First, check libPaths if provided
@@ -734,11 +792,12 @@ const bundleLocalDependencies = async (
                     const resolvedFiles = resolveLibPath(libPath, filename);
                     for (const resolvedFile of resolvedFiles) {
                         if (fs.existsSync(resolvedFile)) {
-                            const destPath = path.join(libsDir, filename);
+                            const destPath = path.join(targetDir, filename);
                             fs.copyFileSync(resolvedFile, destPath);
                             console.log(
                                 `📦 Bundled ${packageName}: ${filename} from ${resolvedFile}`,
                             );
+                            bundledFiles.push(filename);
                             sourceFound = true;
                             break;
                         }
@@ -746,22 +805,18 @@ const bundleLocalDependencies = async (
                     if (sourceFound) break;
                 }
 
-                // Fallback to client libs directories if not found in libPaths
+                // Fallback to package.json file paths if not found in libPaths
                 if (!sourceFound) {
-                    for (const client of clientProjects) {
-                        const sourcePath = path.join(
-                            client.targetLibsDir,
-                            filename,
+                    // Use the original file path from package.json
+                    console.log(`Searching for ${filename} in ${originalPath}`);
+                    if (fs.existsSync(originalPath)) {
+                        const destPath = path.join(targetDir, filename);
+                        fs.copyFileSync(originalPath, destPath);
+                        console.log(
+                            `📦 Bundled ${packageName}: ${filename} from package.json path ${originalPath}`,
                         );
-                        if (fs.existsSync(sourcePath)) {
-                            const destPath = path.join(libsDir, filename);
-                            fs.copyFileSync(sourcePath, destPath);
-                            console.log(
-                                `📦 Bundled ${packageName}: ${filename} from client ${client.name}`,
-                            );
-                            sourceFound = true;
-                            break;
-                        }
+                        bundledFiles.push(filename);
+                        sourceFound = true;
                     }
                 }
 
@@ -773,6 +828,8 @@ const bundleLocalDependencies = async (
             }
         }
     }
+
+    return bundledFiles;
 };
 
 // Helper function to resolve lib paths and patterns
@@ -823,12 +880,32 @@ const preparePublishPackageJson = (
     basePackageJson: PackageJson,
     dependencyInfo: DependencyInfo,
     files: string[],
+    localDependencies?: Record<string, [string, string]>,
 ): PackageJson => {
+    // Add bundled dependency files to the files array
+    const bundledFiles: string[] = [];
+    const processedLocalDeps: Record<string, string> = {};
+
+    if (localDependencies) {
+        for (const [packageName, [srcPath, dstPath]] of Object.entries(
+            localDependencies,
+        )) {
+            if (dstPath.startsWith('file:./')) {
+                const filename = dstPath.substring(7); // Remove 'file:./' to get filename
+                if (filename.endsWith('.tgz')) {
+                    bundledFiles.push(filename);
+                }
+            }
+            // Extract the dependency value (second element of tuple)
+            processedLocalDeps[packageName] = dstPath;
+        }
+    }
+
     const publishPackageJson: PackageJson = {
         name: basePackageJson.name,
         version: basePackageJson.version,
-        files: files.map((f) => f.replace(/\\/g, '/')),
-        dependencies: dependencyInfo.dependencies,
+        files: [...files.map((f) => f.replace(/\\/g, '/')), ...bundledFiles],
+        dependencies: { ...dependencyInfo.dependencies, ...processedLocalDeps },
     };
 
     if (Object.keys(dependencyInfo.peerDependencies).length > 0) {

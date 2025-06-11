@@ -22,7 +22,7 @@
         "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
     },
     "dependencies": {
-        "common": "file:libs/common-2.1.1.tgz",
+        "common": "file:libs/common-2.2.0.tgz",
         "express": "^5.1.0",
         "jsonwebtoken": "^9.0.2",
         "zod": "^3.25.42"

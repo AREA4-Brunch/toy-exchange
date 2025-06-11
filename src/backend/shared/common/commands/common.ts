@@ -1,4 +1,4 @@
-import fg from 'fast-glob';
+import * as fg from 'fast-glob';
 
 export const findFilesByPattern = (
     pattern: string,

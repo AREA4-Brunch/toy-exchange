@@ -43,10 +43,11 @@
     "dependencies": {
         "authentication-interfaces": "file:shared/libs/authentication-interfaces-1.0.0.tgz",
         "authorization": "file:shared/libs/authorization-1.3.0.tgz",
-        "common": "file:shared/libs/common-2.1.1.tgz",
+        "common": "file:shared/libs/common-2.2.0.tgz",
         "cors": "^2.8.5",
         "express": "^5.1.0",
         "jsonwebtoken": "^9.0.2",
+        "password-utils": "file:regular-user/login/libs/password-utils-1.0.0.tgz",
         "reflect-metadata": "^0.2.2",
         "tsyringe": "^4.10.0",
         "xss": "^1.0.15",

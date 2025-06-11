@@ -48,8 +48,6 @@ export const publishInterfacesOptions: IPublishOptions = {
   selectiveIgnorePatterns: ['node_modules', 'dist'],
   cleanupTempDist: true,
   outputDest: './_versions',
-  dependencyFormat: 'bundled',
-  bundleDependencies: true,
   updateClients: true,
   buildBeforePublish: true,
 };
