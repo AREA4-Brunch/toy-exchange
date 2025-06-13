@@ -84,10 +84,45 @@ const formatMicroservice = (servicePath) => {
 
 const restageFiles = (stagedFiles) => {
     try {
-        // Re-stage all originally staged files (they may have been formatted)
-        const filesToStage = stagedFiles.map(f => `"${f}"`).join(' ');
-        execSync(`git add ${filesToStage}`, { stdio: 'inherit' });
+        // Check which files still exist and which are deleted
+        const existingFiles = [];
+        const deletedFiles = [];
+        
+        for (const file of stagedFiles) {
+            if (fs.existsSync(file)) {
+                existingFiles.push(file);
+            } else {
+                // File was deleted, check if it's staged for deletion
+                try {
+                    const status = execSync(`git status --porcelain "${file}"`, { encoding: 'utf8' }).trim();
+                    if (status.startsWith('D ')) {
+                        deletedFiles.push(file);
+                    }
+                } catch (e) {
+                    // File doesn't exist and isn't tracked, skip it
+                }
+            }
+        }
+        
+        // Re-stage existing files
+        if (existingFiles.length > 0) {
+            const filesToStage = existingFiles.map(f => `"${f}"`).join(' ');
+            execSync(`git add ${filesToStage}`, { stdio: 'inherit' });
+        }
+        
+        // For deleted files, ensure they remain staged for deletion
+        if (deletedFiles.length > 0) {
+            const filesToDelete = deletedFiles.map(f => `"${f}"`).join(' ');
+            execSync(`git add ${filesToDelete}`, { stdio: 'inherit' });
+        }
+        
         console.log('📝 Files re-staged after formatting');
+        if (existingFiles.length > 0) {
+            console.log(`   • ${existingFiles.length} existing files re-staged`);
+        }
+        if (deletedFiles.length > 0) {
+            console.log(`   • ${deletedFiles.length} deleted files maintained`);
+        }
         return true;
     } catch (error) {
         console.error('❌ Failed to re-stage files:', error.message);
