@@ -24,7 +24,7 @@ export class LoginUseCase implements ILoginUseCase {
     ) {}
 
     async execute({ email, password }: ILoginInput): Promise<ILoginOutput> {
-        const user = await this.RegularUser.find({ email });
+        const user = await this.RegularUser.findLoginData(email);
         if (!user) {
             throw new LoginUserNotFoundError(email);
         }

@@ -1,17 +1,30 @@
 import { Email } from '../value-objects/email';
 import { UserId } from '../value-objects/user-id';
-import { Entity, ITimestampedProps } from './entity.base';
+import {
+    DomainEntity,
+    IDomainEntity,
+    IDomainEntityProps,
+} from './domain-entity.base';
 
-export interface IUserProps extends ITimestampedProps {
+export interface IUserProps extends IDomainEntityProps {
     email: Email;
     password: string;
     username: string;
 }
 
-export abstract class User<TProps extends IUserProps> extends Entity<
-    UserId,
-    TProps
-> {
+export interface IUser extends IDomainEntity<UserId> {
+    email: Email;
+    password: string;
+    username: string;
+
+    isNotBanned(): boolean;
+    isVerified(): boolean;
+}
+
+export abstract class User<TProps extends IUserProps>
+    extends DomainEntity<UserId, TProps>
+    implements IUser
+{
     constructor(id: UserId, props: TProps) {
         super(id, props);
     }

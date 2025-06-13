@@ -1,9 +1,12 @@
-import { RegularUser } from '../../core/entities/regular-user';
+import { RegularUserRole } from '../../core/value-objects/regular-user-role';
 
-export interface IRegularUserRepoDto {}
+export interface IFindLoginData {
+    password: string; // hashed
+    roles: RegularUserRole[];
+}
 
 export interface IRegularUserRepository {
-    find(
-        criteria: Partial<IRegularUserRepoDto>,
-    ): (RegularUser | null) | Promise<RegularUser | null>;
+    findLoginData(
+        email: string,
+    ): (IFindLoginData | undefined) | (Promise<IFindLoginData> | undefined);
 }

@@ -1,15 +1,17 @@
 import { injectable, singleton } from 'tsyringe';
-import { RegularUser } from '../../core/entities/regular-user';
+import { IFindLoginData } from '../../application/repositories/regular-user.repository.interface';
+import { RegularUserRole } from '../../core/value-objects/regular-user-role';
 import { ITestRegularUserRepoDto } from '../repositories/test-regular-user.repository';
 
 @singleton()
 @injectable()
 export class TestRegularUserMapper {
-    toRepoDto(user: RegularUser): ITestRegularUserRepoDto {
-        return {} as ITestRegularUserRepoDto;
-    }
-
-    toEntity(dto: ITestRegularUserRepoDto): RegularUser {
-        return {} as RegularUser;
+    toLoginData(
+        dto: Pick<ITestRegularUserRepoDto, 'password' | 'roles'>,
+    ): IFindLoginData {
+        return {
+            password: dto.password,
+            roles: dto.roles.map((role) => RegularUserRole.create(role)),
+        } as IFindLoginData;
     }
 }

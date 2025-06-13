@@ -84,45 +84,45 @@ const formatMicroservice = (servicePath) => {
 
 const restageFiles = (stagedFiles) => {
     try {
-        // Check which files still exist and which are deleted
+        // Get current staged files with their status
+        const stagedStatus = execSync('git diff --cached --name-status', { encoding: 'utf8' });
+        const stagedMap = new Map();
+        
+        stagedStatus.trim().split('\n').forEach(line => {
+            if (line.trim()) {
+                const [status, ...pathParts] = line.split('\t');
+                const filePath = pathParts.join('\t'); // Handle paths with tabs
+                stagedMap.set(filePath, status);
+            }
+        });
+        
         const existingFiles = [];
         const deletedFiles = [];
         
         for (const file of stagedFiles) {
-            if (fs.existsSync(file)) {
+            const status = stagedMap.get(file);
+            
+            if (status === 'D') {
+                // File is deleted, don't try to add it
+                deletedFiles.push(file);
+                console.log(`   ℹ️  Skipping deleted file: ${file}`);
+            } else if (fs.existsSync(file)) {
+                // File exists, can be re-staged
                 existingFiles.push(file);
-            } else {
-                // File was deleted, check if it's staged for deletion
-                try {
-                    const status = execSync(`git status --porcelain "${file}"`, { encoding: 'utf8' }).trim();
-                    if (status.startsWith('D ')) {
-                        deletedFiles.push(file);
-                    }
-                } catch (e) {
-                    // File doesn't exist and isn't tracked, skip it
-                }
             }
         }
         
-        // Re-stage existing files
+        // Re-stage only existing files
         if (existingFiles.length > 0) {
             const filesToStage = existingFiles.map(f => `"${f}"`).join(' ');
             execSync(`git add ${filesToStage}`, { stdio: 'inherit' });
+            console.log(`📝 Re-staged ${existingFiles.length} existing files after formatting`);
         }
         
-        // For deleted files, ensure they remain staged for deletion
         if (deletedFiles.length > 0) {
-            const filesToDelete = deletedFiles.map(f => `"${f}"`).join(' ');
-            execSync(`git add ${filesToDelete}`, { stdio: 'inherit' });
+            console.log(`ℹ️  ${deletedFiles.length} deleted files remain staged for deletion`);
         }
         
-        console.log('📝 Files re-staged after formatting');
-        if (existingFiles.length > 0) {
-            console.log(`   • ${existingFiles.length} existing files re-staged`);
-        }
-        if (deletedFiles.length > 0) {
-            console.log(`   • ${deletedFiles.length} deleted files maintained`);
-        }
         return true;
     } catch (error) {
         console.error('❌ Failed to re-stage files:', error.message);
