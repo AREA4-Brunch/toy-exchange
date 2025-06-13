@@ -46,20 +46,27 @@ export const selectiveCompile = async (
         }
 
         // Setup staging environment
+        const originalTsConfigPath = path.join(projectRoot, 'tsconfig.json');
         const compilationRoot = await setupStagingEnvironment(
             stagingDir,
             sourceFiles,
             projectRoot,
+            originalTsConfigPath,
             tsConfigTemplate,
             outputDir,
         );
 
         // Compile the project
         console.log(`🔨 Compiling ${sourceFiles.length} files...`);
-        await execAsync('npx tsc -p tsconfig.json', { cwd: compilationRoot });
+        await execAsync(
+            `cd ${projectRoot} && "node_modules/.bin/tsc" -p tsconfig.json`,
+            {
+                cwd: compilationRoot,
+            },
+        );
 
         // Copy compiled files back to original project
-        const stagingDistDir = path.join(stagingDir, 'dist');
+        const stagingDistDir = path.join(stagingDir, outputDir);
         const targetDistDir = path.resolve(projectRoot, outputDir);
 
         if (fs.existsSync(stagingDistDir)) {
@@ -196,6 +203,7 @@ const setupStagingEnvironment = async (
     stagingDir: string,
     sourceFiles: string[],
     projectRoot: string,
+    originalTsConfigPath: string,
     tsConfigTemplate?: any,
     outputDir: string = './dist',
 ): Promise<string> => {
@@ -219,20 +227,39 @@ const setupStagingEnvironment = async (
     }
 
     // Check if original tsconfig exists and use it as base
-    const originalTsConfigPath = path.join(projectRoot, 'tsconfig.json');
     let baseTsConfig: any = {};
 
     if (fs.existsSync(originalTsConfigPath)) {
         try {
-            baseTsConfig = JSON.parse(
-                fs.readFileSync(originalTsConfigPath, 'utf8'),
+            const tsConfigContent = fs.readFileSync(
+                originalTsConfigPath,
+                'utf8',
             );
-            console.log(`📋 Using original tsconfig.json as base`);
-        } catch (error) {
+
+            // Parse JSON with comments (JSONC format)
+            const parseJSONC = (content: string): any => {
+                // Remove single-line comments
+                let cleaned = content.replace(/\/\/.*$/gm, '');
+                // Remove multi-line comments
+                cleaned = cleaned.replace(/\/\*[\s\S]*?\*\//g, '');
+                // Remove trailing commas
+                cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');
+                return JSON.parse(cleaned);
+            };
+
+            baseTsConfig = parseJSONC(tsConfigContent);
+            console.log(`✅ Successfully parsed original tsconfig.json`);
+        } catch (error: any) {
             console.warn(
-                `⚠️ Failed to parse original tsconfig.json, using defaults`,
+                `⚠️ Failed to parse original tsconfig.json: ${error.message}`,
             );
+            console.warn(`📍 File path: ${originalTsConfigPath}`);
+            console.warn(`📄 Using defaults instead`);
         }
+    } else {
+        console.warn(
+            `⚠️ Original tsconfig.json not found at: ${originalTsConfigPath}`,
+        );
     }
 
     // Create staging tsconfig.json with proper Node.js and decorator support
@@ -241,7 +268,7 @@ const setupStagingEnvironment = async (
             target: 'ES2020',
             module: 'commonjs',
             lib: ['ES2020'],
-            outDir: './dist',
+            outDir: outputDir,
             rootDir: './',
             declaration: true,
             strict: true,
@@ -257,7 +284,7 @@ const setupStagingEnvironment = async (
             types: ['node'],
         },
         include: sourceFiles.map((file) => `./${file}`),
-        exclude: ['./dist/**/*', './node_modules/**/*'],
+        exclude: [`${outputDir}/**/*`, './node_modules/**/*'],
     };
 
     const stagingTsConfig = tsConfigTemplate
@@ -267,7 +294,7 @@ const setupStagingEnvironment = async (
               compilerOptions: {
                   ...baseTsConfig.compilerOptions,
                   ...tsConfigTemplate.compilerOptions,
-                  outDir: './dist',
+                  outDir: outputDir,
                   rootDir: './',
                   experimentalDecorators: true,
                   emitDecoratorMetadata: true,
@@ -276,7 +303,7 @@ const setupStagingEnvironment = async (
                   skipLibCheck: true,
               },
               include: sourceFiles.map((file) => `./${file}`),
-              exclude: ['./dist/**/*', './node_modules/**/*'],
+              exclude: [`${outputDir}/**/*`, './node_modules/**/*'],
           }
         : {
               ...baseTsConfig,
