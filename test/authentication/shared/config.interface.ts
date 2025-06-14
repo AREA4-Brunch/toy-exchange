@@ -19,10 +19,21 @@ export interface IHealthRoutesConfig {
     health: IEndpointConfig;
     test: {
         endpoint: string;
-        health: IEndpointConfig;
-        healthSomeRole: IEndpointConfig;
-        healthMultipleRoles: IEndpointConfig;
-        healthForbiddenRoles: IEndpointConfig;
+        public: IEndpointConfig;
+        authenticated: IEndpointConfig;
+        singleRole: IEndpointConfig;
+        multipleRolesAll: IEndpointConfig;
+        multipleRolesSome: IEndpointConfig;
+        forbiddenRoles: IEndpointConfig;
+        combinedRequirements: IEndpointConfig;
+        allAndSome: IEndpointConfig;
+        someAndNone: IEndpointConfig;
+        allAndNone: IEndpointConfig;
+        doubleMiddleware: IEndpointConfig;
+        adminOnly: IEndpointConfig;
+        superAdmin: IEndpointConfig;
+        moderatorOrAdmin: IEndpointConfig;
+        noBannedUsers: IEndpointConfig;
     };
 }
 

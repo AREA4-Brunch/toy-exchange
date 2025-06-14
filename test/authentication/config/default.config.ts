@@ -18,20 +18,64 @@ const api: IApiConfig = {
                 },
                 test: {
                     endpoint: '-test',
-                    health: {
-                        endpoint: '',
+                    public: {
+                        endpoint: '/public',
                         method: 'GET',
                     },
-                    healthSomeRole: {
-                        endpoint: '/some-role',
+                    authenticated: {
+                        endpoint: '/authenticated',
                         method: 'GET',
                     },
-                    healthMultipleRoles: {
-                        endpoint: '/multiple-roles',
+                    singleRole: {
+                        endpoint: '/single-role',
                         method: 'GET',
                     },
-                    healthForbiddenRoles: {
+                    multipleRolesAll: {
+                        endpoint: '/multiple-roles-all',
+                        method: 'GET',
+                    },
+                    multipleRolesSome: {
+                        endpoint: '/multiple-roles-some',
+                        method: 'GET',
+                    },
+                    forbiddenRoles: {
                         endpoint: '/forbidden-roles',
+                        method: 'GET',
+                    },
+                    combinedRequirements: {
+                        endpoint: '/combined-requirements',
+                        method: 'GET',
+                    },
+                    allAndSome: {
+                        endpoint: '/all-and-some',
+                        method: 'GET',
+                    },
+                    someAndNone: {
+                        endpoint: '/some-and-none',
+                        method: 'GET',
+                    },
+                    allAndNone: {
+                        endpoint: '/all-and-none',
+                        method: 'GET',
+                    },
+                    doubleMiddleware: {
+                        endpoint: '/double-middleware',
+                        method: 'GET',
+                    },
+                    adminOnly: {
+                        endpoint: '/admin-only',
+                        method: 'GET',
+                    },
+                    superAdmin: {
+                        endpoint: '/super-admin',
+                        method: 'GET',
+                    },
+                    moderatorOrAdmin: {
+                        endpoint: '/moderator-or-admin',
+                        method: 'GET',
+                    },
+                    noBannedUsers: {
+                        endpoint: '/no-banned-users',
                         method: 'GET',
                     },
                 },

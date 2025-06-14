@@ -14,20 +14,80 @@ export const getLoginUrl = async (config?: IApiConfig): Promise<IUrl> => {
     return buildUrl('authentication.regularUser.login.login', config);
 };
 
+export const getPublicUrl = async (config?: IApiConfig): Promise<IUrl> => {
+    return buildUrl('authentication.regularUser.health.test.public', config);
+};
+
+export const getAuthenticatedUrl = async (config?: IApiConfig): Promise<IUrl> => {
+    return buildUrl('authentication.regularUser.health.test.authenticated', config);
+};
+
+export const getSingleRoleUrl = async (config?: IApiConfig): Promise<IUrl> => {
+    return buildUrl('authentication.regularUser.health.test.singleRole', config);
+};
+
+export const getMultipleRolesAllUrl = async (config?: IApiConfig): Promise<IUrl> => {
+    return buildUrl('authentication.regularUser.health.test.multipleRolesAll', config);
+};
+
+export const getMultipleRolesSomeUrl = async (config?: IApiConfig): Promise<IUrl> => {
+    return buildUrl('authentication.regularUser.health.test.multipleRolesSome', config);
+};
+
+export const getForbiddenRolesUrl = async (config?: IApiConfig): Promise<IUrl> => {
+    return buildUrl('authentication.regularUser.health.test.forbiddenRoles', config);
+};
+
+export const getCombinedRequirementsUrl = async (config?: IApiConfig): Promise<IUrl> => {
+    return buildUrl('authentication.regularUser.health.test.combinedRequirements', config);
+};
+
+export const getAdminOnlyUrl = async (config?: IApiConfig): Promise<IUrl> => {
+    return buildUrl('authentication.regularUser.health.test.adminOnly', config);
+};
+
+export const getSuperAdminUrl = async (config?: IApiConfig): Promise<IUrl> => {
+    return buildUrl('authentication.regularUser.health.test.superAdmin', config);
+};
+
+export const getModeratorOrAdminUrl = async (config?: IApiConfig): Promise<IUrl> => {
+    return buildUrl('authentication.regularUser.health.test.moderatorOrAdmin', config);
+};
+
+export const getNoBannedUsersUrl = async (config?: IApiConfig): Promise<IUrl> => {
+    return buildUrl('authentication.regularUser.health.test.noBannedUsers', config);
+};
+
+export const getAllAndSomeUrl = async (config?: IApiConfig): Promise<IUrl> => {
+    return buildUrl('authentication.regularUser.health.test.allAndSome', config);
+};
+
+export const getSomeAndNoneUrl = async (config?: IApiConfig): Promise<IUrl> => {
+    return buildUrl('authentication.regularUser.health.test.someAndNone', config);
+};
+
+export const getAllAndNoneUrl = async (config?: IApiConfig): Promise<IUrl> => {
+    return buildUrl('authentication.regularUser.health.test.allAndNone', config);
+};
+
+export const getDoubleMiddlewareUrl = async (config?: IApiConfig): Promise<IUrl> => {
+    return buildUrl('authentication.regularUser.health.test.doubleMiddleware', config);
+};
+
 export const getPingSecuredUrl = async (config?: IApiConfig): Promise<IUrl> => {
-    return buildUrl('authentication.regularUser.health.test.health', config);
+    return getSingleRoleUrl(config);
 };
 
 export const getPingSecuredSomeRole = async (config?: IApiConfig): Promise<IUrl> => {
-    return buildUrl('authentication.regularUser.health.test.healthSomeRole', config);
+    return getMultipleRolesSomeUrl(config);
 };
 
 export const getPingSecuredMultipleRoles = async (config?: IApiConfig): Promise<IUrl> => {
-    return buildUrl('authentication.regularUser.health.test.healthMultipleRoles', config);
+    return getMultipleRolesAllUrl(config);
 };
 
 export const getPingSecuredForbiddenRoles = async (config?: IApiConfig): Promise<IUrl> => {
-    return buildUrl('authentication.regularUser.health.test.healthForbiddenRoles', config);
+    return getForbiddenRolesUrl(config);
 };
 
 const buildUrl = async (propertyPath: string, obj: any): Promise<IUrl> => {

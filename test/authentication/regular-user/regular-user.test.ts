@@ -62,7 +62,7 @@ describe('RegularUser', () => {
         });
 
         it(`${ID++}. should correctly identify a banned user`, () => {
-            userProps.roles = [RegularUserRole.create('blocked')];
+            userProps.roles = [RegularUserRole.create('banned')];
             const user = new RegularUser(userId, userProps);
             expect(user.isNotBanned()).toBe(false);
         });
@@ -70,9 +70,9 @@ describe('RegularUser', () => {
 
     describe('RegularUserRole', () => {
         it(`${ID++}. should create a role from a valid TRegularUserRole`, () => {
-            const role = RegularUserRole.create('blocked');
-            expect(role.value).toBe('blocked');
-            expect(RegularUserRole.isValidRole('blocked')).toBe(true);
+            const role = RegularUserRole.create('banned');
+            expect(role.value).toBe('banned');
+            expect(RegularUserRole.isValidRole('banned')).toBe(true);
         });
 
         it(`${ID++}. should create a role from a valid test TRegularUserRole`, () => {
@@ -82,8 +82,8 @@ describe('RegularUser', () => {
         });
 
         it(`${ID++}. should create a role from a valid string`, () => {
-            const role = RegularUserRole.createFromString('blocked');
-            expect(role.value).toBe('blocked');
+            const role = RegularUserRole.createFromString('banned');
+            expect(role.value).toBe('banned');
         });
 
         it(`${ID++}. should create a role from a valid test string`, () => {
@@ -100,26 +100,26 @@ describe('RegularUser', () => {
         });
 
         it(`${ID++}. should return the same instance for the same role (flyweight pattern)`, () => {
-            const role1 = RegularUserRole.create('blocked');
-            const role2 = RegularUserRole.create('blocked');
+            const role1 = RegularUserRole.create('banned');
+            const role2 = RegularUserRole.create('banned');
             expect(role1).toBe(role2);
         });
 
         it(`${ID++}. should return the same instance for the same role diff factories (flyweight pattern)`, () => {
-            const role1 = RegularUserRole.create('blocked');
-            const role2 = RegularUserRole.createFromString('blocked');
+            const role1 = RegularUserRole.create('banned');
+            const role2 = RegularUserRole.createFromString('banned');
             expect(role1).toBe(role2);
         });
 
         it(`${ID++}. should properly handle includes check with flyweight instances`, () => {
-            const blockedRole = RegularUserRole.create('blocked');
+            const blockedRole = RegularUserRole.create('banned');
             const unverifiedRole = RegularUserRole.create('unverified');
 
             const roles = [blockedRole];
 
             expect(roles.includes(blockedRole)).toBe(true);
             expect(roles.includes(unverifiedRole)).toBe(false);
-            expect(roles.includes(RegularUserRole.create('blocked'))).toBe(true);
+            expect(roles.includes(RegularUserRole.create('banned'))).toBe(true);
         });
     });
 
@@ -127,7 +127,7 @@ describe('RegularUser', () => {
         it(`${ID++}. should handle multiple roles correctly`, () => {
             userProps.roles = [
                 RegularUserRole.create('unverified'),
-                RegularUserRole.create('blocked'),
+                RegularUserRole.create('banned'),
             ];
 
             const user = new RegularUser(userId, userProps);
