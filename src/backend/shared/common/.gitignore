@@ -1,6 +1,7 @@
 node_modules/
 
-/dist/*
+dist/
+staging.*/
 
 package-lock.json
 

@@ -2,7 +2,7 @@ import { exec } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
-import { findFilesByPattern } from './common';
+import { findFilesByPattern, setupStagingEnvironment } from './common';
 import { IClientProject } from './config.interface';
 
 const execAsync = util.promisify(exec);
@@ -177,13 +177,15 @@ export const createPackageTgz = async (
         }
 
         // Always setup staging environment
-        const compilationRoot = await setupStagingEnvironment(
+        const compilationRoot = await setupStagingEnvironment({
             stagingDir,
             sourceFiles,
             projectRoot,
-            tsConfigContent,
-            workingPackageJson,
-        );
+            originalTsConfigPath: path.join(projectRoot, 'tsconfig.json'),
+            tsConfigTemplate: tsConfigContent,
+            outputDir: './dist',
+            packageJson: workingPackageJson,
+        });
 
         // Analyze dependencies
         console.log(`🔍 Analyzing dependencies...`);
@@ -528,72 +530,6 @@ const resolveImportPath = (
         }
     }
     return null;
-};
-
-const setupStagingEnvironment = async (
-    stagingDir: string,
-    sourceFiles: string[],
-    projectRoot: string,
-    tsConfigContent: any,
-    packageJson: PackageJson,
-): Promise<string> => {
-    // Clean and create staging directory
-    if (fs.existsSync(stagingDir)) {
-        fs.rmSync(stagingDir, { recursive: true, force: true });
-    }
-    fs.mkdirSync(stagingDir, { recursive: true });
-
-    // Copy source files
-    for (const file of sourceFiles) {
-        const sourcePath = path.join(projectRoot, file);
-        const destPath = path.join(stagingDir, file);
-        const destDir = path.dirname(destPath);
-
-        if (!fs.existsSync(destDir)) {
-            fs.mkdirSync(destDir, { recursive: true });
-        }
-
-        fs.copyFileSync(sourcePath, destPath);
-    } // Create staging tsconfig.json
-    const stagingTsConfig = {
-        ...tsConfigContent,
-        compilerOptions: {
-            ...tsConfigContent.compilerOptions,
-            outDir: './dist',
-            rootDir: './',
-            declaration: true, // Generate .d.ts files
-            declarationMap: true, // Generate .d.ts.map files for better debugging
-            emitDeclarationOnly: false, // Emit both JS and .d.ts files
-        },
-        include: sourceFiles.map((file) => `./${file}`), // Use copied source files as include
-        exclude: ['./dist/**/*', './node_modules/**/*'],
-    };
-    delete stagingTsConfig.extends;
-
-    fs.writeFileSync(
-        path.join(stagingDir, 'tsconfig.json'),
-        JSON.stringify(stagingTsConfig, null, 2),
-    );
-
-    // Create minimal package.json for staging
-    const stagingPackageJson = {
-        name: packageJson.name,
-        version: packageJson.version,
-        dependencies: {},
-    };
-
-    fs.writeFileSync(
-        path.join(stagingDir, 'package.json'),
-        JSON.stringify(stagingPackageJson, null, 2),
-    );
-
-    // Copy README if needed
-    const readmePath = path.join(projectRoot, 'README.md');
-    if (fs.existsSync(readmePath)) {
-        fs.copyFileSync(readmePath, path.join(stagingDir, 'README.md'));
-    }
-
-    return stagingDir;
 };
 
 const analyzeDependencies = async (
