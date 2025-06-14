@@ -7,7 +7,7 @@ import * as path from 'path';
 import {
     publishInterfacesOptions,
     selfPublishInterfacesOptions,
-} from './config';
+} from './commands.config';
 
 const main = async () => {
     try {

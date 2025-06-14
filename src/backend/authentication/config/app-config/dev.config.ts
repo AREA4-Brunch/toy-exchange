@@ -77,8 +77,8 @@ const sharedConfig: ISharedConfig = {
 export const config: IAuthenticationConfig = {
   server: {
     http: {
-      port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
-      hostname: process.env.HOSTNAME || 'localhost',
+      port: process.env.APP_PORT ? parseInt(process.env.APP_PORT) : 3000,
+      hostname: process.env.APP_HOSTNAME || 'localhost',
     },
   },
   api: {

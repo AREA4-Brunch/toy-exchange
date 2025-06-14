@@ -2,6 +2,8 @@
  * Example of calling the script:
  *    set APP_CONFIG=path/to/config/app-config/default.config.js
  * && node server.js
+ * or
+js * node.server.js ./dist/config/app-config/test.config.js
  */
 
 import express from 'express';
@@ -36,7 +38,11 @@ const main = async (): Promise<void> => {
 const loadConfigFromFile = async (
     fallbackConfig: IAuthenticationConfig,
 ): Promise<IAuthenticationConfig> => {
-    const confPathRaw = process.env.APP_CONFIG;
+    const confPathRaw =
+        process.argv.length >= 3 ? process.argv[2] : process.env.APP_CONFIG;
+
+    console.log(`Args: ${JSON.stringify(process.argv, null, 2)}`);
+
     if (!confPathRaw) {
         return fallbackConfig;
     }

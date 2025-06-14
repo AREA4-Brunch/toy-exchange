@@ -22,6 +22,7 @@ export interface IHealthRoutesConfig {
         health: IEndpointConfig;
         healthSomeRole: IEndpointConfig;
         healthMultipleRoles: IEndpointConfig;
+        healthForbiddenRoles: IEndpointConfig;
     };
 }
 

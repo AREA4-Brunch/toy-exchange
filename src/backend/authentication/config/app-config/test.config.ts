@@ -49,7 +49,7 @@ export const config: IAuthenticationConfig = {
     ...devConfig.server,
     http: {
       ...devConfig.server.http,
-      port: process.env.PORT ? parseInt(process.env.PORT) : 3001,
+      port: process.env.APP_PORT ? parseInt(process.env.APP_PORT) : 3001,
     },
   },
 };
