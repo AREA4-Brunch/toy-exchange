@@ -1,5 +1,5 @@
 import { inject, injectable, singleton } from 'tsyringe';
-import { LOGIN_APPLICATION_TYPES } from '../di/login-application.types';
+import { LOGIN_APPLICATION_TYPES } from '../di/login.types';
 import { IRegularUserRepository } from '../repositories/regular-user.repository.interface';
 import { IPasswordService } from '../services/password.service.interface';
 import { ITokenService } from '../services/token.service.interface';

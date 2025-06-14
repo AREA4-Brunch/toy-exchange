@@ -1,47 +1,59 @@
-/// cause it's cool :)
-export class TestQueryBuilder<T, K extends keyof T = never> {
+/**
+ * cause it's cool :)
+ * @internal - This exists for testing purposes only.
+ */
+export class InMemoryQueryBuilder<T, K extends keyof T = never> {
     protected constructor(
         private readonly db: T[],
         private criteria: Partial<T> = {},
         private projection: K[] = [],
     ) {}
 
-    /// explicitly create with T = never since no projection is set yet
-    public static create<T>(db: T[]): TestQueryBuilder<T, never> {
-        return new TestQueryBuilder<T, never>(db);
+    // explicitly create with T = never since no projection is set yet
+    public static create<T>(db: T[]): InMemoryQueryBuilder<T, never> {
+        return new InMemoryQueryBuilder<T, never>(db);
     }
 
-    /// Adds new fields to the projection while keeping the return
-    /// types in sync with the projection
+    /**
+     * Adds new fields to the projection while keeping the return
+     * types in sync with the projection.
+     * @returns TestQueryBuilder of new type, with updated projection
+     */
     protected static createProjectionExtension<
         T,
         KNew extends keyof T,
         KOld extends keyof T,
     >(
-        builder: TestQueryBuilder<T, KOld>,
+        builder: InMemoryQueryBuilder<T, KOld>,
         addedProjection: KNew[],
-    ): TestQueryBuilder<T, KOld | KNew> | TestQueryBuilder<T, KNew> {
+    ): InMemoryQueryBuilder<T, KOld | KNew> | InMemoryQueryBuilder<T, KNew> {
         if (addedProjection.length === 0) {
             throw new Error(
                 `Projection extension requires changes in projection.`,
             );
         }
 
-        const instance = new TestQueryBuilder<T, KNew | KOld>(builder.db);
+        const instance = new InMemoryQueryBuilder<T, KNew | KOld>(builder.db);
         instance.criteria = builder.criteria;
         instance.projection = [...builder.projection, ...addedProjection];
         return instance;
     }
 
-    /// can be called multiple times to add more fields to projected result
+    /**
+     * Can be called multiple times to add more fields to projected result
+     */
     public select<KSpecific extends keyof T>(
         ...fields: KSpecific[]
-    ): TestQueryBuilder<T, K | KSpecific> | TestQueryBuilder<T, KSpecific> {
-        return TestQueryBuilder.createProjectionExtension(this, fields);
+    ):
+        | InMemoryQueryBuilder<T, K | KSpecific>
+        | InMemoryQueryBuilder<T, KSpecific> {
+        return InMemoryQueryBuilder.createProjectionExtension(this, fields);
     }
 
-    /// can be called multiple times to add more criteria to filter results
-    public where(criteria: Partial<T>): TestQueryBuilder<T, K> {
+    /**
+     * Can be called multiple times to add more criteria to filter results
+     */
+    public where(criteria: Partial<T>): InMemoryQueryBuilder<T, K> {
         this.criteria = { ...this.criteria, ...criteria };
         return this;
     }
@@ -49,7 +61,7 @@ export class TestQueryBuilder<T, K extends keyof T = never> {
     // !important: `[K] extends [never]` notation, not `K extends never`
     public first(): ([K] extends [never] ? T : Pick<T, K>) | undefined {
         const datum = this.db.find((datum) => this.isValidMatch(datum));
-        return datum ? this.project(datum) : undefined;
+        return datum && this.project(datum);
     }
 
     // !important: `[K] extends [never]` notation, not `K extends never`

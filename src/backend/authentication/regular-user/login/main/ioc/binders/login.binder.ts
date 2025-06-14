@@ -2,7 +2,7 @@ import { Argon2PasswordVerifier } from 'password-utils/dist/infrastructure/argon
 import { DependencyContainer, injectable, singleton } from 'tsyringe';
 import { IIoCBinder } from '../../../../../shared/main/ioc/binders/ioc-binder.interface';
 import { IConfigLoginApplication } from '../../../application/config/login.config.interface';
-import { LOGIN_APPLICATION_TYPES } from '../../../application/di/login-application.types';
+import { LOGIN_APPLICATION_TYPES } from '../../../application/di/login.types';
 import { IRegularUserRepository } from '../../../application/repositories/regular-user.repository.interface';
 import { IPasswordService } from '../../../application/services/password.service.interface';
 import { ITokenService } from '../../../application/services/token.service.interface';
@@ -14,7 +14,7 @@ import {
     ILoginRoutesConfig,
 } from '../../../infrastructure/config/login.config.interface';
 import { LOGIN_INFRASTRUCTURE_TYPES } from '../../../infrastructure/di/login.types';
-import { TestRegularUserRepository } from '../../../infrastructure/repositories/test-regular-user.repository';
+import { RegularUserInMemoryRepo } from '../../../infrastructure/persistance/repositories/regular-user.in-mem.repository';
 import {
     ITokenServiceConfig,
     JwtTokenService,
@@ -70,7 +70,7 @@ const infrastructure = (
     container.register<IRegularUserRepository>(
         LOGIN_APPLICATION_TYPES.RegularUserRepository,
         {
-            useClass: TestRegularUserRepository,
+            useClass: RegularUserInMemoryRepo,
         },
     );
 };

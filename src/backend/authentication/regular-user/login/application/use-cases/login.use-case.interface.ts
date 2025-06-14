@@ -8,7 +8,7 @@ export interface ILoginOutput {
 }
 
 export interface ILoginUseCase {
-    execute(input: ILoginInput): ILoginOutput | Promise<ILoginOutput>;
+    execute(input: ILoginInput): Promise<ILoginOutput>;
 }
 
 export class LoginUserNotFoundError extends Error {

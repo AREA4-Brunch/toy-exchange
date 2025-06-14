@@ -2,22 +2,20 @@ import { injectable, singleton } from 'tsyringe';
 import {
     IFindLoginData,
     IRegularUserRepository,
-} from '../../application/repositories/regular-user.repository.interface';
-import { TestRegularUserMapper } from '../mappers/test-regular-user.mapper';
-import { TestQueryBuilder } from './test-query-builder';
+} from '../../../application/repositories/regular-user.repository.interface';
+import { RegularUserInMemoryMapper } from '../mappers/regular-user.in-mem.mapper';
+import { IRegularUserInMemoryModel } from '../models/regular-user.in-mem.model';
+import { InMemoryQueryBuilder } from './query-builder.in-mem';
 
-export interface ITestRegularUserRepoDto {
-    roles: string[];
-    email: string;
-    password: string; // hashed
-}
-
+/**
+ * @internal - This exists for testing purposes only.
+ */
 @injectable()
 @singleton()
-export class TestRegularUserRepository implements IRegularUserRepository {
-    private readonly db: ITestRegularUserRepoDto[] = [];
+export class RegularUserInMemoryRepo implements IRegularUserRepository {
+    private readonly db: IRegularUserInMemoryModel[] = [];
 
-    constructor(private readonly mapper: TestRegularUserMapper) {
+    constructor(private readonly mapper: RegularUserInMemoryMapper) {
         this.db = this.initDB();
     }
 
@@ -29,7 +27,7 @@ export class TestRegularUserRepository implements IRegularUserRepository {
         return data ? this.mapper.toLoginData(data) : undefined;
     }
 
-    private initDB(): ITestRegularUserRepoDto[] {
+    private initDB(): IRegularUserInMemoryModel[] {
         return [
             {
                 email: 'test@test.com',
@@ -62,7 +60,7 @@ export class TestRegularUserRepository implements IRegularUserRepository {
         ];
     }
 
-    private query(): TestQueryBuilder<ITestRegularUserRepoDto, never> {
-        return TestQueryBuilder.create<ITestRegularUserRepoDto>(this.db);
+    private query(): InMemoryQueryBuilder<IRegularUserInMemoryModel, never> {
+        return InMemoryQueryBuilder.create<IRegularUserInMemoryModel>(this.db);
     }
 }
