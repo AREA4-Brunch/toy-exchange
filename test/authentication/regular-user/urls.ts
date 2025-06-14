@@ -26,6 +26,10 @@ export const getPingSecuredMultipleRoles = async (config?: IApiConfig): Promise<
     return buildUrl('authentication.regularUser.health.test.healthMultipleRoles', config);
 };
 
+export const getPingSecuredForbiddenRoles = async (config?: IApiConfig): Promise<IUrl> => {
+    return buildUrl('authentication.regularUser.health.test.healthForbiddenRoles', config);
+};
+
 const buildUrl = async (propertyPath: string, obj: any): Promise<IUrl> => {
     obj = obj || (await ConfigManager.getInstance().apiConfig());
     if (!obj) throw new Error('Cannot build url of undefined/null obj.');

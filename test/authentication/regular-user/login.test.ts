@@ -6,7 +6,14 @@ import {
     generateTestCredentialsNoRoles,
     generateTestCredentialsSomeRole,
 } from './common';
-import { getLoginUrl, getPingSecuredSomeRole, getPingSecuredUrl, IUrl } from './urls';
+import {
+    getLoginUrl,
+    getPingSecuredForbiddenRoles,
+    getPingSecuredMultipleRoles,
+    getPingSecuredUrl,
+    getPingUrl,
+    IUrl,
+} from './urls';
 
 describe('Login API', () => {
     let api: AxiosInstance;
@@ -67,59 +74,113 @@ describe('Login API', () => {
             authToken = '';
         });
 
-        it(`${ID++}. should fail due to missing auth header`, async () => {
+        it(`${ID++}. should fail accessing protected endpoint due to missing auth header`, async () => {
             const protectedResponse = await api.request({
                 ...(await getPingSecuredUrl()),
                 headers: {},
             });
+            console.log(`Response: ${JSON.stringify(protectedResponse.data, null, 2)}`);
             expect(protectedResponse.status).toBe(401);
-            expect(protectedResponse.data).toStrictEqual({
+            expect(protectedResponse.data).toEqual({
                 errMsg: `Authorization header is missing.`,
             });
         });
 
-        it(`${ID++}. should fail due to invalid auth header`, async () => {
+        it(`${ID++}. should fail accessing protected endpoint due to invalid auth header`, async () => {
             const protectedResponse = await api.request({
                 ...(await getPingSecuredUrl()),
                 headers: {
                     Authorization: `Beare`,
                 },
             });
+            console.log(`Response: ${JSON.stringify(protectedResponse.data, null, 2)}`);
             expect(protectedResponse.status).toBe(401);
-            expect(protectedResponse.data).toStrictEqual({
+            expect(protectedResponse.data).toEqual({
                 errMsg: `Authorization header is invalid.`,
             });
         });
 
-        it(`${ID++}. should fail due to invalid auth token`, async () => {
+        it(`${ID++}. should fail accessing protected endpoint due to missing token`, async () => {
+            const protectedResponse = await api.request({
+                ...(await getPingSecuredUrl()),
+                headers: { Authorization: `Bearer ` },
+            });
+            console.log(`Response: ${JSON.stringify(protectedResponse.data, null, 2)}`);
+            expect(protectedResponse.status).toBe(401);
+            expect(protectedResponse.data).toEqual({
+                errMsg: `Authorization header is invalid.`,
+            });
+        });
+
+        it(`${ID++}. should fail accessing protected endpoint due to invalid auth token`, async () => {
             const protectedResponse = await api.request({
                 ...(await getPingSecuredUrl()),
                 headers: {
                     Authorization: `Bearer InvalidToken`,
                 },
             });
+            console.log(`Response: ${JSON.stringify(protectedResponse.data, null, 2)}`);
             expect(protectedResponse.status).toBe(401);
-            expect(protectedResponse.data).toStrictEqual({
+            expect(protectedResponse.data).toEqual({
                 errMsg: `Invalid token.`,
             });
         });
 
-        it(`${ID++}. should fail due to expired token`, async () => {
+        it(`${ID++}. should fail due to incorrect email`, async () => {
+            const loginResponse = await api.request({
+                ...(await getLoginUrl()),
+                data: { ...generateTestCredentials(), email: 'non@existant.com' },
+            });
+            expect(loginResponse.status).toBe(401);
+            expect(loginResponse.data.data).toBeUndefined();
+            expect(loginResponse.data.success).toBe(false);
+            expect(loginResponse.data.message).toEqual('Wrong username or password.');
+        });
+
+        it(`${ID++}. should fail due to incorrect password`, async () => {
+            const loginResponse = await api.request({
+                ...(await getLoginUrl()),
+                data: { ...generateTestCredentials(), password: 'non-existant' },
+            });
+            expect(loginResponse.status).toBe(401);
+            expect(loginResponse.data.data).toBeUndefined();
+            expect(loginResponse.data.success).toBe(false);
+            expect(loginResponse.data.message).toEqual('Wrong username or password.');
+        });
+
+        it(`${ID++}. should fail due to incorrect email and password`, async () => {
+            const loginResponse = await api.request({
+                ...(await getLoginUrl()),
+                data: {
+                    ...generateTestCredentials(),
+                    email: 'non@existant.com',
+                    password: 'non-existant',
+                },
+            });
+            expect(loginResponse.status).toBe(401);
+            expect(loginResponse.data.data).toBeUndefined();
+            expect(loginResponse.data.success).toBe(false);
+            expect(loginResponse.data.message).toEqual('Wrong username or password.');
+        });
+
+        it(`${ID++}. should fail accessing protected endpoint due to expired token`, async () => {
             const loginResponse = await api.request({
                 ...(await getLoginUrl()),
                 data: generateTestCredentials(),
             });
             expect(loginResponse.status).toBe(200);
-            authToken = loginResponse.data.token;
+            authToken = loginResponse.data.data.token;
             expect(authToken).toBeDefined();
+            expect(loginResponse.data.success).toBe(true);
             // simulate token expiration
             await new Promise((resolve) => setTimeout(resolve, 5001));
             const protectedResponse = await api.request({
                 ...(await getPingSecuredUrl()),
                 headers: { Authorization: `Bearer ${authToken}` },
             });
+            console.log(`Response: ${JSON.stringify(protectedResponse.data, null, 2)}`);
             expect(protectedResponse.status).toBe(401);
-            expect(protectedResponse.data).toStrictEqual({
+            expect(protectedResponse.data).toEqual({
                 errMsg: `Token expired.`,
             });
         }, 10000);
@@ -130,32 +191,36 @@ describe('Login API', () => {
                 data: generateTestCredentialsNoRoles(),
             });
             expect(loginResponse.status).toBe(200);
-            authToken = loginResponse.data.token;
+            authToken = loginResponse.data.data.token;
             expect(authToken).toBeDefined();
+            expect(loginResponse.data.success).toBe(true);
             const protectedResponse = await api.request({
                 ...(await getPingSecuredUrl()),
                 headers: { Authorization: `Bearer ${authToken}` },
             });
+            console.log(`Response: ${JSON.stringify(protectedResponse.data, null, 2)}`);
             expect(protectedResponse.status).toBe(403);
-            expect(protectedResponse.data).toStrictEqual({
+            expect(protectedResponse.data).toEqual({
                 errMsg: 'Token has insufficient roles.',
             });
         });
 
-        it(`${ID++}. should fail due to lack of 1 of couple allowed roles to access protected endpoint`, async () => {
+        it(`${ID++}. should fail due to lack of 1 of couple required roles to access protected endpoint`, async () => {
             const loginResponse = await api.request({
                 ...(await getLoginUrl()),
                 data: generateTestCredentialsSomeRole(),
             });
             expect(loginResponse.status).toBe(200);
-            authToken = loginResponse.data.token;
+            authToken = loginResponse.data.data.token;
             expect(authToken).toBeDefined();
+            expect(loginResponse.data.success).toBe(true);
             const protectedResponse = await api.request({
-                ...(await getPingSecuredSomeRole()),
+                ...(await getPingSecuredMultipleRoles()),
                 headers: { Authorization: `Bearer ${authToken}` },
             });
+            console.log(`Response: ${JSON.stringify(protectedResponse.data, null, 2)}`);
             expect(protectedResponse.status).toBe(403);
-            expect(protectedResponse.data).toStrictEqual({
+            expect(protectedResponse.data).toEqual({
                 errMsg: 'Token has insufficient roles.',
             });
         });
@@ -166,14 +231,17 @@ describe('Login API', () => {
                 data: generateTestCredentialsMultipleRoles(),
             });
             expect(loginResponse.status).toBe(200);
-            authToken = loginResponse.data.token;
+            authToken = loginResponse.data.data.token;
             expect(authToken).toBeDefined();
+            expect(loginResponse.data.success).toBe(true);
             const protectedResponse = await api.request({
-                ...(await getPingSecuredUrl()),
+                ...(await getPingSecuredForbiddenRoles()),
                 headers: { Authorization: `Bearer ${authToken}` },
             });
+            console.log(`Response: ${JSON.stringify(protectedResponse.data, null, 2)}`);
             expect(protectedResponse.status).toBe(403);
-            expect(protectedResponse.data).toStrictEqual({
+            console.log(`Received: ${JSON.stringify(protectedResponse.data.data, null, 2)}`);
+            expect(protectedResponse.data).toEqual({
                 errMsg: 'Token has forbidden roles.',
             });
         });
@@ -184,14 +252,16 @@ describe('Login API', () => {
                 data: generateTestCredentials(),
             });
             expect(loginResponse.status).toBe(200);
-            authToken = loginResponse.data.token;
+            authToken = loginResponse.data.data.token;
             expect(authToken).toBeDefined();
+            expect(loginResponse.data.success).toBe(true);
             const protectedResponse = await api.request({
                 ...(await getPingSecuredUrl()),
                 headers: { Authorization: `Bearer ${authToken}` },
             });
+            console.log(`Response: ${JSON.stringify(protectedResponse.data, null, 2)}`);
             expect(protectedResponse.status).toBe(200);
-            expect(protectedResponse.data).toStrictEqual({
+            expect(protectedResponse.data).toEqual({
                 msg: 'Pong!',
             });
         });
@@ -202,14 +272,56 @@ describe('Login API', () => {
                 data: generateTestCredentialsMultipleRoles(),
             });
             expect(loginResponse.status).toBe(200);
-            authToken = loginResponse.data.token;
+            authToken = loginResponse.data.data.token;
             expect(authToken).toBeDefined();
+            expect(loginResponse.data.success).toBe(true);
+            const protectedResponse = await api.request({
+                ...(await getPingSecuredMultipleRoles()),
+                headers: { Authorization: `Bearer ${authToken}` },
+            });
+            console.log(`Response: ${JSON.stringify(protectedResponse.data, null, 2)}`);
+            expect(protectedResponse.status).toBe(200);
+            expect(protectedResponse.data).toEqual({
+                msg: 'Pong!',
+            });
+        });
+
+        it(`${ID++}. should be able to access single role protected endpoint with multi roles account after login`, async () => {
+            const loginResponse = await api.request({
+                ...(await getLoginUrl()),
+                data: generateTestCredentialsMultipleRoles(),
+            });
+            expect(loginResponse.status).toBe(200);
+            authToken = loginResponse.data.data.token;
+            expect(authToken).toBeDefined();
+            expect(loginResponse.data.success).toBe(true);
             const protectedResponse = await api.request({
                 ...(await getPingSecuredUrl()),
                 headers: { Authorization: `Bearer ${authToken}` },
             });
+            console.log(`Response: ${JSON.stringify(protectedResponse.data, null, 2)}`);
             expect(protectedResponse.status).toBe(200);
-            expect(protectedResponse.data).toStrictEqual({
+            expect(protectedResponse.data).toEqual({
+                msg: 'Pong!',
+            });
+        });
+
+        it(`${ID++}. should be able to access no role protected endpoint with multi roles account after login`, async () => {
+            const loginResponse = await api.request({
+                ...(await getLoginUrl()),
+                data: generateTestCredentialsMultipleRoles(),
+            });
+            expect(loginResponse.status).toBe(200);
+            authToken = loginResponse.data.data.token;
+            expect(authToken).toBeDefined();
+            expect(loginResponse.data.success).toBe(true);
+            const protectedResponse = await api.request({
+                ...(await getPingUrl()),
+                headers: { Authorization: `Bearer ${authToken}` },
+            });
+            console.log(`Response: ${JSON.stringify(protectedResponse.data, null, 2)}`);
+            expect(protectedResponse.status).toBe(200);
+            expect(protectedResponse.data).toEqual({
                 msg: 'Pong!',
             });
         });

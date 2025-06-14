@@ -2,11 +2,11 @@
     "name": "test-authentication",
     "version": "1.0.0",
     "scripts": {
-        "clean": "rimraf ./dist",
-        "build": "npx tsc --outDir ./dist",
         "test": "npm run clean && npm run build && npm run _start",
         "test:watch": "node ./dist/test/authentication/commands/test-runner.js --watch",
         "test:coverage": "node ./dist/test/authentication/commands/test-runner.js --coverage",
+        "clean": "node -e \"require('fs').rmSync('./dist', {recursive: true, force: true})\"",
+        "build": "npx tsc --outDir ./dist",
         "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
         "killer-start": "(npm run check-need-cleanup || npm run cleanup) && npm run _start",
         "check-need-cleanup": "cross-env TEST_CONFIG=./dist/test/authentication/config/default.config.js node ./dist/test/authentication/commands/check-port.js",
@@ -19,7 +19,6 @@
     "dependencies": {
         "child_process": "^1.0.2",
         "concurrently": "^9.1.2",
-        "rimraf": "^6.0.1",
         "tsyringe": "^4.10.0",
         "vitest": "^3.1.2",
         "wait-on": "^8.0.3"
@@ -32,7 +31,6 @@
         "detect-port-alt": "^1.1.6",
         "kill-port": "^2.0.1",
         "prettier": "^3.5.3",
-        "ts-node": "^10.9.2",
         "typescript": "^5.8.3"
     }
 }
