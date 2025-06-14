@@ -1,39 +1,62 @@
-import { UserRole } from '../../../../shared/core/value-objects/user-role';
+import {
+    _TUserRole,
+    UserRole,
+} from '../../../../shared/core/value-objects/user-role';
 
-export class RegularUserRole extends UserRole<RegularUserRole.Type> {
+const _TRegularUserRole = [..._TUserRole, 'regular-user'] as const;
+
+/**
+ * @internal - This exists for testing purposes only.
+ */
+const _TTestRegularUserRole = [
+    ..._TUserRole,
+    'test',
+    'test-admin',
+    'test-1',
+    'test-some-1',
+    'test-some-2',
+    'test-none-1',
+    'test-none-2',
+    'test-admin',
+    'test-super-admin',
+    'test-moderator',
+    'test-suspended',
+] as const;
+
+/** At all times contains both production and testing roles. */
+export type TRegularUserRole =
+    | (typeof _TRegularUserRole)[number]
+    | (typeof _TTestRegularUserRole)[number];
+
+export class RegularUserRole extends UserRole<TRegularUserRole> {
     private static readonly registry = new Map<
-        RegularUserRole.Type,
+        TRegularUserRole,
         RegularUserRole
     >();
 
-    protected constructor(value: RegularUserRole.Type) {
+    /** At all times contains both production and testing roles. */
+    private static readonly validRoles = new Set<TRegularUserRole>([
+        ..._TRegularUserRole,
+        ..._TTestRegularUserRole,
+    ]);
+
+    protected constructor(value: TRegularUserRole) {
         super(value);
-        this.registerInstance(value, this);
+        RegularUserRole.registry.set(value, this);
     }
 
-    public static create(role: RegularUserRole.Type): RegularUserRole {
+    public static create(role: TRegularUserRole): RegularUserRole {
         return RegularUserRole.registry.get(role) ?? new RegularUserRole(role);
     }
 
-    public static fromString(value: string): RegularUserRole {
-        const role = RegularUserRole.getRole<RegularUserRole.Type>(
-            value,
-            RegularUserRole.Type,
-        );
-        if (role === undefined) {
-            throw new Error(`Invalid role: ${value}`);
+    public static createFromString(role: string): RegularUserRole {
+        if (!RegularUserRole.isValidRole(role)) {
+            throw new Error(`Invalid role: ${role}`);
         }
-        return RegularUserRole.create(role);
+        return RegularUserRole.create(role as TRegularUserRole);
     }
 
-    protected registerInstance(
-        role: RegularUserRole.Type,
-        instance: RegularUserRole,
-    ): void {
-        RegularUserRole.registry.set(role, instance);
+    public static isValidRole(role: string): role is TRegularUserRole {
+        return RegularUserRole.validRoles.has(role as TRegularUserRole);
     }
-}
-
-export namespace RegularUserRole {
-    export class Type extends UserRole.Type {}
 }

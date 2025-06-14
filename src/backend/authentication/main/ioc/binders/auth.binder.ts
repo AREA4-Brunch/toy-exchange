@@ -1,5 +1,5 @@
-import { AuthorizationModule } from 'authorization';
-import { AuthorizationMiddleware } from 'authorization/dist/authorization/middleware';
+import { AuthorizationMiddleware } from 'authorization/dist/infrastructure/middleware';
+import { AuthorizationModule } from 'authorization/dist/infrastructure/module';
 import { DependencyContainer, injectable, singleton } from 'tsyringe';
 import { ErrorHandlerMiddleware } from '../../../shared/infrastructure/middleware/error-handler.middleware';
 import { MiddlewareModule } from '../../../shared/infrastructure/middleware/module';
@@ -12,7 +12,7 @@ import { IIoCBinder } from '../../../shared/main/ioc/binders/ioc-binder.interfac
 import {
     IAuthenticationConfig,
     ISharedConfig,
-} from '../../config/auth-config.interface';
+} from '../../config/auth.config.interface';
 
 @singleton()
 @injectable()

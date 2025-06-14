@@ -3,7 +3,7 @@ import express from 'express';
 import { injectable, InjectionToken, singleton } from 'tsyringe';
 import { RegularUserIoC } from '../../../regular-user/main/ioc/ioc/regular-user.ioc';
 import { ModuleIoC } from '../../../shared/main/ioc/ioc/ioc-initializer.base';
-import { IAuthenticationConfig } from '../../config/auth-config.interface';
+import { IAuthenticationConfig } from '../../config/auth.config.interface';
 import { AuthenticationBinder } from '../binders/auth.binder';
 
 @singleton()

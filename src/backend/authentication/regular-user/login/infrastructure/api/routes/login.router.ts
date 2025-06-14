@@ -6,14 +6,15 @@ import { RequestMetadataMiddleware } from '../../../../../shared/infrastructure/
 import { RequestValidationMiddleware } from '../../../../../shared/infrastructure/middleware/request-validation.middleware';
 import { ResponseLoggingMiddleware } from '../../../../../shared/infrastructure/middleware/response-logging.middleware';
 import { SanitizationMiddleware } from '../../../../../shared/infrastructure/middleware/sanitization.middleware';
-import { ILoginRoutesConfig } from '../../config/login-config.interface';
-import { LOGIN_INFRASTRUCTURE_TYPES } from '../../di/login-types';
+import { RoutesLoader } from '../../../../../shared/infrastructure/routes/routes-loader.base';
+import { ILoginRoutesConfig } from '../../config/login.config.interface';
+import { LOGIN_INFRASTRUCTURE_TYPES } from '../../di/login.types';
 import { LoginController } from '../controllers/login.controller';
 import { loginRequestSchema } from '../request-schemas/login.schema';
 
 @singleton()
 @injectable()
-export class LoginRouter {
+export class LoginRouter extends RoutesLoader<ILoginRoutesConfig> {
     constructor(
         @inject(LOGIN_INFRASTRUCTURE_TYPES.RoutesConfig)
         private readonly routesConfig: ILoginRoutesConfig,
@@ -22,11 +23,13 @@ export class LoginRouter {
         private readonly requestLogging: RequestLoggingMiddleware,
         private readonly responseLogging: ResponseLoggingMiddleware,
         private readonly errorHandler: ErrorHandlerMiddleware,
-        private readonly requestValidation: RequestValidationMiddleware,
+        private readonly reqValidation: RequestValidationMiddleware,
         private readonly loginController: LoginController,
-    ) {}
+    ) {
+        super();
+    }
 
-    public getRouters(): { path: string; router: express.Router }[] {
+    protected getRouters(): { path: string; router: express.Router }[] {
         return [
             {
                 path: this.routesConfig.apiBasePath,
@@ -37,21 +40,19 @@ export class LoginRouter {
 
     private createLoginRouter(): express.Router {
         const login = express.Router();
-
         login.use(this.sanitization.createSanitizeEntireBody());
         login.use(this.requestMetadata.createRequestMetadata());
         login.use(this.requestLogging.createLogRequest());
         login.use(this.responseLogging.createLogResponse());
-        login.use(
-            this.requestValidation.createValidateRequest(loginRequestSchema),
-        );
 
         login
             .route(``)
-            .post((req, res) => this.loginController.login(req, res));
+            .post(
+                this.reqValidation.createValidateRequest(loginRequestSchema),
+                (req, res) => this.loginController.login(req, res),
+            );
 
         login.use(this.errorHandler.createHandleUncaughtExceptions());
-
         return login;
     }
 }
