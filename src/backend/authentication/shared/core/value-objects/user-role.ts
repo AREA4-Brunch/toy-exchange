@@ -23,5 +23,5 @@ export abstract class UserRole<TValue extends string>
     }
 }
 
-export const _TUserRole = ['blocked', 'unverified'] as const;
+export const _TUserRole = ['banned', 'unverified'] as const;
 export type TUserRole = (typeof _TUserRole)[number];

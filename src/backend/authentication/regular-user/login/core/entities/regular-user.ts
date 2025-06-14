@@ -18,7 +18,7 @@ export class RegularUser extends User<IRegularUserProps> {
     }
 
     public isNotBanned(): boolean {
-        return !this.roles.includes(RegularUserRole.create('blocked'));
+        return !this.roles.includes(RegularUserRole.create('banned'));
     }
 
     public isVerified(): boolean {

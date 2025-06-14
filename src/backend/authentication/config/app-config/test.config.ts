@@ -17,7 +17,7 @@ export const config: IAuthenticationConfig = {
             ...devConfig.regularUser.features.login.infrastructure.tokenService,
             jwtSecretKey: process.env.JWT_SECRET_KEY || defaultJwtSecretKey,
             jwtTokenDurationSecs: Number(
-              process.env.JWT_TOKEN_DURATION_SECS || 5,
+              process.env.JWT_TOKEN_DURATION_SECS || 60 * 60,
             ),
           },
         },

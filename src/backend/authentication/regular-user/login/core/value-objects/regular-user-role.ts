@@ -11,10 +11,16 @@ const _TRegularUserRole = [..._TUserRole, 'regular-user'] as const;
 const _TTestRegularUserRole = [
     ..._TUserRole,
     'test',
+    'test-admin',
     'test-1',
     'test-some-1',
     'test-some-2',
+    'test-none-1',
     'test-none-2',
+    'test-admin',
+    'test-super-admin',
+    'test-moderator',
+    'test-suspended',
 ] as const;
 
 /** At all times contains both production and testing roles. */

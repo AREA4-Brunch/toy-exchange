@@ -1,7 +1,7 @@
 import { inject, injectable, InjectionToken, singleton } from 'tsyringe';
 import { FeatureIoC } from '../../../../../shared/main/ioc/ioc/ioc-initializer.base';
 import { HealthRouter } from '../../../infrastructure/api/health.router';
-import { TestHealthRouter } from '../../../infrastructure/api/test.health.router';
+import { TestRoleCheckingRouter } from '../../../infrastructure/api/test.role-checking.router';
 import { IHealthRoutesConfig } from '../../../infrastructure/config/health.config.interface';
 import { IHealthConfig } from '../../config/health.config.interface';
 import { HealthBinder } from '../binders/health.binder';
@@ -28,7 +28,7 @@ const getRouters = (conf: IHealthRoutesConfig): [InjectionToken, string][] => {
         [HealthRouter, 'infrastructure.api.routes'],
     ];
     if (conf.testEnabled) {
-        routers.push([TestHealthRouter, 'infrastructure.api.routes']);
+        routers.push([TestRoleCheckingRouter, 'infrastructure.api.routes']);
     }
     return routers;
 };

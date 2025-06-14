@@ -57,6 +57,48 @@ export class RegularUserInMemoryRepo implements IRegularUserRepository {
                 password:
                     '$argon2id$v=19$m=262144,t=1,p=2$z0biLO9xSPTxq5aC+nG4Ew$HWpJD0FOpq0XiastASO160lm5KNjpEcfxrRLu4N2p1E',
             },
+            {
+                email: 'admin@test.com',
+                roles: ['test-admin'],
+                // password: 'password123',
+                password:
+                    '$argon2id$v=19$m=262144,t=1,p=2$z0biLO9xSPTxq5aC+nG4Ew$HWpJD0FOpq0XiastASO160lm5KNjpEcfxrRLu4N2p1E',
+            },
+            {
+                email: 'super-admin@test.com',
+                roles: ['test-admin', 'test-super-admin'],
+                // password: 'password123',
+                password:
+                    '$argon2id$v=19$m=262144,t=1,p=2$z0biLO9xSPTxq5aC+nG4Ew$HWpJD0FOpq0XiastASO160lm5KNjpEcfxrRLu4N2p1E',
+            },
+            {
+                email: 'moderator@test.com',
+                roles: ['test-moderator'],
+                // password: 'password123',
+                password:
+                    '$argon2id$v=19$m=262144,t=1,p=2$z0biLO9xSPTxq5aC+nG4Ew$HWpJD0FOpq0XiastASO160lm5KNjpEcfxrRLu4N2p1E',
+            },
+            {
+                email: 'banned@test.com',
+                roles: ['regular-user', 'banned'],
+                // password: 'password123',
+                password:
+                    '$argon2id$v=19$m=262144,t=1,p=2$z0biLO9xSPTxq5aC+nG4Ew$HWpJD0FOpq0XiastASO160lm5KNjpEcfxrRLu4N2p1E',
+            },
+            {
+                email: 'moderator-admin@test.com',
+                roles: ['test-moderator', 'test-admin'],
+                // password: 'password123',
+                password:
+                    '$argon2id$v=19$m=262144,t=1,p=2$z0biLO9xSPTxq5aC+nG4Ew$HWpJD0FOpq0XiastASO160lm5KNjpEcfxrRLu4N2p1E',
+            },
+            {
+                email: 'suspended@test.com',
+                roles: ['regular-user', 'test-suspended'],
+                // password: 'password123',
+                password:
+                    '$argon2id$v=19$m=262144,t=1,p=2$z0biLO9xSPTxq5aC+nG4Ew$HWpJD0FOpq0XiastASO160lm5KNjpEcfxrRLu4N2p1E',
+            },
         ];
     }
 
