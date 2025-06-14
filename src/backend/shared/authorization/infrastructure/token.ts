@@ -17,15 +17,24 @@ export class AuthTokenDataInterpreter {
         AuthTokenDataSchema.parse(data);
     }
 
-    public hasAllRoles(roles: Set<string>) {
-        return this.data.roles.every((role) => roles.has(role));
+    public hasAllRoles(roles_: Set<string>) {
+        if (roles_.size === 0) return true;
+        const roles = new Set(roles_);
+        for (const userRole of this.data.roles) {
+            if (roles.delete(userRole) && roles.size === 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public hasSomeRoles(roles: Set<string>) {
+        if (roles.size === 0) return true;
         return this.data.roles.some((role) => roles.has(role));
     }
 
     public hasNoRoles(roles: Set<string>) {
+        if (roles.size === 0) return true;
         return !this.data.roles.some((role) => roles.has(role));
     }
 }
