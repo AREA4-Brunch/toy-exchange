@@ -1,21 +1,16 @@
 import {
   IAuthenticationConfig,
   ISharedConfig,
-} from '../../main/config/auth-config.interface';
-import { IHealthConfig } from '../../regular-user/health/main/config/health-config.interface';
-import { ILoginConfig } from '../../regular-user/login/main/config/login-config.interface';
-import { IRegularUserConfig } from '../../regular-user/main/config/app-config.interface';
+} from '../../main/config/auth.config.interface';
+import { IHealthConfig } from '../../regular-user/health/main/config/health.config.interface';
+import { ILoginConfig } from '../../regular-user/login/main/config/login.config.interface';
+import { IRegularUserConfig } from '../../regular-user/main/config/app.config.interface';
 
 const defaultJwtSecretKey = `07885db471baa1ce5672c7843e309818cfe43cbaadc76133c21213d98fc8c3d3`;
 
 const loginConfig: ILoginConfig = {
   core: {},
-  application: {
-    tokenService: {
-      jwtSecretKey: process.env.JWT_SECRET_KEY || defaultJwtSecretKey,
-      jwtTokenDurationSecs: Number(process.env.JWT_TOKEN_DURATION_SECS || 3600),
-    },
-  },
+  application: {},
   infrastructure: {
     api: {
       routes: {
@@ -24,6 +19,10 @@ const loginConfig: ILoginConfig = {
         staticContents: [],
       },
       middleware: {},
+    },
+    tokenService: {
+      jwtSecretKey: process.env.JWT_SECRET_KEY || defaultJwtSecretKey,
+      jwtTokenDurationSecs: Number(process.env.JWT_TOKEN_DURATION_SECS || 3600),
     },
   },
 };
@@ -35,6 +34,7 @@ const healthConfig: IHealthConfig = {
         apiBasePath: '/health',
         staticBasePath: '/static',
         staticContents: [],
+        testEnabled: false,
       },
     },
   },
@@ -77,8 +77,8 @@ const sharedConfig: ISharedConfig = {
 export const config: IAuthenticationConfig = {
   server: {
     http: {
-      port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
-      hostname: process.env.HOSTNAME || 'localhost',
+      port: process.env.APP_PORT ? parseInt(process.env.APP_PORT) : 3000,
+      hostname: process.env.APP_HOSTNAME || 'localhost',
     },
   },
   api: {

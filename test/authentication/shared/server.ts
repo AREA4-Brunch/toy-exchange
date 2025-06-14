@@ -14,9 +14,9 @@ export const initializeServerConfig = (): IServerRunnerConfig => {
     console.info(`Server config path: ${config.configPath}`);
     // Set environment variables for child processes
     process.env.NODE_ENV = 'test';
-    process.env.PORT = `${config.port}`;
-    process.env.HOSTNAME = config.hostname;
-    process.env.APP_CONFIG = config.configPath;
+    process.env.APP_PORT = `${config.port}`;
+    process.env.APP_HOSTNAME = config.hostname;
+    // process.env.APP_CONFIG = config.configPath;
     return config;
 };
 
@@ -43,11 +43,14 @@ export const startServer = (config: IServerRunnerConfig): ChildProcess => {
         const normalizedPath = path.normalize(config.serverDir);
         console.log(`Using normalized path: ${normalizedPath}`);
 
-        const server = spawn(npmCmd, ['run', 'start:test'], {
+        const server = spawn(npmCmd, ['run', 'start:test', `"${config.configPath}"`], {
             cwd: normalizedPath,
-            env: process.env,
+            env: {
+                ...process.env,
+                JWT_TOKEN_DURATION_SECS: '5',
+            },
             stdio: 'inherit',
-            shell: true, // use shell to handle any path issues
+            shell: true,
         });
 
         server.on('error', (err) => {

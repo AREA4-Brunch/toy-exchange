@@ -5,17 +5,22 @@
     "main": "dist/server.js",
     "types": "dist/server.d.ts",
     "scripts": {
-        "start": "npm run clean && npm run build && npm run serve",
-        "start:dev": "npm run clean && npm run build && npm run serve",
-        "start:test": "npm run clean && npm run build && npm run serve",
-        "serve": "node dist/server.js",
-        "build": "npx tsc",
-        "clean": "rimraf ./dist",
+        "start": "sh commands/start.sh",
+        "start:dev": "sh commands/start.dev.sh",
+        "start:test": "sh commands/start.test.sh",
+        "serve": "sh commands/serve.sh",
+        "build": "sh commands/build.sh",
+        "build:interfaces": "sh commands/build.interfaces.sh -- ",
+        "build:selective": "sh command/build.selective.sh",
+        "clean": "sh commands/clean.sh",
         "install:docker:prod": "npm install --omit=dev",
         "install:docker:build": "npm install typescript",
         "test": "echo \"Error: no test specified\" && exit 1",
         "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
-        "regular-user:gen-jwt": "node dist/regular-user/commands/generate-jwt-secret-key.js"
+        "regular-user:gen-jwt": "sh regular-user/commands/gen-jwt.sh",
+        "regular-user:publish-interfaces": "sh regular-user/commands/publish-interfaces.sh",
+        "regular-user:publish-interfaces:self": "sh regular-user/commands/publish-interfaces.self.sh",
+        "regular-user:build:commands": "sh regular-user/commands/build.selective.sh commands"
     },
     "author": "Aleksandar Radenkovic (Sale)",
     "license": "UNLICENSED",
@@ -36,14 +41,19 @@
         "typescript": "^5.8.3"
     },
     "dependencies": {
-        "authorization": "file:shared/libs/authorization-1.1.0.tgz",
+        "authentication-interfaces": "file:shared/libs/authentication-interfaces-1.0.0.tgz",
+        "authorization": "file:shared/libs/authorization-1.3.1.tgz",
+        "common": "file:shared/libs/common-2.2.2.tgz",
         "cors": "^2.8.5",
         "express": "^5.1.0",
         "jsonwebtoken": "^9.0.2",
+        "password-utils": "file:regular-user/login/libs/password-utils-1.0.0.tgz",
         "reflect-metadata": "^0.2.2",
-        "rimraf": "^6.0.1",
         "tsyringe": "^4.10.0",
         "xss": "^1.0.15",
         "zod": "^3.24.4"
-    }
+    },
+    "files": [
+        "dist/"
+    ]
 }

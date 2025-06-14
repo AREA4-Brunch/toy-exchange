@@ -1,15 +1,22 @@
 import { IDomainEvent } from '../events/domain-event.interface';
 import { Identifier } from '../value-objects/identifier';
-import { BasicEntity } from './basic-entity.base';
+import { Entity, IEntity } from './entity.base';
 
-export abstract class TrackableEntity<
-    TId extends Identifier<unknown>,
-    TProps,
-> extends BasicEntity<TId, TProps> {
+export interface ITrackableEntity<TId extends Identifier<unknown>>
+    extends IEntity<TId> {
+    addDomainEvent(domainEvent: IDomainEvent): void;
+    clearEvents(): void;
+    getDomainEvents(): IDomainEvent[];
+}
+
+export abstract class TrackableEntity<TId extends Identifier<unknown>>
+    extends Entity<TId>
+    implements ITrackableEntity<TId>
+{
     protected domainEvents: IDomainEvent[] = [];
 
-    constructor(id: TId, props: TProps = {} as TProps) {
-        super(id, props);
+    constructor(id: TId) {
+        super(id);
     }
 
     public addDomainEvent(domainEvent: IDomainEvent): void {
@@ -18,5 +25,9 @@ export abstract class TrackableEntity<
 
     public clearEvents(): void {
         this.domainEvents = [];
+    }
+
+    public getDomainEvents(): IDomainEvent[] {
+        return [...this.domainEvents];
     }
 }

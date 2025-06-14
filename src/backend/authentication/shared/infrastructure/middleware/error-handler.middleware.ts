@@ -21,8 +21,7 @@ export class ErrorHandlerMiddleware {
         res: express.Response,
         next: express.NextFunction,
     ) {
-        // res.status(500).json({ err_msg: err.message });
-        res.status(500).end();
+        res.status(500).json({ error: true, message: 'Internal Server Error' });
         this.logger.error(`Uncaught Error: ${err}`);
     }
 }

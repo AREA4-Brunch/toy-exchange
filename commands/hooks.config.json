@@ -1,0 +1,56 @@
+{
+  "microservices": {
+    "src/backend/authentication": {
+      "command": "npm run format",
+      "type": "node",
+      "description": "Authentication microservice"
+    },
+    "src/backend/shared/authorization": {
+      "command": "npm run format",
+      "type": "node",
+      "description": "Authorization utilities"
+    },
+    "src/backend/shared/common": {
+      "command": "npm run format",
+      "type": "node",
+      "description": "Common utilities"
+    },
+    "src/backend/shared/password-utils": {
+      "command": "npm run format",
+      "type": "node",
+      "description": "Password utilities"
+    },
+    "test/authentication": {
+      "command": "npm run format",
+      "type": "node",
+      "description": "Authentication tests"
+    }
+  },
+  "globalSettings": {
+    "timeout": 60000,
+    "verbose": true,
+    "failOnError": true
+  },
+  "examples": {
+    "python": {
+      "command": "black . && isort .",
+      "type": "python"
+    },
+    "go": {
+      "command": "gofmt -w .",
+      "type": "go"
+    },
+    "rust": {
+      "command": "cargo fmt",
+      "type": "rust"
+    },
+    "dotnet": {
+      "command": "dotnet format",
+      "type": "csharp"
+    },
+    "java": {
+      "command": "mvn spotless:apply",
+      "type": "java"
+    }
+  }
+}

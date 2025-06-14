@@ -1,7 +1,7 @@
 import { Identifier } from './identifier';
 
 export class UserId extends Identifier<string> {
-    protected constructor(value: string) {
+    public constructor(value: string) {
         super(value);
     }
 
