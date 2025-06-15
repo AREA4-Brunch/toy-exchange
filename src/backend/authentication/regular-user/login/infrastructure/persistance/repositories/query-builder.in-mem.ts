@@ -42,12 +42,14 @@ export class InMemoryQueryBuilder<T, K extends keyof T = never> {
     /**
      * Can be called multiple times to add more fields to projected result
      */
-    public select<KSpecific extends keyof T>(
-        ...fields: KSpecific[]
-    ):
+    // prettier-ignore
+    public select<KSpecific extends keyof T>(...fields: KSpecific[]):
         | InMemoryQueryBuilder<T, K | KSpecific>
-        | InMemoryQueryBuilder<T, KSpecific> {
-        return InMemoryQueryBuilder.createProjectionExtension(this, fields);
+        | InMemoryQueryBuilder<T, KSpecific>
+    {
+        return fields.length === 0
+            ? (this as InMemoryQueryBuilder<T, K | KSpecific>)
+            : InMemoryQueryBuilder.createProjectionExtension(this, fields);
     }
 
     /**
