@@ -98,7 +98,7 @@ const rootDir = path.resolve(
 );
 
 const serverDir = path.resolve(
-    process.env.SERVER_DIR ?? path.join(rootDir, 'src', 'backend', 'authentication'),
+    process.env.SERVER_DIR ?? path.join(rootDir, 'development', 'backend', 'authentication'),
 );
 
 const testDir = path.resolve(process.env.TEST_DIR ?? path.join(rootDir, 'test', 'authentication'));
