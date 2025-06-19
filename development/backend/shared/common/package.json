@@ -1,6 +1,6 @@
 {
     "name": "common",
-    "version": "2.2.2",
+    "version": "2.2.3",
     "description": "Common code used in shared/",
     "homepage": "https://github.com/AREA4-Brunch/toy-exchange#readme",
     "bugs": {

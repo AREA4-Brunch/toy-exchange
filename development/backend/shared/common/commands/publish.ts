@@ -978,6 +978,8 @@ const distributeToClients = async (
                     packageInfo,
                     targetPath,
                 );
+            } else {
+                console.log(`   ⏭️ ${client.name} has no package.json to update`);
             }
 
             // Clean up old versions
@@ -1041,7 +1043,7 @@ const cleanupOldVersions = async (
     currentVersion: string,
 ): Promise<void> => {
     try {
-        const files = fs.readdirSync(libsDir);
+        const files: string[] = fs.readdirSync(libsDir);
         const oldFiles = files.filter(
             (file) =>
                 file.startsWith(`${packageName}-`)
