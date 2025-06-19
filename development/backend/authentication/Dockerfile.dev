@@ -1,0 +1,29 @@
+FROM node:current-alpine
+
+RUN mkdir -p /usr/service
+WORKDIR /usr/service
+
+# RUN npm install -g npm@latest
+
+COPY ./package.json ./
+COPY ./package-lock.json ./
+COPY ./commands/install.non-local-deps.sh ./commands/
+
+# install libs that do not have local libs as dependencies
+COPY ./shared/libs/*.tgz ./shared/libs/
+RUN npm run _install:non-local-deps
+
+COPY ./shared ./shared
+COPY ./regular-user ./regular-user
+COPY ./main ./main
+COPY ./commands ./commands
+COPY ./config ./config
+COPY ./server.ts ./server.ts
+COPY ./tsconfig.json ./tsconfig.json
+
+# install custom libs
+RUN npm run _install:local-deps
+
+RUN npm run clean
+RUN npm run build
+CMD [ "npm", "run", "serve" ]

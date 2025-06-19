@@ -1,3 +1,3 @@
 #!/bin/sh
-echo "Building selective compile for authentication service..."
+echo "Selective compilation for regular user of authentication service..."
 node "$(dirname "$0")/selective-compile.js" "$@"

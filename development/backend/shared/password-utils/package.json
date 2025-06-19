@@ -27,7 +27,7 @@
     "dependencies": {
         "argon2": "^0.43.0",
         "authentication-interfaces": "file:libs/authentication-interfaces-1.0.0.tgz",
-        "common": "file:libs/common-2.2.2.tgz"
+        "common": "file:libs/common-2.2.3.tgz"
     },
     "devDependencies": {
         "@types/node": "^22.15.30",

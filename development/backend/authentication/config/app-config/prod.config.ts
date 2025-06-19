@@ -6,7 +6,7 @@ import { IHealthConfig } from '../../regular-user/health/main/config/health.conf
 import { ILoginConfig } from '../../regular-user/login/main/config/login.config.interface';
 import { IRegularUserConfig } from '../../regular-user/main/config/app.config.interface';
 
-const defaultJwtSecretKey = `07885db471baa1ce5672c7843e309818cfe43cbaadc76133c21213d98fc8c3d3`;
+const defaultJwtSecretKey = `1151ed58911dd2acdaedfc6e4d3e681d522574ca41a65c89d04912c2afeb67b3`;
 
 const loginConfig: ILoginConfig = {
   core: {},
@@ -58,7 +58,7 @@ const sharedConfig: ISharedConfig = {
     requestMetadata: {},
     requestLogging: {
       logger: console,
-      logLevel: 'detailed',
+      logLevel: 'basic',
       fieldsToRedact: ['password', 'token'],
     },
     responseLogging: {
@@ -77,7 +77,7 @@ const sharedConfig: ISharedConfig = {
 export const config: IAuthenticationConfig = {
   server: {
     http: {
-      port: process.env.APP_PORT ? parseInt(process.env.APP_PORT) : 3001,
+      port: process.env.APP_PORT ? parseInt(process.env.APP_PORT) : 3000,
       hostname: process.env.APP_HOSTNAME || '0.0.0.0',
     },
   },

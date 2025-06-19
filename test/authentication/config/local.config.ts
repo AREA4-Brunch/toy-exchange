@@ -1,7 +1,7 @@
 import path from 'path';
 import { IApiConfig, ITestConfig } from '../shared/config.interface';
 
-const PORT = parseInt(process.env.APP_PORT || '3001');
+const PORT = parseInt(process.env.APP_PORT || '3002');
 const HOSTNAME = process.env.APP_HOSTNAME || 'localhost';
 
 const api: IApiConfig = {

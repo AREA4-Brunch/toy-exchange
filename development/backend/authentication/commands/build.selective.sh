@@ -1,3 +1,3 @@
 #!/bin/sh
-echo "Building selective authentication commands..."
+echo "Selective authentication compilation..."
 "$(dirname "$0")/../regular-user/commands/build.selective.sh"
