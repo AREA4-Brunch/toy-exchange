@@ -1,0 +1,35 @@
+{
+    "name": "common",
+    "version": "2.2.3",
+    "description": "Common code used in shared/",
+    "homepage": "https://github.com/AREA4-Brunch/toy-exchange#readme",
+    "bugs": {
+        "url": "https://github.com/AREA4-Brunch/toy-exchange/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/AREA4-Brunch/toy-exchange.git"
+    },
+    "license": "UNLICENSED",
+    "author": "Aleksandar Radenkovic (Sale)",
+    "type": "commonjs",
+    "main": "index.js",
+    "scripts": {
+        "publish": "npm run clean && npm run build && node dist/_commands/publish.js",
+        "publish:self": "npm run clean && npm run build && node dist/commands/publish-self.js",
+        "build": "npx tsc",
+        "clean": "node -e \"require('fs').rmSync('./dist', {recursive: true, force: true})\"",
+        "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
+    },
+    "devDependencies": {
+        "@types/node": "^22.15.30",
+        "prettier": "^3.5.3",
+        "typescript": "^5.8.3"
+    },
+    "files": [
+        "dist/"
+    ],
+    "dependencies": {
+        "fast-glob": "^3.3.3"
+    }
+}

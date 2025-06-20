@@ -112,11 +112,19 @@ const restageFiles = (stagedFiles) => {
             }
         }
         
-        // Re-stage only existing files
+        // Re-stage only existing files - one by one to avoid command line length limits
         if (existingFiles.length > 0) {
-            const filesToStage = existingFiles.map(f => `"${f}"`).join(' ');
-            execSync(`git add ${filesToStage}`, { stdio: 'inherit' });
-            console.log(`📝 Re-staged ${existingFiles.length} existing files after formatting`);
+            let successCount = 0;
+            for (const file of existingFiles) {
+                try {
+                    execSync(`git add "${file}"`, { stdio: 'pipe' });
+                    successCount++;
+                } catch (error) {
+                    console.error(`   ⚠️  Failed to re-stage file: ${file}`);
+                    console.error(`   Error: ${error.message}`);
+                }
+            }
+            console.log(`📝 Re-staged ${successCount}/${existingFiles.length} existing files after formatting`);
         }
         
         if (deletedFiles.length > 0) {

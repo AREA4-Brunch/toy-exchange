@@ -1,6 +1,6 @@
 /**
  * basically equivalent to:
- * netstat -ano | findstr :3001
+ * netstat -ano | findstr :3002
  * but loads in the port from the config file
  */
 

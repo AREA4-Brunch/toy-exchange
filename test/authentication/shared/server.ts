@@ -2,7 +2,7 @@ import { ChildProcess, exec, spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import waitOn from 'wait-on';
-import defaultConfig from '../config/default.config';
+import defaultConfig from '../config/local.config';
 import { IServerRunnerConfig } from './config.interface';
 
 /**
