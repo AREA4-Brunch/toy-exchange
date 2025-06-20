@@ -1,5 +1,5 @@
 import { injectable, singleton } from 'tsyringe';
-import { IFindLoginData } from '../../../application/repositories/regular-user.repository.interface';
+import { IFindLoginData } from '../../../application/ports/repositories/regular-user.repository.interface';
 import { RegularUserRole } from '../../../core/value-objects/regular-user-role';
 import { IRegularUserInMemoryModel } from '../models/regular-user.in-mem.model';
 

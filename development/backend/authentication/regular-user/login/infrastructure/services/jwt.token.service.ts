@@ -1,10 +1,8 @@
+import { IAuthTokenData } from 'authorization/dist/infrastructure/token';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { inject, injectable, singleton } from 'tsyringe';
-import {
-    IAuthTokenData,
-    ITokenService,
-} from '../../application/services/token.service.interface';
+import { ITokenService } from '../../application/ports/services/token.service.interface';
 import { RegularUserRole } from '../../core/value-objects/regular-user-role';
 import { LOGIN_INFRASTRUCTURE_TYPES } from '../di/login.types';
 

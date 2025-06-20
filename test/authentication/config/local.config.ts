@@ -126,7 +126,7 @@ const config: ITestConfig = {
                     'test',
                     'authentication',
                     'config',
-                    'default.config.js',
+                    'local.config.js',
                 ),
         },
     },

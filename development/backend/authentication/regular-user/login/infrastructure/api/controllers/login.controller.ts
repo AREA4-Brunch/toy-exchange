@@ -4,7 +4,7 @@ import { LOGIN_APPLICATION_TYPES } from '../../../application/di/login.types';
 import {
     ILoginInput,
     ILoginUseCase,
-} from '../../../application/use-cases/login.use-case.interface';
+} from '../../../application/ports/use-cases/login.use-case.interface';
 import { ILoginResponseDto } from '../dtos/login.response.dto';
 import { LoginResponseMapper } from '../mappers/login-response.mapper';
 
@@ -24,10 +24,10 @@ export class LoginController {
         return this.loginUseCase
             .execute(req.body as ILoginInput)
             .then((result) => {
-                res.json(this.mapper.success(res, result));
-            })
-            .catch((err: unknown) => {
-                res.json(this.mapper.domainError(res, err));
+                result
+                    .map((data) => this.mapper.success(res, data))
+                    .mapError((err) => this.mapper.domainError(res, err))
+                    .reduce((dto) => res.json(dto));
             });
     }
 }

@@ -2,7 +2,7 @@ import { injectable, singleton } from 'tsyringe';
 import {
     IFindLoginData,
     IRegularUserRepository,
-} from '../../../application/repositories/regular-user.repository.interface';
+} from '../../../application/ports/repositories/regular-user.repository.interface';
 import { RegularUserInMemoryMapper } from '../mappers/regular-user.in-mem.mapper';
 import { IRegularUserInMemoryModel } from '../models/regular-user.in-mem.model';
 import { InMemoryQueryBuilder } from './query-builder.in-mem';

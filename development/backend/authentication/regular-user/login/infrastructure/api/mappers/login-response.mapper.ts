@@ -2,9 +2,11 @@ import express from 'express';
 import { injectable, singleton } from 'tsyringe';
 import {
     ILoginOutput,
+    LoginBannedUserError,
     LoginIncorrectPasswordError,
+    LoginUseCaseErrors,
     LoginUserNotFoundError,
-} from '../../../application/use-cases/login.use-case.interface';
+} from '../../../application/ports/use-cases/login.use-case.interface';
 import {
     ILoginResponseErrorDto,
     ILoginResponseSuccessDto,
@@ -29,15 +31,14 @@ export class LoginResponseMapper {
      */
     public domainError(
         res: express.Response,
-        err: unknown,
+        err: LoginUseCaseErrors,
     ): ILoginResponseErrorDto {
-        if (!(err instanceof Error)) {
-            throw err;
-        }
-
         const mapping = LoginResponseMapper.errorMap[err.constructor.name];
         if (!mapping) {
-            throw err;
+            // should never happen
+            throw new Error(
+                `Unknown domain error passed to ${this.constructor.name}`,
+            );
         }
 
         res.status(mapping.status);
@@ -55,6 +56,10 @@ export class LoginResponseMapper {
         [LoginIncorrectPasswordError.name]: {
             status: 401,
             message: 'Wrong username or password.',
+        },
+        [LoginBannedUserError.name]: {
+            status: 403,
+            message: 'Forbidden to login due to having been banned.',
         },
     };
 }

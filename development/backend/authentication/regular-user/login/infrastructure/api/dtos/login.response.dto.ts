@@ -1,4 +1,4 @@
-import { ILoginOutput } from '../../../application/use-cases/login.use-case.interface';
+import { ILoginOutput } from '../../../application/ports/use-cases/login.use-case.interface';
 
 export interface ILoginResponseSuccessDto {
     success: boolean;

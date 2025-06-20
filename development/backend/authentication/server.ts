@@ -1,6 +1,6 @@
 /**
  * Example of calling the script:
- *    set APP_CONFIG=path/to/config/app-config/default.config.js
+ *    set APP_CONFIG=path/to/config/app-config/local.config.js
  * && node server.js
  * or
 js * node.server.js ./dist/config/app-config/test.config.js

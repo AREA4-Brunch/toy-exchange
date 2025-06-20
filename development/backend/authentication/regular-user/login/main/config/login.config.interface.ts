@@ -1,4 +1,4 @@
-import { IConfigLoginApplication } from '../../application/config/login.config.interface';
+import { IConfigLoginApplication } from '../../application/ports/config/login.config.interface';
 import { IConfigLoginCore } from '../../core/config/login.config.interface';
 import { ILoginInfrastructureConfig } from '../../infrastructure/config/login.config.interface';
 

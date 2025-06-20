@@ -551,16 +551,9 @@ describe('Login API', () => {
                 ...(await getLoginUrl()),
                 data: generateBannedUserCredentials(),
             });
-            expect(loginResponse.status).toBe(200);
-            authToken = loginResponse.data.data.token;
-
-            const response = await api.request({
-                ...(await getNoBannedUsersUrl()),
-                headers: { Authorization: `Bearer ${authToken}` },
-            });
-            expect(response.status).toBe(403);
-            expect(response.data).toStrictEqual({
-                errMsg: 'Token has forbidden roles.',
+            expect(loginResponse.status).toBe(403);
+            expect(loginResponse.data).toStrictEqual({
+                msg: 'Forbidden to login due to having been banned.',
             });
         });
 
