@@ -1,4 +1,5 @@
 import { injectable, singleton } from 'tsyringe';
+import { Email } from '../../../../../shared/core/value-objects/email';
 import {
     IFindLoginData,
     IRegularUserAuthRepository,
@@ -19,10 +20,10 @@ export class RegularUserAuthInMemoryRepo implements IRegularUserAuthRepository {
         this.db = this.initDB();
     }
 
-    public findUsrLoginData(email: string): IFindLoginData | undefined {
+    public findUsrLoginData(email: Email): IFindLoginData | undefined {
         const data = this.query()
             .select('password', 'roles')
-            .where({ email })
+            .where({ email: email.value })
             .first();
         return data ? this.mapper.toLoginData(data) : undefined;
     }

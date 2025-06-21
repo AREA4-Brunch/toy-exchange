@@ -1,7 +1,8 @@
+import { Email } from '../../../../../shared/core/value-objects/email';
 import { Result } from '../../../../../shared/types/result';
 
 export interface ILoginInput {
-    email: string;
+    email: Email;
     password: string;
 }
 
@@ -12,42 +13,45 @@ export interface ILoginOutput {
 export interface ILoginUseCase {
     execute(
         input: ILoginInput,
-    ): Promise<
-        Result<
-            ILoginOutput,
-            | LoginUserNotFoundError
-            | LoginIncorrectPasswordError
-            | LoginForbiddenError
-        >
-    >;
+    ): Promise<Result<ILoginOutput, LoginUseCaseErrors>>;
 }
 
-abstract class ILoginUseCaseError {
-    constructor(public readonly message: string) {}
-}
+// do not export, use LoginUseCaseErrors instead to enforce thinking
+// about all causes
+abstract class LoginUseCaseError extends Error {
+    abstract readonly code: string; // for type safety
 
-export class LoginUserNotFoundError extends ILoginUseCaseError {
-    constructor(email: string) {
-        super(`No user found with email: ${email}`);
+    constructor(public readonly message: string) {
+        super(message);
     }
 }
 
-export class LoginIncorrectPasswordError extends ILoginUseCaseError {
-    public static readonly msg = `Provided password is incorrect.`;
+export class LoginUserNotFoundError extends LoginUseCaseError {
+    readonly code = 'LOGIN_USER_NOT_FOUND' as const;
+
+    constructor(email: Email) {
+        super(`No user found with email: ${email.value}`);
+    }
+}
+
+export class LoginIncorrectPasswordError extends LoginUseCaseError {
+    readonly code = 'LOGIN_INCORRECT_PASSWORD' as const;
 
     constructor() {
-        super(LoginIncorrectPasswordError.msg);
+        super(`Provided password is incorrect.`);
     }
 }
 
-export class LoginForbiddenError extends ILoginUseCaseError {
-    public static readonly msg = `User may not login due to having been banned.`;
+export class LoginForbiddenError extends LoginUseCaseError {
+    readonly code = 'LOGIN_FORBIDDEN' as const;
 
     constructor() {
-        super(LoginForbiddenError.msg);
+        super(`User may not login due to having been banned.`);
     }
 }
 
+// union useful for reminding of strict typing/handling all causes/errors
+// not just general error base class
 export type LoginUseCaseErrors =
     | LoginUserNotFoundError
     | LoginIncorrectPasswordError

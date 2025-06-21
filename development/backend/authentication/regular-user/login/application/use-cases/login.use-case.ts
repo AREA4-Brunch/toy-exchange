@@ -10,6 +10,7 @@ import {
     ILoginUseCase,
     LoginForbiddenError,
     LoginIncorrectPasswordError,
+    LoginUseCaseErrors,
     LoginUserNotFoundError,
 } from '../ports/use-cases/login.use-case.interface';
 import { LoginEligibilityService } from '../services/login-eligibility.service';
@@ -30,14 +31,7 @@ export class LoginUseCase implements ILoginUseCase {
     async execute({
         email,
         password,
-    }: ILoginInput): Promise<
-        Result<
-            ILoginOutput,
-            | LoginUserNotFoundError
-            | LoginIncorrectPasswordError
-            | LoginForbiddenError
-        >
-    > {
+    }: ILoginInput): Promise<Result<ILoginOutput, LoginUseCaseErrors>> {
         const data = await this.AuthRepo.findUsrLoginData(email);
         if (!data) {
             return Result.failure(new LoginUserNotFoundError(email));

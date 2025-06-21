@@ -1,4 +1,13 @@
+import { Result } from '../../types/result';
 import { ValueObject } from './value-object.base';
+
+export class InvalidEmailError extends Error {
+    readonly code: string = 'INVALID_EMAIL_FORMAT' as const;
+
+    constructor() {
+        super('Invalid email format.');
+    }
+}
 
 export class Email extends ValueObject<string> {
     protected constructor(email: string) {
@@ -6,21 +15,17 @@ export class Email extends ValueObject<string> {
     }
 
     public static create(email: string): Email {
-        if (!Email.isValidEmail(email)) {
-            throw new Error('Invalid email format');
-        }
-        return new Email(email);
+        if (Email.isValidEmail(email)) return new Email(email);
+        throw new InvalidEmailError();
     }
 
-    public static createNoThrow(email: string): {
-        success: boolean;
-        email?: Email;
-        error?: Error;
-    } {
+    public static createNoThrow(
+        email: string,
+    ): Result<Email, InvalidEmailError> {
         if (!Email.isValidEmail(email)) {
-            return { success: false, error: new Error(`Invalid email format`) };
+            return Result.failure(new InvalidEmailError());
         }
-        return { success: true, email: new Email(email) };
+        return Result.success(Email.create(email));
     }
 
     private static isValidEmail(email: string): boolean {

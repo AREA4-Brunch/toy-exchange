@@ -7,6 +7,10 @@ export abstract class Result<T, E> {
         return Failure.create(error);
     }
 
+    public abstract isSuccess(): this is Success<T>;
+
+    public abstract isFailure(): this is Failure<E>;
+
     public abstract reduce<TRet>(handler: (either: T | E) => TRet): TRet;
 
     public abstract match<TRet>(handlers: {
@@ -22,6 +26,14 @@ export abstract class Result<T, E> {
 export class Success<T> extends Result<T, never> {
     protected constructor(public readonly value: T) {
         super();
+    }
+
+    public isSuccess(): this is Success<T> {
+        return true;
+    }
+
+    public isFailure(): this is Failure<never> {
+        return false;
     }
 
     public static create<T>(value: T): Success<T> {
@@ -51,6 +63,14 @@ export class Success<T> extends Result<T, never> {
 export class Failure<E> extends Result<never, E> {
     protected constructor(public readonly error: E) {
         super();
+    }
+
+    public isSuccess(): this is Success<never> {
+        return false;
+    }
+
+    public isFailure(): this is Failure<E> {
+        return true;
     }
 
     public static create<E>(error: E): Failure<E> {

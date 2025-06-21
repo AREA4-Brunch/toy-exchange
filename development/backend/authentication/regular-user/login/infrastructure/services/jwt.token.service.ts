@@ -2,6 +2,7 @@ import { IAuthTokenData } from 'authorization/dist/infrastructure/token';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { inject, injectable, singleton } from 'tsyringe';
+import { Email } from '../../../../shared/core/value-objects/email';
 import { ITokenService } from '../../application/ports/services/token.service.interface';
 import { RegularUserRole } from '../../core/value-objects/regular-user-role';
 import { LOGIN_INFRASTRUCTURE_TYPES } from '../di/login.types';
@@ -26,10 +27,10 @@ export class JwtTokenService implements ITokenService {
     }
 
     public generateAuthToken(
-        email: string,
+        email: Email,
         roles: RegularUserRole[],
     ): [string, IAuthTokenData] {
-        const payload = this.createPayload(email, roles);
+        const payload = this.createPayload(email.value, roles);
         const token = jwt.sign(payload, this.getJwtSecretKey(), {
             expiresIn: this.getJwtTokenDuration(),
         });
