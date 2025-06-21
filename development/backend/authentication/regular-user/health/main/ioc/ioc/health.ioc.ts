@@ -1,5 +1,5 @@
 import { inject, injectable, InjectionToken, singleton } from 'tsyringe';
-import { FeatureIoC } from '../../../../../shared/main/ioc/ioc/ioc-initializer.base';
+import { FeatureIoC } from '../../../../../shared/main/ioc/ioc/ioc';
 import { HealthRouter } from '../../../infrastructure/api/health.router';
 import { TestRoleCheckingRouter } from '../../../infrastructure/api/test.role-checking.router';
 import { IHealthRoutesConfig } from '../../../infrastructure/config/health.config.interface';

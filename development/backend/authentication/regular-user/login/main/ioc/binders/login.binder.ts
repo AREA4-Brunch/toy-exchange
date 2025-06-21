@@ -3,12 +3,12 @@ import { Argon2PasswordVerifier } from 'password-utils/dist/infrastructure/argon
 import { DependencyContainer, injectable, singleton } from 'tsyringe';
 import { IIoCBinder } from '../../../../../shared/main/ioc/binders/ioc-binder.interface';
 import { LOGIN_APPLICATION_TYPES } from '../../../application/di/login.types';
-import { IConfigLoginApplication } from '../../../application/ports/config/login.config.interface';
+import { ILoginApplicationConfig } from '../../../application/ports/config/login.config.interface';
 import { IRegularUserRepository } from '../../../application/ports/repositories/regular-user.repository.interface';
 import { ITokenService } from '../../../application/ports/services/token.service.interface';
 import { ILoginUseCase } from '../../../application/ports/use-cases/login.use-case.interface';
 import { LoginUseCase } from '../../../application/use-cases/login.use-case';
-import { IConfigLoginCore } from '../../../core/config/login.config.interface';
+import { ILoginCoreConfig } from '../../../core/config/login.config.interface';
 import {
     ILoginInfrastructureConfig,
     ILoginRoutesConfig,
@@ -34,12 +34,12 @@ export class LoginBinder implements IIoCBinder<ILoginConfig> {
 
 const core = (
     container: DependencyContainer,
-    conf: IConfigLoginCore,
+    conf: ILoginCoreConfig,
 ): void => {};
 
 const application = (
     container: DependencyContainer,
-    conf: IConfigLoginApplication,
+    conf: ILoginApplicationConfig,
 ): void => {
     container.register<ILoginUseCase>(LOGIN_APPLICATION_TYPES.LoginUseCase, {
         useClass: LoginUseCase,

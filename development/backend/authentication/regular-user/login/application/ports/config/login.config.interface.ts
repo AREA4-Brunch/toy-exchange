@@ -1,1 +1,1 @@
-export interface IConfigLoginApplication {}
+export interface ILoginApplicationConfig {}

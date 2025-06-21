@@ -1,5 +1,5 @@
 import { injectable, InjectionToken, singleton } from 'tsyringe';
-import { ModuleIoC } from '../../../../shared/main/ioc/ioc/ioc-initializer.base';
+import { ModuleIoC } from '../../../../shared/main/ioc/ioc/ioc';
 import { HealthIoC } from '../../../health/main/ioc/ioc/health.ioc';
 import { LoginIoC } from '../../../login/main/ioc/ioc/login.ioc';
 import { IRegularUserConfig } from '../../config/app.config.interface';
