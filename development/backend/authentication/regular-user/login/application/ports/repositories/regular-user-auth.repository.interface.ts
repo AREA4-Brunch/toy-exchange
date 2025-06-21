@@ -5,8 +5,8 @@ export interface IFindLoginData {
     roles: RegularUserRole[];
 }
 
-export interface IRegularUserRepository {
-    findLoginData(
+export interface IRegularUserAuthRepository {
+    findUsrLoginData(
         email: string,
     ): (IFindLoginData | undefined) | (Promise<IFindLoginData> | undefined);
 }

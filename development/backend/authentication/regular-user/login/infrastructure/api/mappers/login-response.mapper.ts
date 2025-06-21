@@ -2,7 +2,7 @@ import express from 'express';
 import { injectable, singleton } from 'tsyringe';
 import {
     ILoginOutput,
-    LoginBannedUserError,
+    LoginForbiddenError,
     LoginIncorrectPasswordError,
     LoginUseCaseErrors,
     LoginUserNotFoundError,
@@ -57,7 +57,7 @@ export class LoginResponseMapper {
             status: 401,
             message: 'Wrong username or password.',
         },
-        [LoginBannedUserError.name]: {
+        [LoginForbiddenError.name]: {
             status: 403,
             message: 'Forbidden to login due to having been banned.',
         },

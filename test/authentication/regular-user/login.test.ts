@@ -89,9 +89,10 @@ describe('Login API', () => {
                 data: { ...generateTestCredentials(), email: 'non@existant.com' },
             });
             expect(loginResponse.status).toBe(401);
-            expect(loginResponse.data.data).toBeUndefined();
-            expect(loginResponse.data.success).toBe(false);
-            expect(loginResponse.data.message).toStrictEqual('Wrong username or password.');
+            expect(loginResponse.data).toStrictEqual({
+                success: false,
+                message: 'Wrong username or password.',
+            });
         });
 
         it(`${ID++}. should fail due to incorrect password`, async () => {
@@ -100,9 +101,10 @@ describe('Login API', () => {
                 data: { ...generateTestCredentials(), password: 'non-existant' },
             });
             expect(loginResponse.status).toBe(401);
-            expect(loginResponse.data.data).toBeUndefined();
-            expect(loginResponse.data.success).toBe(false);
-            expect(loginResponse.data.message).toStrictEqual('Wrong username or password.');
+            expect(loginResponse.data).toStrictEqual({
+                success: false,
+                message: 'Wrong username or password.',
+            });
         });
 
         it(`${ID++}. should fail due to incorrect email and password`, async () => {
@@ -115,9 +117,10 @@ describe('Login API', () => {
                 },
             });
             expect(loginResponse.status).toBe(401);
-            expect(loginResponse.data.data).toBeUndefined();
-            expect(loginResponse.data.success).toBe(false);
-            expect(loginResponse.data.message).toStrictEqual('Wrong username or password.');
+            expect(loginResponse.data).toStrictEqual({
+                success: false,
+                message: 'Wrong username or password.',
+            });
         });
     });
 
@@ -553,7 +556,8 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(403);
             expect(loginResponse.data).toStrictEqual({
-                msg: 'Forbidden to login due to having been banned.',
+                success: false,
+                message: 'Forbidden to login due to having been banned.',
             });
         });
 

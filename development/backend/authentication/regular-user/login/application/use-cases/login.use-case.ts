@@ -1,18 +1,18 @@
 import { inject, injectable, singleton } from 'tsyringe';
 import { Result } from '../../../../shared/types/result';
-import { RegularUserRole } from '../../core/value-objects/regular-user-role';
 import { LOGIN_APPLICATION_TYPES } from '../di/login.types';
-import { IRegularUserRepository } from '../ports/repositories/regular-user.repository.interface';
+import { IRegularUserAuthRepository } from '../ports/repositories/regular-user-auth.repository.interface';
 import { IPasswordService } from '../ports/services/password.service.interface';
 import { ITokenService } from '../ports/services/token.service.interface';
 import {
     ILoginInput,
     ILoginOutput,
     ILoginUseCase,
-    LoginBannedUserError,
+    LoginForbiddenError,
     LoginIncorrectPasswordError,
     LoginUserNotFoundError,
 } from '../ports/use-cases/login.use-case.interface';
+import { LoginEligibilityService } from '../services/login-eligibility.service';
 
 @singleton()
 @injectable()
@@ -22,8 +22,9 @@ export class LoginUseCase implements ILoginUseCase {
         private readonly tokenService: ITokenService,
         @inject(LOGIN_APPLICATION_TYPES.PasswordService)
         private readonly passwordService: IPasswordService,
-        @inject(LOGIN_APPLICATION_TYPES.RegularUserRepository)
-        private readonly RegularUser: IRegularUserRepository,
+        @inject(LOGIN_APPLICATION_TYPES.RegularUserAuthRepository)
+        private readonly AuthRepo: IRegularUserAuthRepository,
+        private readonly loginEligibility: LoginEligibilityService,
     ) {}
 
     async execute({
@@ -34,25 +35,25 @@ export class LoginUseCase implements ILoginUseCase {
             ILoginOutput,
             | LoginUserNotFoundError
             | LoginIncorrectPasswordError
-            | LoginBannedUserError
+            | LoginForbiddenError
         >
     > {
-        const user = await this.RegularUser.findLoginData(email);
-        if (!user) {
+        const data = await this.AuthRepo.findUsrLoginData(email);
+        if (!data) {
             return Result.failure(new LoginUserNotFoundError(email));
         }
-        if (user.roles.includes(RegularUserRole.create('banned'))) {
-            return Result.failure(new LoginBannedUserError());
+        if (this.loginEligibility.isForbidden(data.roles)) {
+            return Result.failure(new LoginForbiddenError());
         }
         const isPasswordValid = await this.passwordService.verifyPassword(
             password,
-            user.password,
+            data.password,
         );
         if (!isPasswordValid) {
             return Result.failure(new LoginIncorrectPasswordError());
         }
         return Result.success({
-            token: this.tokenService.generateAuthToken(email, user.roles)[0],
+            token: this.tokenService.generateAuthToken(email, data.roles)[0],
         } as ILoginOutput);
     }
 }

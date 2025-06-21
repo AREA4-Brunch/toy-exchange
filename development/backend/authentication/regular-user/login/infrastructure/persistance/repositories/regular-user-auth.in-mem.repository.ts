@@ -1,10 +1,10 @@
 import { injectable, singleton } from 'tsyringe';
 import {
     IFindLoginData,
-    IRegularUserRepository,
-} from '../../../application/ports/repositories/regular-user.repository.interface';
-import { RegularUserInMemoryMapper } from '../mappers/regular-user.in-mem.mapper';
-import { IRegularUserInMemoryModel } from '../models/regular-user.in-mem.model';
+    IRegularUserAuthRepository,
+} from '../../../application/ports/repositories/regular-user-auth.repository.interface';
+import { RegularUserAuthInMemoryMapper } from '../mappers/regular-user-auth.in-mem.mapper';
+import { IRegularUserAuthInMemoryModel } from '../models/regular-user-auth.in-mem.model';
 import { InMemoryQueryBuilder } from './query-builder.in-mem';
 
 /**
@@ -12,14 +12,14 @@ import { InMemoryQueryBuilder } from './query-builder.in-mem';
  */
 @injectable()
 @singleton()
-export class RegularUserInMemoryRepo implements IRegularUserRepository {
-    private readonly db: IRegularUserInMemoryModel[] = [];
+export class RegularUserAuthInMemoryRepo implements IRegularUserAuthRepository {
+    private readonly db: IRegularUserAuthInMemoryModel[] = [];
 
-    constructor(private readonly mapper: RegularUserInMemoryMapper) {
+    constructor(private readonly mapper: RegularUserAuthInMemoryMapper) {
         this.db = this.initDB();
     }
 
-    public findLoginData(email: string): IFindLoginData | undefined {
+    public findUsrLoginData(email: string): IFindLoginData | undefined {
         const data = this.query()
             .select('password', 'roles')
             .where({ email })
@@ -27,7 +27,7 @@ export class RegularUserInMemoryRepo implements IRegularUserRepository {
         return data ? this.mapper.toLoginData(data) : undefined;
     }
 
-    private initDB(): IRegularUserInMemoryModel[] {
+    private initDB(): IRegularUserAuthInMemoryModel[] {
         return [
             {
                 email: 'test@test.com',
@@ -102,7 +102,12 @@ export class RegularUserInMemoryRepo implements IRegularUserRepository {
         ];
     }
 
-    private query(): InMemoryQueryBuilder<IRegularUserInMemoryModel, never> {
-        return InMemoryQueryBuilder.create<IRegularUserInMemoryModel>(this.db);
+    private query(): InMemoryQueryBuilder<
+        IRegularUserAuthInMemoryModel,
+        never
+    > {
+        return InMemoryQueryBuilder.create<IRegularUserAuthInMemoryModel>(
+            this.db,
+        );
     }
 }

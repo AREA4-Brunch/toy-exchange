@@ -1,10 +1,10 @@
-import { IPasswordService } from 'authentication-interfaces/dist/regular-user/login/application/services/password.service.interface';
 import { Argon2PasswordVerifier } from 'password-utils/dist/infrastructure/argon2.password-verifier';
 import { DependencyContainer, injectable, singleton } from 'tsyringe';
 import { IIoCBinder } from '../../../../../shared/main/ioc/binders/ioc-binder.interface';
 import { LOGIN_APPLICATION_TYPES } from '../../../application/di/login.types';
 import { ILoginApplicationConfig } from '../../../application/ports/config/login.config.interface';
-import { IRegularUserRepository } from '../../../application/ports/repositories/regular-user.repository.interface';
+import { IRegularUserAuthRepository } from '../../../application/ports/repositories/regular-user-auth.repository.interface';
+import { IPasswordService } from '../../../application/ports/services/password.service.interface';
 import { ITokenService } from '../../../application/ports/services/token.service.interface';
 import { ILoginUseCase } from '../../../application/ports/use-cases/login.use-case.interface';
 import { LoginUseCase } from '../../../application/use-cases/login.use-case';
@@ -14,7 +14,7 @@ import {
     ILoginRoutesConfig,
 } from '../../../infrastructure/config/login.config.interface';
 import { LOGIN_INFRASTRUCTURE_TYPES } from '../../../infrastructure/di/login.types';
-import { RegularUserInMemoryRepo } from '../../../infrastructure/persistance/repositories/regular-user.in-mem.repository';
+import { RegularUserAuthInMemoryRepo } from '../../../infrastructure/persistance/repositories/regular-user-auth.in-mem.repository';
 import {
     ITokenServiceConfig,
     JwtTokenService,
@@ -67,10 +67,10 @@ const infrastructure = (
             useClass: Argon2PasswordVerifier,
         },
     );
-    container.register<IRegularUserRepository>(
-        LOGIN_APPLICATION_TYPES.RegularUserRepository,
+    container.register<IRegularUserAuthRepository>(
+        LOGIN_APPLICATION_TYPES.RegularUserAuthRepository,
         {
-            useClass: RegularUserInMemoryRepo,
+            useClass: RegularUserAuthInMemoryRepo,
         },
     );
 };

@@ -1,6 +1,6 @@
 {
     "name": "password-utils",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Common code used in shared/",
     "homepage": "https://github.com/AREA4-Brunch/toy-exchange#readme",
     "bugs": {
@@ -26,7 +26,7 @@
     },
     "dependencies": {
         "argon2": "^0.43.0",
-        "authentication-interfaces": "file:libs/authentication-interfaces-1.0.0.tgz",
+        "authentication-interfaces": "file:libs/authentication-interfaces-2.0.0.tgz",
         "common": "file:libs/common-2.2.3.tgz"
     },
     "devDependencies": {

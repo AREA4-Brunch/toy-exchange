@@ -22,12 +22,12 @@ const main = async () => {
         console.log(`publishType: ${JSON.stringify(publishType)}`);
 
         const options =
-            publishType === 'all'
-                ? { ...publishInterfacesOptions, newVersion: version }
-                : {
+            publishType === 'self'
+                ? {
                       ...selfPublishInterfacesOptions,
                       newVersion: version,
-                  };
+                  }
+                : { ...publishInterfacesOptions, newVersion: version };
 
         console.log('🚀 Step 1: Creating package...');
         const packageInfo = await createPackageTgz(options);

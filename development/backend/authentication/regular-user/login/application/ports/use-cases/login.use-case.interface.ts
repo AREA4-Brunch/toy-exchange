@@ -17,7 +17,7 @@ export interface ILoginUseCase {
             ILoginOutput,
             | LoginUserNotFoundError
             | LoginIncorrectPasswordError
-            | LoginBannedUserError
+            | LoginForbiddenError
         >
     >;
 }
@@ -40,15 +40,15 @@ export class LoginIncorrectPasswordError extends ILoginUseCaseError {
     }
 }
 
-export class LoginBannedUserError extends ILoginUseCaseError {
+export class LoginForbiddenError extends ILoginUseCaseError {
     public static readonly msg = `User may not login due to having been banned.`;
 
     constructor() {
-        super(LoginBannedUserError.msg);
+        super(LoginForbiddenError.msg);
     }
 }
 
 export type LoginUseCaseErrors =
     | LoginUserNotFoundError
     | LoginIncorrectPasswordError
-    | LoginBannedUserError;
+    | LoginForbiddenError;
