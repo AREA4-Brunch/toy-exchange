@@ -1,21 +1,21 @@
 {
   "microservices": {
-    "src/backend/authentication": {
+    "development/backend/authentication": {
       "command": "npm run format",
       "type": "node",
       "description": "Authentication microservice"
     },
-    "src/backend/shared/authorization": {
+    "development/backend/shared/authorization": {
       "command": "npm run format",
       "type": "node",
       "description": "Authorization utilities"
     },
-    "src/backend/shared/common": {
+    "development/backend/shared/common": {
       "command": "npm run format",
       "type": "node",
       "description": "Common utilities"
     },
-    "src/backend/shared/password-utils": {
+    "development/backend/shared/password-utils": {
       "command": "npm run format",
       "type": "node",
       "description": "Password utilities"
