@@ -1,12 +1,12 @@
 import { ILoginOutput } from '../../../application/ports/use-cases/login.use-case.interface';
 
 export interface ILoginResponseSuccessDto {
-    readonly success: true;
+    readonly status: 'success';
     data: ILoginOutput;
 }
 
 export interface ILoginResponseErrorDto {
-    readonly success: false;
+    readonly status: 'failure';
     message: string;
 }
 

@@ -24,7 +24,7 @@ export class LoginResponseMapper {
         data: ILoginOutput,
     ): ILoginResponseSuccessDto {
         res.status(200);
-        return { success: true, data } as ILoginResponseSuccessDto;
+        return { status: 'success', data } as ILoginResponseSuccessDto;
     }
 
     /**
@@ -44,7 +44,7 @@ export class LoginResponseMapper {
 
         res.status(mapping.status);
         return {
-            success: false,
+            status: 'failure',
             message: mapping.message,
         } as ILoginResponseErrorDto;
     }
@@ -65,7 +65,7 @@ export class LoginResponseMapper {
 
         const { status, message } = mapping(err);
         res.status(status);
-        return { success: false, message } as ILoginResponseErrorDto;
+        return { status: 'failure', message } as ILoginResponseErrorDto;
     }
 
     private static readonly loginErrMap = {

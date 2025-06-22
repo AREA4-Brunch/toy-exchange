@@ -21,18 +21,20 @@ export class RequestValidationMiddleware {
         next: express.NextFunction,
     ): Promise<void> {
         try {
-            await schema.parseAsync({
+            const parsed = schema.parse({
                 body: req.body,
                 query: req.query,
                 params: req.params,
             });
-
-            next();
+            req.body = parsed.body;
+            req.params = parsed.params;
+            // cannot set req.query since it only has a getter in express
+            return next();
         } catch (error) {
             if (!rethrowValidationError && error instanceof ZodError) {
                 res.status(400).json({
-                    status: 'error',
-                    message: 'Invalid request data',
+                    status: 'validation-error',
+                    message: 'Invalid request data.',
                     errors: error.errors,
                 });
                 return;

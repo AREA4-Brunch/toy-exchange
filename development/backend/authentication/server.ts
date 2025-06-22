@@ -18,16 +18,15 @@ import { AuthenticationIoC } from './main/ioc/ioc/auth.ioc';
 const main = async (): Promise<void> => {
     const authContainer = container;
     const authApp: express.Express = express();
-    const config: IAuthenticationConfig =
-        await loadConfigFromFile(defaultConfig);
-    console.log(`Loaded configuration:\n${JSON.stringify(config, null, 2)}`);
+    const config: IAuthenticationConfig = await loadConfFromFile(defaultConfig);
+    console.info(`Loaded configuration:\n${JSON.stringify(config, null, 2)}`);
 
     initApp(authContainer, authApp, config);
 
     const serverConfig = config.server;
     authApp
         .listen(serverConfig.http.port, serverConfig.http.hostname, () =>
-            console.log(`App is listening on port ${serverConfig.http.port}`),
+            console.info(`App is listening on port ${serverConfig.http.port}`),
         )
         .on('error', (error: Error) => {
             console.error(`Error starting server: ${error.message}`);
@@ -35,13 +34,11 @@ const main = async (): Promise<void> => {
         });
 };
 
-const loadConfigFromFile = async (
+const loadConfFromFile = async (
     fallbackConfig: IAuthenticationConfig,
 ): Promise<IAuthenticationConfig> => {
     const confPathRaw =
         process.argv.length >= 3 ? process.argv[2] : process.env.APP_CONFIG;
-
-    console.log(`Args: ${JSON.stringify(process.argv, null, 2)}`);
 
     if (!confPathRaw) {
         return fallbackConfig;
@@ -52,7 +49,7 @@ const loadConfigFromFile = async (
             ? confPathRaw
             : path.resolve(process.cwd(), confPathRaw);
 
-        console.log(`Loading configuration from: ${confPath}`);
+        console.info(`Loading configuration from: ${confPath}`);
         if (!fs.existsSync(confPath)) {
             console.warn(`Config file not found, using default config`);
             return fallbackConfig;
@@ -62,7 +59,7 @@ const loadConfigFromFile = async (
         return customConfig.config || customConfig.default || customConfig;
     } catch (error) {
         console.error(`Error loading config file: ${(error as Error).message}`);
-        console.log('Falling back to default configuration');
+        console.info('Falling back to default configuration');
         return fallbackConfig;
     }
 };
@@ -77,4 +74,6 @@ const initApp = (
         .initialize({ container: rootContainer, router: app, config });
 };
 
-main();
+if (require.main === module) {
+    main();
+}

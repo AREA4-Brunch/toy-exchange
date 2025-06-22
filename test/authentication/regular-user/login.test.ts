@@ -90,7 +90,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(401);
             expect(loginResponse.data).toStrictEqual({
-                success: false,
+                status: 'failure',
                 message: 'Wrong username or password.',
             });
         });
@@ -102,7 +102,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(401);
             expect(loginResponse.data).toStrictEqual({
-                success: false,
+                status: 'failure',
                 message: 'Wrong username or password.',
             });
         });
@@ -118,7 +118,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(401);
             expect(loginResponse.data).toStrictEqual({
-                success: false,
+                status: 'failure',
                 message: 'Wrong username or password.',
             });
         });
@@ -159,6 +159,7 @@ describe('Login API', () => {
                 data: generateTestCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -177,6 +178,7 @@ describe('Login API', () => {
                 data: generateNoRoleCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -195,6 +197,7 @@ describe('Login API', () => {
                 data: generateTestCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -213,6 +216,7 @@ describe('Login API', () => {
                 data: generateTestCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -231,6 +235,7 @@ describe('Login API', () => {
                 data: generateMultipleRoleCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -249,6 +254,7 @@ describe('Login API', () => {
                 data: generateTestCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -267,6 +273,7 @@ describe('Login API', () => {
                 data: generateSomeRoleCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -285,6 +292,7 @@ describe('Login API', () => {
                 data: generateMultipleRoleCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -303,6 +311,7 @@ describe('Login API', () => {
                 data: generateTestCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -321,6 +330,7 @@ describe('Login API', () => {
                 data: generateMultipleRoleCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -339,6 +349,7 @@ describe('Login API', () => {
                 data: generateSomeRoleCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -357,6 +368,7 @@ describe('Login API', () => {
                 data: generateSomeRoleCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -375,6 +387,7 @@ describe('Login API', () => {
                 data: generateMultipleRoleCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -393,6 +406,7 @@ describe('Login API', () => {
                 data: generateMultipleRoleCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -411,6 +425,7 @@ describe('Login API', () => {
                 data: generateMultipleRoleCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -429,6 +444,7 @@ describe('Login API', () => {
                 data: generateMultipleRoleCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -447,6 +463,7 @@ describe('Login API', () => {
                 data: generateTestCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -465,6 +482,7 @@ describe('Login API', () => {
                 data: generateAdminCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -483,6 +501,7 @@ describe('Login API', () => {
                 data: generateAdminCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -501,6 +520,7 @@ describe('Login API', () => {
                 data: generateSuperAdminCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -519,6 +539,7 @@ describe('Login API', () => {
                 data: generateModeratorCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -537,6 +558,7 @@ describe('Login API', () => {
                 data: generateModeratorAdminCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -556,7 +578,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(403);
             expect(loginResponse.data).toStrictEqual({
-                success: false,
+                status: 'failure',
                 message: 'Forbidden to login due to having been banned.',
             });
         });
@@ -567,6 +589,7 @@ describe('Login API', () => {
                 data: generateSuspendedUserCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -585,6 +608,7 @@ describe('Login API', () => {
                 data: generateTestCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             const response = await api.request({
@@ -616,6 +640,7 @@ describe('Login API', () => {
                 data: generateTestCredentials(),
             });
             expect(loginResponse.status).toBe(200);
+            expect(loginResponse.data.status).toBe('success');
             authToken = loginResponse.data.data.token;
 
             await new Promise((resolve) => setTimeout(resolve, 5001));
