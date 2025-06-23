@@ -21,7 +21,7 @@ const main = async (): Promise<void> => {
     const config: IAuthenticationConfig = await loadConfFromFile(defaultConfig);
     console.info(`Loaded configuration:\n${JSON.stringify(config, null, 2)}`);
 
-    initApp(authContainer, authApp, config);
+    await initApp(authContainer, authApp, config);
 
     const serverConfig = config.server;
     authApp
@@ -68,10 +68,10 @@ const initApp = (
     rootContainer: DependencyContainer,
     app: express.Router,
     config: IAuthenticationConfig,
-) => {
-    rootContainer
+): Promise<void> => {
+    return rootContainer
         .resolve(AuthenticationIoC)
-        .initialize({ container: rootContainer, router: app, config });
+        .initialize(rootContainer, app, config);
 };
 
 if (require.main === module) {

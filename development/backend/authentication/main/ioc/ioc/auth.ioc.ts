@@ -1,6 +1,6 @@
 import cors from 'cors';
 import express from 'express';
-import { injectable, InjectionToken, singleton } from 'tsyringe';
+import { injectable, singleton } from 'tsyringe';
 import { RegularUserIoC } from '../../../regular-user/main/ioc/ioc/regular-user.ioc';
 import { ModuleIoC } from '../../../shared/main/ioc/ioc/ioc';
 import { IAuthenticationConfig } from '../../config/auth.config.interface';
@@ -12,12 +12,14 @@ export class AuthenticationIoC extends ModuleIoC<IAuthenticationConfig> {
     constructor(binder: AuthenticationBinder) {
         super(
             binder,
-            'api.basePath',
-            new Map<InjectionToken, string>([[RegularUserIoC, 'regularUser']]),
+            (conf: IAuthenticationConfig) => conf.api.basePath,
+            (_, __, conf: IAuthenticationConfig) => [
+                [[RegularUserIoC, conf.regularUser]],
+            ],
         );
     }
 
-    protected override createCommonChildRouter(): express.Router {
+    protected override async createCommonChildRouter(): Promise<express.Router> {
         const router = express.Router();
         router.use(cors());
         router.use(express.json());
