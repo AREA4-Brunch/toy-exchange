@@ -8,23 +8,20 @@ import {
     LoginUseCaseErrors,
     LoginUserNotFoundError,
 } from '../../../application/ports/use-cases/login.use-case.interface';
-import {
-    ILoginResponseErrorDto,
-    ILoginResponseSuccessDto,
-} from '../dtos/login.response.dto';
+import { LoginErrorView, LoginSuccessView } from '../views/login.view';
 
 @singleton()
 @injectable()
-export class LoginResponseMapper {
+export class LoginPresenter {
     /**
      * Sets up the given response and returns data to be sent via res.json()
      */
     public success(
         res: express.Response,
         data: ILoginOutput,
-    ): ILoginResponseSuccessDto {
+    ): LoginSuccessView {
         res.status(200);
-        return { status: 'success', data } as ILoginResponseSuccessDto;
+        return new LoginSuccessView(data);
     }
 
     /**
@@ -33,8 +30,8 @@ export class LoginResponseMapper {
     public loginError(
         res: express.Response,
         err: LoginUseCaseErrors,
-    ): ILoginResponseErrorDto {
-        const mapping = LoginResponseMapper.loginErrMap[err.constructor.name];
+    ): LoginErrorView {
+        const mapping = LoginPresenter.loginErrMap[err.constructor.name];
         if (!mapping) {
             // should never happen
             throw new Error(
@@ -43,19 +40,18 @@ export class LoginResponseMapper {
         }
 
         res.status(mapping.status);
-        return {
-            status: 'failure',
-            message: mapping.message,
-        } as ILoginResponseErrorDto;
+        return new LoginErrorView(mapping.message);
     }
 
     /**
      * Sets up the given response and returns data to be sent via res.json()
      * Handles errors occurred during request DTO to use case input mapping.
      */
-    public invalidInput(res: express.Response, err: InvalidEmailError) {
-        const mapping =
-            LoginResponseMapper.invalidInputErrMap[err.constructor.name];
+    public invalidInput(
+        res: express.Response,
+        err: InvalidEmailError,
+    ): LoginErrorView {
+        const mapping = LoginPresenter.invalidInputErrMap[err.constructor.name];
         if (!mapping) {
             // should never happen
             throw new Error(
@@ -65,7 +61,7 @@ export class LoginResponseMapper {
 
         const { status, message } = mapping(err);
         res.status(status);
-        return { status: 'failure', message } as ILoginResponseErrorDto;
+        return new LoginErrorView(message);
     }
 
     private static readonly loginErrMap = {

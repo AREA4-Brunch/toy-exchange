@@ -10,7 +10,7 @@ import { RoutesLoader } from '../../../../../shared/infrastructure/routes/routes
 import { ILoginRoutesConfig } from '../../config/login.config.interface';
 import { LOGIN_INFRASTRUCTURE_TYPES } from '../../di/login.types';
 import { LoginController } from '../controllers/login.controller';
-import { loginRequestSchema } from '../request-schemas/login.schema';
+import { loginRequestSchema } from '../request/login.request.schema';
 
 @singleton()
 @injectable()

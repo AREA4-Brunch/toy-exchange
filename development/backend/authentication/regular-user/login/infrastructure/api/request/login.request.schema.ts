@@ -1,5 +1,8 @@
 import { z } from 'zod';
 
+// conceptually this is equivalent to constructor validation of the request DTO
+// so it should be separated from DTO interface, whereas request DTO
+// impl is express.Request
 export const loginRequestSchema = z.object({
     body: z.object({
         email: z
