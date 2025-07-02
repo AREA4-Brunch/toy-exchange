@@ -1,0 +1,40 @@
+{
+    "name": "password-utils",
+    "version": "1.0.1",
+    "description": "Common code used in shared/",
+    "homepage": "https://github.com/AREA4-Brunch/toy-exchange#readme",
+    "bugs": {
+        "url": "https://github.com/AREA4-Brunch/toy-exchange/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/AREA4-Brunch/toy-exchange.git"
+    },
+    "license": "UNLICENSED",
+    "author": "Aleksandar Radenkovic (Sale)",
+    "type": "commonjs",
+    "main": "index.js",
+    "scripts": {
+        "publish": "npm run clean && npm run build && node dist/commands/publish.js",
+        "publish:self": "npm run clean && npm run build && node dist/commands/publish-self.js",
+        "build": "npx tsc",
+        "clean": "node -e \"require('fs').rmSync('./dist', {recursive: true, force: true})\"",
+        "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+        "pwd:hash": "node dist/commands/gen-hash.js",
+        "pwd:verifier:tune": "npm run _tune:argon2 500 verify power-of-2",
+        "_tune:argon2": "node dist/commands/tune-argon2.js"
+    },
+    "dependencies": {
+        "argon2": "^0.43.0",
+        "authentication-interfaces": "file:libs/authentication-interfaces-2.0.0.tgz",
+        "common": "file:libs/common-2.2.3.tgz"
+    },
+    "devDependencies": {
+        "@types/node": "^22.15.30",
+        "prettier": "^3.5.3",
+        "typescript": "^5.8.3"
+    },
+    "files": [
+        "dist/"
+    ]
+}

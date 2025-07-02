@@ -3,9 +3,9 @@ import {
     IRegularUserProps,
     RegularUser,
     RegularUserId,
-} from '../../../src/backend/authentication/regular-user/login/core/entities/regular-user';
-import { RegularUserRole } from '../../../src/backend/authentication/regular-user/login/core/value-objects/regular-user-role';
-import { Email } from '../../../src/backend/authentication/shared/core/value-objects/email';
+} from '../../../development/backend/authentication/regular-user/login/core/entities/regular-user';
+import { RegularUserRole } from '../../../development/backend/authentication/regular-user/login/core/value-objects/regular-user-role';
+import { Email } from '../../../development/backend/authentication/shared/core/value-objects/email';
 
 describe('RegularUser', () => {
     let userId: RegularUserId;
@@ -15,7 +15,7 @@ describe('RegularUser', () => {
     beforeEach(() => {
         userId = RegularUserId.create();
         userProps = {
-            email: Email.create('test@example.com'),
+            email: Email.create('test@example.com').getOrThrow(),
             password: 'hashedPassword123',
             username: 'testuser',
             roles: [RegularUserRole.create('unverified')],
@@ -29,7 +29,7 @@ describe('RegularUser', () => {
         it(`${ID++}. should create a regular user with expected properties`, () => {
             const user = new RegularUser(userId, userProps);
             expect(user.id).toEqual(userId);
-            expect(user.email.equals(Email.create('test@example.com'))).toBe(true);
+            expect(user.email.equals(Email.create('test@example.com').getOrThrow())).toBe(true);
             expect(user.username).toEqual('testuser');
         });
 

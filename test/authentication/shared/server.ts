@@ -2,15 +2,16 @@ import { ChildProcess, exec, spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import waitOn from 'wait-on';
-import defaultConfig from '../config/default.config';
+import defaultConfig from '../config/local.config';
 import { IServerRunnerConfig } from './config.interface';
 
 /**
  * Initialize configuration and environment variables
  * @returns Configuration object
  */
-export const initializeServerConfig = (): IServerRunnerConfig => {
+export const initializeServerConfig = (startCmnd: string): IServerRunnerConfig => {
     const config: IServerRunnerConfig = defaultConfig.runnerScript.server;
+    config.startCmnd = startCmnd;
     console.info(`Server config path: ${config.configPath}`);
     // Set environment variables for child processes
     process.env.NODE_ENV = 'test';
@@ -43,7 +44,7 @@ export const startServer = (config: IServerRunnerConfig): ChildProcess => {
         const normalizedPath = path.normalize(config.serverDir);
         console.log(`Using normalized path: ${normalizedPath}`);
 
-        const server = spawn(npmCmd, ['run', 'start:test', `"${config.configPath}"`], {
+        const server = spawn(npmCmd, ['run', config.startCmnd, `"${config.configPath}"`], {
             cwd: normalizedPath,
             env: {
                 ...process.env,

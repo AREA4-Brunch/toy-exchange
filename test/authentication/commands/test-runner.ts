@@ -1,7 +1,7 @@
 import { ChildProcess, spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import defaultConfig from '../config/default.config';
+import defaultConfig from '../config/local.config';
 import { ITestsRunnerConfig } from '../shared/config.interface';
 import { initializeServerConfig, killServer, startServer, waitForServer } from '../shared/server';
 
@@ -11,7 +11,30 @@ import { initializeServerConfig, killServer, startServer, waitForServer } from '
 interface CommandLineOptions {
     watchMode: boolean;
     coverage: boolean;
+    startCmnd: string;
 }
+
+/**
+ * Main function that orchestrates the test running process
+ */
+const main = async (): Promise<void> => {
+    try {
+        console.info('Starting test runner...');
+        const options = parseArguments();
+
+        const serverConfig = initializeServerConfig(options.startCmnd);
+        console.info(`Server directory: ${serverConfig.serverDir}`);
+        const server = startServer(serverConfig);
+        await waitForServer(serverConfig);
+
+        const runnerConfig = initializeTestConfig();
+        console.info(`Test directory: ${runnerConfig.testDir}`);
+        await runTests(runnerConfig, options, server, serverConfig.port);
+    } catch (error) {
+        console.error('Error in test runner:', error);
+        process.exit(1);
+    }
+};
 
 /**
  * Parse command line arguments
@@ -22,6 +45,7 @@ const parseArguments = (): CommandLineOptions => {
     return {
         watchMode: args.includes('--watch'),
         coverage: args.includes('--coverage'),
+        startCmnd: args.includes('--serve') ? 'serve' : 'start:test',
     };
 };
 
@@ -196,28 +220,6 @@ const initializeTestConfig = (): ITestsRunnerConfig => {
     process.env.TEST_CONFIG = config.testConfigPath;
     console.info(`Test config path: ${config.testConfigPath}`);
     return config;
-};
-
-/**
- * Main function that orchestrates the test running process
- */
-const main = async (): Promise<void> => {
-    try {
-        console.info('Starting test runner...');
-        const options = parseArguments();
-
-        const serverConfig = initializeServerConfig();
-        console.info(`Server directory: ${serverConfig.serverDir}`);
-        const server = startServer(serverConfig);
-        await waitForServer(serverConfig);
-
-        const runnerConfig = initializeTestConfig();
-        console.info(`Test directory: ${runnerConfig.testDir}`);
-        await runTests(runnerConfig, options, server, serverConfig.port);
-    } catch (error) {
-        console.error('Error in test runner:', error);
-        process.exit(1);
-    }
 };
 
 if (require.main === module) {
