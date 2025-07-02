@@ -15,7 +15,7 @@ describe('RegularUser', () => {
     beforeEach(() => {
         userId = RegularUserId.create();
         userProps = {
-            email: Email.create('test@example.com'),
+            email: Email.create('test@example.com').getOrThrow(),
             password: 'hashedPassword123',
             username: 'testuser',
             roles: [RegularUserRole.create('unverified')],
@@ -29,7 +29,7 @@ describe('RegularUser', () => {
         it(`${ID++}. should create a regular user with expected properties`, () => {
             const user = new RegularUser(userId, userProps);
             expect(user.id).toEqual(userId);
-            expect(user.email.equals(Email.create('test@example.com'))).toBe(true);
+            expect(user.email.equals(Email.create('test@example.com').getOrThrow())).toBe(true);
             expect(user.username).toEqual('testuser');
         });
 

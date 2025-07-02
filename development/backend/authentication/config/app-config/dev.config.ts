@@ -1,89 +1,21 @@
-import {
-  IAuthenticationConfig,
-  ISharedConfig,
-} from '../../main/config/auth.config.interface';
-import { IHealthConfig } from '../../regular-user/health/main/config/health.config.interface';
-import { ILoginConfig } from '../../regular-user/login/main/config/login.config.interface';
-import { IRegularUserConfig } from '../../regular-user/main/config/app.config.interface';
+import { IAuthenticationConfig } from '../../main/config/authentication.config.interface';
+import prodConfig from './prod.config';
 
 const defaultJwtSecretKey = `07885db471baa1ce5672c7843e309818cfe43cbaadc76133c21213d98fc8c3d3`;
+const jwtKey = process.env.JWT_SECRET_KEY || defaultJwtSecretKey;
 
-const loginConfig: ILoginConfig = {
-  core: {},
-  application: {},
-  infrastructure: {
-    api: {
-      routes: {
-        apiBasePath: '/login',
-        staticBasePath: '/static',
-        staticContents: [],
-      },
-      middleware: {},
-    },
-    tokenService: {
-      jwtSecretKey: process.env.JWT_SECRET_KEY || defaultJwtSecretKey,
-      jwtTokenDurationSecs: Number(process.env.JWT_TOKEN_DURATION_SECS || 3600),
-    },
-  },
+const conf: IAuthenticationConfig = { ...prodConfig };
+
+conf.features.regularUser.features.login.infrastructure.tokenService = {
+  ...conf.features.regularUser.features.login.infrastructure.tokenService,
+  jwtSecretKey: jwtKey,
+  jwtTokenDurationSecs: Number(process.env.JWT_TOKEN_DURATION_SECS || 60 * 60),
 };
 
-const healthConfig: IHealthConfig = {
-  infrastructure: {
-    api: {
-      routes: {
-        apiBasePath: '/health',
-        staticBasePath: '/static',
-        staticContents: [],
-        testEnabled: false,
-      },
-    },
-  },
-};
+conf.shared.authorization.jwtSecretKey = jwtKey;
 
-const regularUserConfig: IRegularUserConfig = {
-  api: {
-    basePath: '/regular-user',
-  },
-  features: {
-    login: loginConfig,
-    health: healthConfig,
-  },
-};
+conf.server.http.port = process.env.APP_PORT
+  ? parseInt(process.env.APP_PORT)
+  : 3001;
 
-const sharedConfig: ISharedConfig = {
-  middleware: {
-    sanitization: {
-      logger: console,
-    },
-    requestMetadata: {},
-    requestLogging: {
-      logger: console,
-      logLevel: 'detailed',
-      fieldsToRedact: ['password', 'token'],
-    },
-    responseLogging: {
-      logger: console,
-    },
-    errorHandler: {
-      logger: console,
-    },
-    requestValidation: {},
-  },
-  authorization: {
-    jwtSecretKey: process.env.JWT_SECRET_KEY || defaultJwtSecretKey,
-  },
-};
-
-export const config: IAuthenticationConfig = {
-  server: {
-    http: {
-      port: process.env.APP_PORT ? parseInt(process.env.APP_PORT) : 3001,
-      hostname: process.env.APP_HOSTNAME || '0.0.0.0',
-    },
-  },
-  api: {
-    basePath: '/api/v1/auth',
-  },
-  regularUser: regularUserConfig,
-  shared: sharedConfig,
-};
+export default { ...conf };

@@ -1,5 +1,5 @@
-import { IHealthInfrastructureConfig } from '../../infrastructure/config/health.config.interface';
+import { IHealthPresentationConfig } from '../../presentation/config/health.config.interface';
 
 export interface IHealthConfig {
-    readonly infrastructure: IHealthInfrastructureConfig;
+    presentation: IHealthPresentationConfig;
 }

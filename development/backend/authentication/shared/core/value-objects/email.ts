@@ -1,26 +1,24 @@
+import { Result } from '../../types/result';
 import { ValueObject } from './value-object.base';
+
+export class InvalidEmailError extends Error {
+    readonly code: string = 'INVALID_EMAIL_FORMAT' as const;
+
+    constructor() {
+        super('Invalid email format.');
+    }
+}
 
 export class Email extends ValueObject<string> {
     protected constructor(email: string) {
         super(email);
     }
 
-    public static create(email: string): Email {
+    public static create(email: string): Result<Email, InvalidEmailError> {
         if (!Email.isValidEmail(email)) {
-            throw new Error('Invalid email format');
+            return Result.failure(new InvalidEmailError());
         }
-        return new Email(email);
-    }
-
-    public static createNoThrow(email: string): {
-        success: boolean;
-        email?: Email;
-        error?: Error;
-    } {
-        if (!Email.isValidEmail(email)) {
-            return { success: false, error: new Error(`Invalid email format`) };
-        }
-        return { success: true, email: new Email(email) };
+        return Result.success(new Email(email));
     }
 
     private static isValidEmail(email: string): boolean {

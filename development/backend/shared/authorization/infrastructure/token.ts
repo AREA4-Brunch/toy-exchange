@@ -40,12 +40,16 @@ export class AuthTokenDataInterpreter {
 }
 
 export class AuthorizationHeaderMissing extends Error {
+    readonly code: string = 'AUTHORIZATION_HEADER_MISSING' as const;
+
     constructor() {
         super('Authorization header is missing.');
     }
 }
 
 export class AuthorizationHeaderInvalid extends Error {
+    readonly code: string = 'AUTHORIZATION_HEADER_INVALID' as const;
+
     constructor() {
         super('Authorization header is invalid.');
     }

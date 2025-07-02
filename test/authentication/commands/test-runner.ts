@@ -11,6 +11,7 @@ import { initializeServerConfig, killServer, startServer, waitForServer } from '
 interface CommandLineOptions {
     watchMode: boolean;
     coverage: boolean;
+    startCmnd: string;
 }
 
 /**
@@ -21,7 +22,7 @@ const main = async (): Promise<void> => {
         console.info('Starting test runner...');
         const options = parseArguments();
 
-        const serverConfig = initializeServerConfig();
+        const serverConfig = initializeServerConfig(options.startCmnd);
         console.info(`Server directory: ${serverConfig.serverDir}`);
         const server = startServer(serverConfig);
         await waitForServer(serverConfig);
@@ -44,6 +45,7 @@ const parseArguments = (): CommandLineOptions => {
     return {
         watchMode: args.includes('--watch'),
         coverage: args.includes('--coverage'),
+        startCmnd: args.includes('--serve') ? 'serve' : 'start:test',
     };
 };
 

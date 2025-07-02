@@ -1,1 +1,1 @@
-export interface IConfigLoginCore {}
+export interface ILoginCoreConfig {}

@@ -1,34 +1,26 @@
-import { inject, injectable, InjectionToken, singleton } from 'tsyringe';
-import { FeatureIoC } from '../../../../../shared/main/ioc/ioc/ioc-initializer.base';
-import { HealthRouter } from '../../../infrastructure/api/health.router';
-import { TestRoleCheckingRouter } from '../../../infrastructure/api/test.role-checking.router';
-import { IHealthRoutesConfig } from '../../../infrastructure/config/health.config.interface';
+import { DependencyContainer, injectable, singleton } from 'tsyringe';
+import { CompositeInitializer } from '../../../../../shared/main/ioc/initializer.base';
 import { IHealthConfig } from '../../config/health.config.interface';
-import { HealthBinder } from '../binders/health.binder';
-import { HEALTH_MAIN_TYPES } from '../di/health.types';
+import { HealthApiInitializer } from '../initializers/health.api.initializer';
+import { HealthBinder } from '../initializers/health.binder.initializer';
 
 @singleton()
 @injectable()
-export class HealthIoC extends FeatureIoC<IHealthConfig> {
-    constructor(
-        binder: HealthBinder,
-        @inject(HEALTH_MAIN_TYPES.Config) conf: IHealthConfig,
-    ) {
-        super(
-            binder,
-            new Map<InjectionToken, string>(
-                getRouters(conf.infrastructure.api.routes),
-            ),
-        );
+export class HealthIoC extends CompositeInitializer<IHealthConfig> {
+    constructor(private readonly binder: HealthBinder) {
+        super();
+    }
+
+    public async initialize(
+        container: DependencyContainer,
+        config: IHealthConfig,
+    ): Promise<void> {
+        await this.binder.initialize(container, config);
+
+        if (config.presentation.api) {
+            this.initChildrenInParallel(container, [
+                [[container, HealthApiInitializer, config.presentation.api]],
+            ]);
+        }
     }
 }
-
-const getRouters = (conf: IHealthRoutesConfig): [InjectionToken, string][] => {
-    const routers: [InjectionToken, string][] = [
-        [HealthRouter, 'infrastructure.api.routes'],
-    ];
-    if (conf.testEnabled) {
-        routers.push([TestRoleCheckingRouter, 'infrastructure.api.routes']);
-    }
-    return routers;
-};

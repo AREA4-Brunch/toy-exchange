@@ -1,9 +1,11 @@
-import { IConfigLoginApplication } from '../../application/config/login.config.interface';
-import { IConfigLoginCore } from '../../core/config/login.config.interface';
-import { ILoginInfrastructureConfig } from '../../infrastructure/config/login.config.interface';
+import { ILoginApplicationConfig } from '../../application/ports/config/login.config.interface';
+import { ILoginCoreConfig } from '../../core/config/login.config.interface';
+import { ILoginInfrastructureConfig } from '../../infrastructure/ports/config/login.config.interface';
+import { ILoginPresentationConfig } from '../../presentation/ports/config/login.config.interface';
 
 export interface ILoginConfig {
-    readonly core: IConfigLoginCore;
-    readonly application: IConfigLoginApplication;
-    readonly infrastructure: ILoginInfrastructureConfig;
+    core: ILoginCoreConfig;
+    application: ILoginApplicationConfig;
+    infrastructure: ILoginInfrastructureConfig;
+    presentation: ILoginPresentationConfig;
 }

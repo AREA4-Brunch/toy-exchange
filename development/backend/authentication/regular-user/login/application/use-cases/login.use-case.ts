@@ -1,42 +1,53 @@
-import { inject, injectable, singleton } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 import { LOGIN_APPLICATION_TYPES } from '../di/login.types';
-import { IRegularUserRepository } from '../repositories/regular-user.repository.interface';
-import { IPasswordService } from '../services/password.service.interface';
-import { ITokenService } from '../services/token.service.interface';
+import { IRegularUserAuthRepository } from '../ports/repositories/regular-user-auth.repository.interface';
+import { IPasswordVerifier } from '../ports/services/password.service.interface';
+import { ITokenService } from '../ports/services/token.service.interface';
 import {
-    ILoginInput,
-    ILoginOutput,
-    ILoginUseCase,
-    LoginIncorrectPasswordError,
-    LoginUserNotFoundError,
-} from './login.use-case.interface';
+    ILoginInputBoundary,
+    LoginInput,
+} from '../ports/use-cases/login.use-case.input.interface';
+import {
+    ILoginOutputBoundary,
+    LoginOutput,
+} from '../ports/use-cases/login.use-case.output.interface';
+import { LoginEligibilityService } from '../services/login-eligibility.service';
 
-@singleton()
 @injectable()
-export class LoginUseCase implements ILoginUseCase {
+export class LoginUseCase implements ILoginInputBoundary {
     constructor(
         @inject(LOGIN_APPLICATION_TYPES.TokenService)
         private readonly tokenService: ITokenService,
-        @inject(LOGIN_APPLICATION_TYPES.PasswordService)
-        private readonly passwordService: IPasswordService,
-        @inject(LOGIN_APPLICATION_TYPES.RegularUserRepository)
-        private readonly RegularUser: IRegularUserRepository,
+        @inject(LOGIN_APPLICATION_TYPES.PasswordVerifier)
+        private readonly passwordVerifier: IPasswordVerifier,
+        @inject(LOGIN_APPLICATION_TYPES.RegularUserAuthRepository)
+        private readonly AuthRepo: IRegularUserAuthRepository,
+        private readonly loginEligibility: LoginEligibilityService,
+        @inject(LOGIN_APPLICATION_TYPES.LoginOutputBoundary)
+        private readonly presenter: ILoginOutputBoundary,
     ) {}
 
-    async execute({ email, password }: ILoginInput): Promise<ILoginOutput> {
-        const user = await this.RegularUser.findLoginData(email);
-        if (!user) {
-            throw new LoginUserNotFoundError(email);
+    async execute({ email, password }: LoginInput): Promise<void> {
+        const data = await this.AuthRepo.findUsrLoginData(email);
+        if (!data) {
+            this.presenter.errorUserNotFound(email);
+            return;
         }
-        const isPasswordValid = await this.passwordService.verifyPassword(
+        if (this.loginEligibility.isForbidden(data.roles)) {
+            this.presenter.errorForbidden();
+            return;
+        }
+        const isPasswordValid = await this.passwordVerifier.verifyPassword(
             password,
-            user.password,
+            data.password,
         );
         if (!isPasswordValid) {
-            throw new LoginIncorrectPasswordError();
+            this.presenter.errorIncorrectPassword();
+            return;
         }
-        return {
-            token: this.tokenService.generateAuthToken(email, user.roles)[0],
-        } as ILoginOutput;
+        // prettier-ignore
+        this.presenter.success(LoginOutput.create(
+            this.tokenService.generateAuthToken(email, data.roles)[0],
+        ));
     }
 }
