@@ -28,7 +28,12 @@ export type TRegularUserRole =
     | (typeof _TRegularUserRole)[number]
     | (typeof _TTestRegularUserRole)[number];
 
-export class RegularUserRole extends UserRole<TRegularUserRole> {
+export interface IRegularUserRole extends UserRole<TRegularUserRole> {}
+
+export class RegularUserRole
+    extends UserRole<TRegularUserRole>
+    implements IRegularUserRole
+{
     private static readonly registry = new Map<
         TRegularUserRole,
         RegularUserRole

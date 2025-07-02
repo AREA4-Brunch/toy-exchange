@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "scripts": {
         "test": "npm run clean && npm run build && npm run _start",
+        "test:tests": "npm run clean && npm run build && npm run _start -- --serve",
         "test:watch": "node ./dist/test/authentication/commands/test-runner.js --watch",
         "test:coverage": "node ./dist/test/authentication/commands/test-runner.js --coverage",
         "clean": "node -e \"require('fs').rmSync('./dist', {recursive: true, force: true})\"",

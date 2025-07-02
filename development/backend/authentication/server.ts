@@ -11,27 +11,40 @@ import * as fs from 'fs';
 import * as path from 'path';
 import 'reflect-metadata'; // tsyringe requires this to be first line imported
 import { container, DependencyContainer } from 'tsyringe';
-import { config as defaultConfig } from './config/app-config/dev.config';
-import { IAuthenticationConfig } from './main/config/auth.config.interface';
-import { AuthenticationIoC } from './main/ioc/ioc/auth.ioc';
+import defaultConfig from './config/app-config/dev.config';
+import { IAuthenticationConfig } from './main/config/authentication.config.interface';
+import { AUTHENTICATION_TYPES } from './main/di/authentication.types';
+import { AuthenticationIoC } from './main/ioc/ioc/authentication.ioc';
 
 const main = async (): Promise<void> => {
-    const authContainer = container;
-    const authApp: express.Express = express();
     const config: IAuthenticationConfig = await loadConfFromFile(defaultConfig);
-    console.info(`Loaded configuration:\n${JSON.stringify(config, null, 2)}`);
+    console.info(`Loaded configuration:`, JSON.stringify(config, null, 2));
 
-    await initApp(authContainer, authApp, config);
+    const authApp: express.Express = express();
+    await initApp(container, authApp, config);
 
-    const serverConfig = config.server;
     authApp
-        .listen(serverConfig.http.port, serverConfig.http.hostname, () =>
-            console.info(`App is listening on port ${serverConfig.http.port}`),
+        .listen(config.server.http.port, config.server.http.hostname, () =>
+            console.info(`App is listening on port ${config.server.http.port}`),
         )
         .on('error', (error: Error) => {
-            console.error(`Error starting server: ${error.message}`);
+            console.error(`Error starting server:`, error);
             process.exit(1);
         });
+};
+
+const initApp = (
+    rootContainer: DependencyContainer,
+    app: express.Router,
+    config: IAuthenticationConfig,
+): Promise<void> => {
+    rootContainer.registerInstance<express.Router>(
+        AUTHENTICATION_TYPES.RootRouter,
+        app,
+    );
+    return rootContainer
+        .resolve(AuthenticationIoC)
+        .initialize(rootContainer, config);
 };
 
 const loadConfFromFile = async (
@@ -55,23 +68,12 @@ const loadConfFromFile = async (
             return fallbackConfig;
         }
         const customConfig = await import(confPath);
-        // !important try config first as it is in the default config
-        return customConfig.config || customConfig.default || customConfig;
+        return customConfig.default || customConfig;
     } catch (error) {
         console.error(`Error loading config file: ${(error as Error).message}`);
         console.info('Falling back to default configuration');
         return fallbackConfig;
     }
-};
-
-const initApp = (
-    rootContainer: DependencyContainer,
-    app: express.Router,
-    config: IAuthenticationConfig,
-): Promise<void> => {
-    return rootContainer
-        .resolve(AuthenticationIoC)
-        .initialize(rootContainer, app, config);
 };
 
 if (require.main === module) {

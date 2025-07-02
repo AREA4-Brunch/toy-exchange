@@ -115,6 +115,7 @@ const config: ITestConfig = {
             serverPingEndpoint: process.env.HEALTH_ENDPOINT || '/api/v1/auth/regular-user/health',
             serverDir: serverDir,
             configPath: path.join(serverDir, 'dist', 'config', 'app-config', 'test.config.js'),
+            startCmnd: 'start:test',
         },
         tests: {
             testDir: testDir,

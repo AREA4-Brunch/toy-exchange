@@ -1,37 +1,26 @@
-import { Router } from 'express';
-import {
-    DependencyContainer,
-    injectable,
-    InjectionToken,
-    singleton,
-} from 'tsyringe';
-import { RoutesLoader } from '../../../../../shared/infrastructure/routes/routes-loader.base';
-import { FeatureIoC } from '../../../../../shared/main/ioc/ioc/ioc';
-import { HealthRouter } from '../../../infrastructure/api/health.router';
-import { TestRoleCheckingRouter } from '../../../infrastructure/api/test.role-checking.router';
-import { IHealthRoutesConfig } from '../../../infrastructure/config/health.config.interface';
+import { DependencyContainer, injectable, singleton } from 'tsyringe';
+import { CompositeInitializer } from '../../../../../shared/main/ioc/initializer.base';
 import { IHealthConfig } from '../../config/health.config.interface';
-import { HealthBinder } from '../binders/health.binder';
+import { HealthApiInitializer } from '../initializers/health.api.initializer';
+import { HealthBinder } from '../initializers/health.binder.initializer';
 
 @singleton()
 @injectable()
-export class HealthIoC extends FeatureIoC<IHealthConfig> {
-    constructor(binder: HealthBinder) {
-        super(binder, getRouters);
+export class HealthIoC extends CompositeInitializer<IHealthConfig> {
+    constructor(private readonly binder: HealthBinder) {
+        super();
+    }
+
+    public async initialize(
+        container: DependencyContainer,
+        config: IHealthConfig,
+    ): Promise<void> {
+        await this.binder.initialize(container, config);
+
+        if (config.presentation.api) {
+            this.initChildrenInParallel(container, [
+                [[container, HealthApiInitializer, config.presentation.api]],
+            ]);
+        }
     }
 }
-
-const getRouters = (
-    container: DependencyContainer,
-    router: Router,
-    config: IHealthConfig,
-): [InjectionToken<RoutesLoader<any>>, string][][] => {
-    const conf: IHealthRoutesConfig = config.infrastructure.api.routes;
-    const routers: [InjectionToken<RoutesLoader<any>>, any][][] = [
-        [[HealthRouter, conf]],
-    ];
-    if (conf.testEnabled) {
-        routers.push([[TestRoleCheckingRouter, conf]]);
-    }
-    return routers;
-};

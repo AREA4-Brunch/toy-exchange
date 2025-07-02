@@ -1,15 +1,26 @@
-import { injectable, singleton } from 'tsyringe';
-import { FeatureIoC } from '../../../../../shared/main/ioc/ioc/ioc';
-import { LoginRouter } from '../../../infrastructure/api/routes/login.router';
+import { DependencyContainer, injectable, singleton } from 'tsyringe';
+import { CompositeInitializer } from '../../../../../shared/main/ioc/initializer.base';
 import { ILoginConfig } from '../../config/login.config.interface';
-import { LoginBinder } from '../binders/login.binder';
+import { LoginApiInitializer } from '../initializers/login.api.initializer';
+import { LoginBinder } from '../initializers/login.binder.initializer';
 
 @singleton()
 @injectable()
-export class LoginIoC extends FeatureIoC<ILoginConfig> {
-    constructor(binder: LoginBinder) {
-        super(binder, (_, __, conf: ILoginConfig) => [
-            [[LoginRouter, conf.infrastructure.api.routes]],
-        ]);
+export class LoginIoC extends CompositeInitializer<ILoginConfig> {
+    constructor(private readonly binder: LoginBinder) {
+        super();
+    }
+
+    public async initialize(
+        container: DependencyContainer,
+        config: ILoginConfig,
+    ): Promise<void> {
+        await this.binder.initialize(container, config);
+
+        if (config.presentation.api) {
+            this.initChildrenInParallel(container, [
+                [[container, LoginApiInitializer, config.presentation.api]],
+            ]);
+        }
     }
 }

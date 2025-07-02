@@ -1,4 +1,4 @@
-export interface IPasswordService {
+export interface IPasswordVerifier {
     verifyPassword(
         password: string,
         hashedPassword: string,

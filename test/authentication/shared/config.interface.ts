@@ -60,6 +60,7 @@ export interface IServerRunnerConfig {
     serverPingEndpoint: string;
     serverDir: string;
     configPath: string;
+    startCmnd: string;
 }
 
 export interface ITestsRunnerConfig {

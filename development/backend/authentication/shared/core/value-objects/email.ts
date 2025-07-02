@@ -14,18 +14,11 @@ export class Email extends ValueObject<string> {
         super(email);
     }
 
-    public static create(email: string): Email {
-        if (Email.isValidEmail(email)) return new Email(email);
-        throw new InvalidEmailError();
-    }
-
-    public static createNoThrow(
-        email: string,
-    ): Result<Email, InvalidEmailError> {
+    public static create(email: string): Result<Email, InvalidEmailError> {
         if (!Email.isValidEmail(email)) {
             return Result.failure(new InvalidEmailError());
         }
-        return Result.success(Email.create(email));
+        return Result.success(new Email(email));
     }
 
     private static isValidEmail(email: string): boolean {

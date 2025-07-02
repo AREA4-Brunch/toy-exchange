@@ -1,4 +1,8 @@
-import { IUserProps, User } from '../../../../shared/core/entities/user.base';
+import {
+    IUser,
+    IUserProps,
+    User,
+} from '../../../../shared/core/entities/user.base';
 import { UserId } from '../../../../shared/core/value-objects/user-id';
 import { RegularUserRole } from '../value-objects/regular-user-role';
 
@@ -8,7 +12,14 @@ export interface IRegularUserProps extends IUserProps {
     roles: RegularUserRole[];
 }
 
-export class RegularUser extends User<IRegularUserProps> {
+export interface IRegularUser extends IUser {
+    roles: RegularUserRole[];
+}
+
+export class RegularUser
+    extends User<IRegularUserProps>
+    implements IRegularUser
+{
     constructor(id: RegularUserId, props: IRegularUserProps) {
         super(id, props);
     }

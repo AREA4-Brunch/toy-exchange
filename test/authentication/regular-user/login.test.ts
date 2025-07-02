@@ -81,9 +81,12 @@ describe('Login API', () => {
             };
             const response = await api.request({ ...url, data: invalidPayload });
             expect(response.status).toBe(400);
+            expect(response.data).toEqual({
+                errors: ['Invalid email format.'],
+            });
         });
 
-        it(`${ID++}. should fail due to incorrect email`, async () => {
+        it(`${ID++}. should fail due to non existant email`, async () => {
             const loginResponse = await api.request({
                 ...url,
                 data: { ...generateTestCredentials(), email: 'non@existant.com' },
@@ -160,7 +163,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getAuthenticatedUrl()),
@@ -179,7 +182,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getSingleRoleUrl()),
@@ -198,7 +201,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getSingleRoleUrl()),
@@ -217,7 +220,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getMultipleRolesAllUrl()),
@@ -236,7 +239,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getMultipleRolesAllUrl()),
@@ -255,7 +258,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getMultipleRolesSomeUrl()),
@@ -274,7 +277,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getMultipleRolesSomeUrl()),
@@ -293,7 +296,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getForbiddenRolesUrl()),
@@ -312,7 +315,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getForbiddenRolesUrl()),
@@ -331,7 +334,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getAllAndSomeUrl()),
@@ -350,7 +353,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getAllAndSomeUrl()),
@@ -369,7 +372,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getSomeAndNoneUrl()),
@@ -388,7 +391,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getSomeAndNoneUrl()),
@@ -407,7 +410,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getAllAndNoneUrl()),
@@ -426,7 +429,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getCombinedRequirementsUrl()),
@@ -445,7 +448,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getDoubleMiddlewareUrl()),
@@ -464,7 +467,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getAdminOnlyUrl()),
@@ -483,7 +486,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getAdminOnlyUrl()),
@@ -502,7 +505,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getSuperAdminUrl()),
@@ -521,7 +524,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getSuperAdminUrl()),
@@ -540,7 +543,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getModeratorOrAdminUrl()),
@@ -559,7 +562,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getModeratorOrAdminUrl()),
@@ -590,7 +593,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getNoBannedUsersUrl()),
@@ -609,7 +612,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             const response = await api.request({
                 ...(await getNoBannedUsersUrl()),
@@ -641,7 +644,7 @@ describe('Login API', () => {
             });
             expect(loginResponse.status).toBe(200);
             expect(loginResponse.data.status).toBe('success');
-            authToken = loginResponse.data.data.token;
+            authToken = loginResponse.data.token;
 
             await new Promise((resolve) => setTimeout(resolve, 5001));
 

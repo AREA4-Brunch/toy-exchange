@@ -1,10 +1,10 @@
 export interface IAppConfig {
-    readonly server: IServerConfig;
+    server: IServerConfig;
 }
 
 export interface IServerConfig {
-    readonly http: {
-        readonly port: number;
-        readonly hostname: string;
+    http: {
+        port: number;
+        hostname: string;
     };
 }
